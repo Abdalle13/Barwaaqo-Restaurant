@@ -5,8 +5,6 @@ This system allows admins and users to manage orders, view menus, and handle use
 
 ---
 
----
-
 ## 🚀 Features
 
 - **User Roles**:
@@ -23,11 +21,6 @@ This system allows admins and users to manage orders, view menus, and handle use
   - Order management panel.
 - **Responsive Design**:
   - Works on desktop and mobile devices.
-- **Tech Stack**:
-  - **Frontend**: React, React Router, Fetch API, Tailwind CSS / Bootstrap
-  - **Backend**: Node.js, Express
-  - **Database**: MongoDB with Mongoose
-  - **Authentication**: JWT (JSON Web Tokens)
 
 ---
 
@@ -49,8 +42,8 @@ This system allows admins and users to manage orders, view menus, and handle use
 ---
 
 ## 📁 Folder Structure
+
 restaurant-management-system/
-│
 ├── backend/
 │ ├── src/
 │ │ ├── controllers/
@@ -58,15 +51,14 @@ restaurant-management-system/
 │ │ ├── routes/
 │ │ ├── middleware/
 │ │ └── config/
-│ │
 │ ├── app.js
 │ ├── server.js
 │ └── package.json
-│
 ├── frontend/ # (Will be added later)
-│
 ├── README.md
 └── .gitignore
+
+---
 
 
 ---
@@ -79,3 +71,12 @@ restaurant-management-system/
 - `feature-*` → Individual features
 
 Examples:
+- feature-auth
+- feature-orders
+- feature-dashboard
+
+### Rules
+- ❌ No direct push to `main`
+- ✅ Always create a feature branch
+- ✅ Open Pull Requests (PR)
+- ✅ Admin reviews & merges
