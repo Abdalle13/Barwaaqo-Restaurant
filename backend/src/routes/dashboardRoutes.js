@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { createRole, getRoles } = require('../controllers/roleController');
+const { getAdminDashboardStats } = require('../controllers/dashboardController');
 const { protect } = require('../middleware/auth');
 const { authorize } = require('../middleware/authoriz');
 const { PERMISSIONS } = require('../seeds/constants');
 
-router.post('/', protect, authorize(PERMISSIONS.MANAGE_ROLES), createRole);
-router.get('/', protect, authorize(PERMISSIONS.MANAGE_ROLES), getRoles);
+// Route: GET /api/dashboard/stats
+router.get('/stats', protect, authorize(PERMISSIONS.VIEW_ALL_ORDERS), getAdminDashboardStats);
 
 module.exports = router;
