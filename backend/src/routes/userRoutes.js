@@ -9,7 +9,7 @@ const upload = require('../utils/fileUpload');
 const {
   getAllUsers,
   getUserById,
-  deleteUser,
+  toggleUserStatus,
   updateUserProfile
 } = require('../controllers/userController');
 
@@ -38,12 +38,10 @@ router.get(
   getUserById
 );
 
-// DELETE User (Admin)
-router.delete(
-  '/:id',
+router.put(
+  '/toggle-status/:id',
   protect,
-  authorize(PERMISSIONS.DELETE_USER),
-  deleteUser
+  authorize(PERMISSIONS.DELETE_USER), 
+  toggleUserStatus
 );
-
 module.exports = router;

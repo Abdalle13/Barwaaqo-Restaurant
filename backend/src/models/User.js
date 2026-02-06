@@ -29,6 +29,11 @@ const UserSchema = new mongoose.Schema({
     match: [/^\d{9,12}$/, 'Fadlan geli lambar talefan oo sax ah (9-12 digital)']
   },
   profileImage: { type: String, default: "" },
+  status: { 
+    type: String, 
+    enum: ['active', 'blocked'], 
+    default: 'active' 
+  },
   role: { type: mongoose.Schema.Types.ObjectId, ref: 'Role', required: true }
 }, { timestamps: true });
 

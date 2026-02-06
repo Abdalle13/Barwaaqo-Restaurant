@@ -36,28 +36,29 @@ exports.getUserById = async (req, res) => {
   }
 };
 
-// @desc    DELETE User (Admin Only)
-exports.deleteUser = async (req, res) => {
+
+// @desc    Toggle User Status (Block/Unblock)
+exports.toggleUserStatus = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
 
     if (!user) {
-      return res
-        .status(404)
-        .json({ success: false, message: 'User-ka lama helin' });
+      return res.status(404).json({ success: false, message: 'User-ka lama helin' });
     }
 
+    // Iska ilaali in admin-ku is block-gareeyo
     if (user._id.toString() === req.user._id.toString()) {
-      return res.status(400).json({
-        success: false,
-        message: 'Iskama tirtiri kartid naftaada'
-      });
+      return res.status(400).json({ success: false, message: 'Ma block-gareyn kartid naftaada' });
     }
 
-    await user.deleteOne();
-    res.status(200).json({
-      success: true,
-      message: 'User-ka waa la tirtiray si guul leh'
+    // Haddii uu active ahaa ka dhig blocked, haddii uu blocked ahaa ka dhig active
+    user.status = user.status === 'active' ? 'blocked' : 'active';
+    await user.save();
+
+    res.status(200).json({ 
+      success: true, 
+      message: `User-ka hadda waa ${user.status}`,
+      data: user 
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
