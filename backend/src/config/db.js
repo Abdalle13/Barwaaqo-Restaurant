@@ -1,4 +1,13 @@
 const mongoose = require('mongoose');
+const dns = require('dns');
+
+// On Windows local networks, ISP DNS servers often fail on SRV queries for MongoDB Atlas.
+// Setting public DNS servers (Google / Cloudflare) guarantees reliable connection.
+try {
+  dns.setServers(['8.8.8.8', '8.8.4.4', '1.1.1.1']);
+} catch (e) {
+  // Ignored if not supported in certain restricted environments
+}
 
 let cached = global.mongoose;
 
