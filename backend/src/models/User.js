@@ -4,46 +4,55 @@ const bcrypt = require('bcryptjs');
 const UserSchema = new mongoose.Schema({
   name: { 
     type: String, 
-    required: [true, 'Fadlan geli magacaaga'],
+    required: [true, 'Please provide your full name'],
     trim: true 
   },
   email: { 
     type: String, 
-    required: [true, 'Fadlan geli email-ka'], 
+    required: [true, 'Please provide an email address'], 
     unique: true,
     lowercase: true,
+    trim: true,
     match: [
       /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
-      'Fadlan geli email sax ah'
+      'Please enter a valid email address'
     ]
   },
   password: { 
     type: String, 
-    required: [true, 'Fadlan geli password-ka'],
-    minlength: [6, 'Password-ku waa inuu ka badnaadaa 6 harfood']
+    required: [true, 'Please enter a password'],
+    minlength: [6, 'Password must be at least 6 characters']
   },
   phone: { 
     type: String, 
-    required: [true, 'Fadlan geli lambarka talefanka'],
-    // Somalian phone numbers are usually 9-10 digits
-    match: [/^\d{9,12}$/, 'Fadlan geli lambar talefan oo sax ah (9-12 digital)']
+    required: [true, 'Please provide a valid phone number'],
+    trim: true,
   },
-  profileImage: { type: String, default: "" },
+  address: {
+    type: String,
+    default: '',
+    trim: true,
+  },
   status: { 
     type: String, 
     enum: ['active', 'blocked'], 
     default: 'active' 
   },
-  role: { type: mongoose.Schema.Types.ObjectId, ref: 'Role', required: true }
+  role: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Role', 
+    required: true 
+  }
 }, { timestamps: true });
 
-// Password hashing (sidii hore)
+// Password hashing before saving
 UserSchema.pre('save', async function(next) {
   if (!this.isModified('password')) return next();
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
 });
 
+// Compare password method
 UserSchema.methods.matchPassword = async function(enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
