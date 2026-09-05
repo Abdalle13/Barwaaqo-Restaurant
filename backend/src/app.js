@@ -62,6 +62,9 @@ const orderRoutes = require('./routes/orderRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const roleRoutes = require('./routes/roleRoutes');
 const permissionRoutes = require('./routes/permissionRoutes');
+const tableRoutes = require('./routes/tableRoutes');
+const reservationRoutes = require('./routes/reservationRoutes');
+const settingsRoutes = require('./routes/settingsRoutes');
 
 // --- 3. Mount Routes ---
 app.use('/api/auth', authRoutes);
@@ -70,6 +73,9 @@ app.use('/api/foods', foodRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/tables', tableRoutes);
+app.use('/api/reservations', reservationRoutes);
+app.use('/api/settings', settingsRoutes);
 app.use('/api/roles', roleRoutes);
 app.use('/api/permissions', permissionRoutes);
 
