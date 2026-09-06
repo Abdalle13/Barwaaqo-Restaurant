@@ -1,85 +1,212 @@
 const Food = require('../models/Food');
-const fs = require('fs');
-const path = require('path');
+const { uploadToImageKit } = require('../utils/imagekit');
 
-// @desc    GET All Foods & Search
+// @desc    GET All Foods with Search, Filter & Pagination
+// @route   GET /api/foods
+// @access  Public
 exports.getFoods = async (req, res) => {
   try {
-    let filter = {};
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 12;
+    const skip = (page - 1) * limit;
+
+    let filter = { isDeleted: false };
+
+    // Search by food name or description
     if (req.query.search) {
-      // 'i' waxay ka dhigan tahay inuu raadiyo xitaa haddii xuruuftu yaryar yihiin ama waaweyn yihiin
-      filter.name = { $regex: req.query.search, $options: 'i' };
+      filter.$or = [
+        { name: { $regex: req.query.search, $options: 'i' } },
+        { description: { $regex: req.query.search, $options: 'i' } },
+      ];
     }
 
-    const foods = await Food.find(filter).populate('category', 'name');
-    res.status(200).json({ success: true, count: foods.length, data: foods });
+    // Filter by category
+    if (req.query.category) {
+      filter.category = req.query.category;
+    }
+
+    // Filter by status (e.g., Available)
+    if (req.query.status) {
+      filter.status = req.query.status;
+    }
+
+    const total = await Food.countDocuments(filter);
+
+    const foods = await Food.find(filter)
+      .populate('category', 'name')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    res.status(200).json({
+      success: true,
+      count: foods.length,
+      pagination: {
+        total,
+        page,
+        pages: Math.ceil(total / limit),
+        limit,
+      },
+      data: foods,
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// @desc    CREATE Food
-exports.createFood = async (req, res) => {
+// @desc    GET Popular / Featured Foods
+// @route   GET /api/foods/popular
+// @access  Public
+exports.getPopularFoods = async (req, res) => {
   try {
-    const { name, description, price, category } = req.body;
-    const food = new Food({
-      name, description, price, category,
-      image: req.file ? `/uploads/${req.file.filename}` : ''
-    });
-    const savedFood = await food.save();
-    res.status(201).json({ success: true, data: savedFood });
-  } catch (error) {
-    if (req.file) fs.unlinkSync(req.file.path); // Tirtir sawirka haddii error jiro
-    res.status(400).json({ success: false, message: error.message });
-  }
-};
+    const popularFoods = await Food.find({ isDeleted: false, isPopular: true })
+      .populate('category', 'name')
+      .limit(6);
 
-// @desc    UPDATE Food
-exports.updateFood = async (req, res) => {
-  try {
-    let food = await Food.findById(req.params.id);
-    if (!food) return res.status(404).json({ message: 'Cuntada lama helin' });
-
-    if (req.file) {
-      // Tirtir sawirkii hore ee folder-ka ku jiray
-      if (food.image) {
-        const oldPath = path.join(__dirname, '../../uploads', path.basename(food.image));
-        if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
-      }
-      req.body.image = `/uploads/${req.file.filename}`;
+    // Fallback: If no dishes are flagged as isPopular, return top rated items
+    let result = popularFoods;
+    if (result.length === 0) {
+      result = await Food.find({ isDeleted: false })
+        .populate('category', 'name')
+        .sort({ rating: -1, createdAt: -1 })
+        .limit(6);
     }
 
-    food = await Food.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.status(200).json({
+      success: true,
+      count: result.length,
+      data: result,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    GET Single Food Item
+// @route   GET /api/foods/:id
+// @access  Public
+exports.getFoodById = async (req, res) => {
+  try {
+    const food = await Food.findOne({ _id: req.params.id, isDeleted: false }).populate('category', 'name');
+    if (!food) {
+      return res.status(404).json({ success: false, message: 'Food item not found' });
+    }
     res.status(200).json({ success: true, data: food });
+  } catch (error) {
+    res.status(404).json({ success: false, message: 'Food item not found' });
+  }
+};
+
+// @desc    CREATE Food Item with ImageKit Upload
+// @route   POST /api/foods
+// @access  Private (Admin)
+exports.createFood = async (req, res) => {
+  try {
+    const { name, description, price, discount, category, status, preparationTime, isPopular } = req.body;
+
+    let imageUrl = '';
+    let imageKitId = '';
+
+    // If image file is provided in memory, upload to ImageKit
+    if (req.file) {
+      const fileName = `food-${Date.now()}-${req.file.originalname.replace(/\s+/g, '-')}`;
+      try {
+        const uploadResult = await uploadToImageKit(req.file.buffer, fileName, '/barwaaqo/foods');
+        imageUrl = uploadResult.url;
+        imageKitId = uploadResult.fileId;
+      } catch (uploadError) {
+        console.warn('ImageKit upload warning:', uploadError.message);
+        // If image upload fails or keys not active, continue with empty or provided url
+      }
+    } else if (req.body.imageUrl) {
+      imageUrl = req.body.imageUrl;
+    }
+
+    const food = new Food({
+      name,
+      description,
+      price: Number(price),
+      discount: discount ? Number(discount) : 0,
+      category,
+      status: status || 'Available',
+      preparationTime: preparationTime ? Number(preparationTime) : 20,
+      isPopular: isPopular === 'true' || isPopular === true,
+      image: imageUrl,
+      imageKitId,
+    });
+
+    const savedFood = await food.save();
+    const populated = await Food.findById(savedFood._id).populate('category', 'name');
+
+    res.status(201).json({
+      success: true,
+      message: 'Dish created successfully',
+      data: populated,
+    });
   } catch (error) {
     res.status(400).json({ success: false, message: error.message });
   }
 };
 
-// @desc    DELETE Food
+// @desc    UPDATE Food Item
+// @route   PUT /api/foods/:id
+// @access  Private (Admin)
+exports.updateFood = async (req, res) => {
+  try {
+    let food = await Food.findOne({ _id: req.params.id, isDeleted: false });
+    if (!food) {
+      return res.status(404).json({ success: false, message: 'Food item not found' });
+    }
+
+    const updates = { ...req.body };
+
+    if (req.file) {
+      const fileName = `food-${Date.now()}-${req.file.originalname.replace(/\s+/g, '-')}`;
+      try {
+        const uploadResult = await uploadToImageKit(req.file.buffer, fileName, '/barwaaqo/foods');
+        updates.image = uploadResult.url;
+        updates.imageKitId = uploadResult.fileId;
+      } catch (uploadError) {
+        console.warn('ImageKit upload warning:', uploadError.message);
+      }
+    }
+
+    if (updates.price !== undefined) updates.price = Number(updates.price);
+    if (updates.discount !== undefined) updates.discount = Number(updates.discount);
+    if (updates.preparationTime !== undefined) updates.preparationTime = Number(updates.preparationTime);
+    if (updates.isPopular !== undefined) updates.isPopular = updates.isPopular === 'true' || updates.isPopular === true;
+
+    food = await Food.findByIdAndUpdate(req.params.id, updates, { new: true, runValidators: true }).populate('category', 'name');
+
+    res.status(200).json({
+      success: true,
+      message: 'Dish updated successfully',
+      data: food,
+    });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    DELETE Food Item (Soft-delete for production safety)
+// @route   DELETE /api/foods/:id
+// @access  Private (Admin)
 exports.deleteFood = async (req, res) => {
   try {
     const food = await Food.findById(req.params.id);
-    if (!food) return res.status(404).json({ message: 'Lama helin' });
-
-    if (food.image) {
-      const imgPath = path.join(__dirname, '../../uploads', path.basename(food.image));
-      if (fs.existsSync(imgPath)) fs.unlinkSync(imgPath);
+    if (!food) {
+      return res.status(404).json({ success: false, message: 'Food item not found' });
     }
 
-    await food.deleteOne();
-    res.status(200).json({ success: true, message: 'Waa la tirtiray' });
+    // Soft delete so existing orders can still reference it
+    food.isDeleted = true;
+    await food.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Dish removed successfully',
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
-  }
-};
-
-// @desc    GET Single Food
-exports.getFoodById = async (req, res) => {
-  try {
-    const food = await Food.findById(req.params.id).populate('category', 'name');
-    res.status(200).json({ success: true, data: food });
-  } catch (error) {
-    res.status(404).json({ success: false, message: 'Lama helin' });
   }
 };
