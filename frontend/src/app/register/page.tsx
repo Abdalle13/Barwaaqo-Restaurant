@@ -3,11 +3,9 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
 import { useAuth } from '@/context/AuthContext';
 import api from '@/lib/api';
-import { UserPlus, User, Mail, Lock, Phone, MapPin } from 'lucide-react';
+import { ArrowLeft, UserPlus, User, Mail, Lock, Phone, MapPin, Eye, EyeOff } from 'lucide-react';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -18,6 +16,7 @@ export default function RegisterPage() {
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -48,46 +47,51 @@ export default function RegisterPage() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <Navbar />
+    <div style={{ minHeight: '100vh', backgroundColor: 'var(--bg-base)', color: 'var(--text-primary)' }}>
+      <header style={{ height: '72px', borderBottom: '1px solid var(--border)', padding: '0 20px' }}>
+        <div style={{ width: '100%', maxWidth: '1180px', height: '100%', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Link href="/" style={{ fontFamily: 'var(--font-heading)', fontSize: '19px', fontWeight: '700', color: 'var(--accent)', textDecoration: 'none' }}>
+            Barwaaqo Restaurant
+          </Link>
+          <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'var(--text-secondary)', fontSize: '13px', textDecoration: 'none' }}>
+            <ArrowLeft size={15} /> Back to home
+          </Link>
+        </div>
+      </header>
 
-      <main style={{ flexGrow: 1, padding: '50px 20px 80px 20px', display: 'flex', alignItems: 'center' }}>
-        <div className="container" style={{ maxWidth: '480px' }}>
-          <div className="card" style={{ padding: '36px' }}>
-            <div style={{ textAlign: 'center', marginBottom: '28px' }}>
-              <div
+      <main style={{ width: '100%', maxWidth: '500px', margin: '0 auto', padding: 'clamp(32px, 6vh, 64px) 20px 56px' }}>
+        <div style={{ padding: '42px 36px', backgroundColor: 'var(--bg-surface)', borderRadius: '24px', border: '1px solid var(--border)', boxShadow: '0 20px 50px rgba(0, 0, 0, 0.5)' }}>
+            <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+              <div style={{ width: '58px', height: '58px', borderRadius: '16px', background: 'linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%)', color: 'var(--bg-deep)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 18px auto', boxShadow: '0 8px 24px rgba(212, 165, 116, 0.3)' }}>
+                <UserPlus size={26} strokeWidth={2.2} />
+              </div>
+              <h2
                 style={{
-                  width: '54px',
-                  height: '54px',
-                  borderRadius: '14px',
-                  backgroundColor: 'var(--primary-light)',
-                  color: 'var(--primary)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  margin: '0 auto 14px auto',
+                  fontFamily: 'var(--font-display)',
+                  fontSize: '30px',
+                  fontWeight: '700',
+                  color: 'var(--text-primary)',
+                  marginBottom: '8px',
                 }}
               >
-                <UserPlus size={26} />
-              </div>
-              <h2 style={{ fontSize: '24px', fontWeight: '800', marginBottom: '6px' }}>
                 Join Barwaaqo
               </h2>
-              <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>
-                Create an account to order meals and track deliveries effortlessly
+              <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
+                Create an account to reserve tables, order dishes, and track deliveries.
               </p>
             </div>
 
             {error && (
               <div
                 style={{
-                  padding: '12px',
-                  backgroundColor: 'var(--danger-light)',
+                  padding: '12px 16px',
+                  backgroundColor: 'rgba(248, 113, 113, 0.12)',
+                  border: '1px solid rgba(248, 113, 113, 0.3)',
                   color: 'var(--danger)',
-                  borderRadius: 'var(--radius-md)',
+                  borderRadius: '12px',
                   fontSize: '13px',
                   fontWeight: '600',
-                  marginBottom: '20px',
+                  marginBottom: '22px',
                   textAlign: 'center',
                 }}
               >
@@ -96,33 +100,44 @@ export default function RegisterPage() {
             )}
 
             <form onSubmit={handleSubmit}>
-              <div className="form-group">
-                <label className="form-label">Full Name *</label>
+              <div className="form-group" style={{ marginBottom: '18px' }}>
+                <label className="form-label" style={{ color: 'var(--text-secondary)', fontSize: '13px', fontWeight: '600' }}>
+                  Full Name *
+                </label>
                 <div style={{ position: 'relative' }}>
                   <User
-                    size={16}
-                    color="var(--text-muted)"
-                    style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }}
+                    size={17}
+                    color="var(--accent)"
+                    style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', opacity: 0.8 }}
                   />
                   <input
                     type="text"
-                    placeholder="e.g. Fatima Ali"
+                    placeholder="Fatima Ali"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
                     className="form-input"
-                    style={{ paddingLeft: '40px' }}
+                    style={{
+                      paddingLeft: '48px',
+                      backgroundColor: 'var(--bg-deep)',
+                      border: '1px solid var(--border)',
+                      color: 'var(--text-primary)',
+                      borderRadius: '7px',
+                      height: '46px',
+                    }}
                   />
                 </div>
               </div>
 
-              <div className="form-group">
-                <label className="form-label">Email Address *</label>
+              <div className="form-group" style={{ marginBottom: '18px' }}>
+                <label className="form-label" style={{ color: 'var(--text-secondary)', fontSize: '13px', fontWeight: '600' }}>
+                  Email Address *
+                </label>
                 <div style={{ position: 'relative' }}>
                   <Mail
-                    size={16}
-                    color="var(--text-muted)"
-                    style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }}
+                    size={17}
+                    color="var(--accent)"
+                    style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', opacity: 0.8 }}
                   />
                   <input
                     type="email"
@@ -131,18 +146,27 @@ export default function RegisterPage() {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     className="form-input"
-                    style={{ paddingLeft: '40px' }}
+                    style={{
+                      paddingLeft: '48px',
+                      backgroundColor: 'var(--bg-deep)',
+                      border: '1px solid var(--border)',
+                      color: 'var(--text-primary)',
+                      borderRadius: '7px',
+                      height: '46px',
+                    }}
                   />
                 </div>
               </div>
 
-              <div className="form-group">
-                <label className="form-label">Phone Number *</label>
+              <div className="form-group" style={{ marginBottom: '18px' }}>
+                <label className="form-label" style={{ color: 'var(--text-secondary)', fontSize: '13px', fontWeight: '600' }}>
+                  Phone Number *
+                </label>
                 <div style={{ position: 'relative' }}>
                   <Phone
-                    size={16}
-                    color="var(--text-muted)"
-                    style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }}
+                    size={17}
+                    color="var(--accent)"
+                    style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', opacity: 0.8 }}
                   />
                   <input
                     type="text"
@@ -151,18 +175,27 @@ export default function RegisterPage() {
                     onChange={(e) => setPhone(e.target.value)}
                     required
                     className="form-input"
-                    style={{ paddingLeft: '40px' }}
+                    style={{
+                      paddingLeft: '48px',
+                      backgroundColor: 'var(--bg-deep)',
+                      border: '1px solid var(--border)',
+                      color: 'var(--text-primary)',
+                      borderRadius: '7px',
+                      height: '46px',
+                    }}
                   />
                 </div>
               </div>
 
-              <div className="form-group">
-                <label className="form-label">Default Delivery Address</label>
+              <div className="form-group" style={{ marginBottom: '18px' }}>
+                <label className="form-label" style={{ color: 'var(--text-secondary)', fontSize: '13px', fontWeight: '600' }}>
+                  Default Delivery Address
+                </label>
                 <div style={{ position: 'relative' }}>
                   <MapPin
-                    size={16}
-                    color="var(--text-muted)"
-                    style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }}
+                    size={17}
+                    color="var(--accent)"
+                    style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', opacity: 0.8 }}
                   />
                   <input
                     type="text"
@@ -170,37 +203,87 @@ export default function RegisterPage() {
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
                     className="form-input"
-                    style={{ paddingLeft: '40px' }}
+                    style={{
+                      paddingLeft: '48px',
+                      backgroundColor: 'var(--bg-deep)',
+                      border: '1px solid var(--border)',
+                      color: 'var(--text-primary)',
+                      borderRadius: '7px',
+                      height: '46px',
+                    }}
                   />
                 </div>
               </div>
 
-              <div className="form-group" style={{ marginBottom: '24px' }}>
-                <label className="form-label">Password *</label>
+              <div className="form-group" style={{ marginBottom: '26px' }}>
+                <label className="form-label" style={{ color: 'var(--text-secondary)', fontSize: '13px', fontWeight: '600' }}>
+                  Password * (Minimum 6 characters)
+                </label>
                 <div style={{ position: 'relative' }}>
                   <Lock
-                    size={16}
-                    color="var(--text-muted)"
-                    style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }}
+                    size={17}
+                    color="var(--accent)"
+                    style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', opacity: 0.8 }}
                   />
                   <input
-                    type="password"
-                    placeholder="Min 6 characters"
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     minLength={6}
                     className="form-input"
-                    style={{ paddingLeft: '40px' }}
+                    style={{
+                      paddingLeft: '48px',
+                      paddingRight: '48px',
+                      backgroundColor: 'var(--bg-deep)',
+                      border: '1px solid var(--border)',
+                      color: 'var(--text-primary)',
+                      borderRadius: '7px',
+                      height: '46px',
+                    }}
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    style={{
+                      position: 'absolute',
+                      right: '16px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      background: 'none',
+                      border: 'none',
+                      color: 'var(--text-secondary)',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      padding: 0
+                    }}
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
                 </div>
               </div>
 
               <button
                 type="submit"
                 disabled={isLoading}
-                className="btn btn-primary"
-                style={{ width: '100%', padding: '12px', display: 'flex', justifyContent: 'center' }}
+                style={{
+                  width: '100%',
+                  padding: '14px',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: 'var(--accent)',
+                  color: 'var(--bg-deep)',
+                  borderRadius: '7px',
+                  border: 'none',
+                  fontWeight: '700',
+                  fontSize: '15px',
+                  cursor: isLoading ? 'not-allowed' : 'pointer',
+                  transition: 'all 0.25s',
+                }}
               >
                 {isLoading ? 'Creating Account...' : 'Create Account'}
               </button>
@@ -209,23 +292,20 @@ export default function RegisterPage() {
             <div
               style={{
                 textAlign: 'center',
-                marginTop: '24px',
+                marginTop: '26px',
                 paddingTop: '20px',
                 borderTop: '1px solid var(--border)',
                 fontSize: '14px',
-                color: 'var(--text-muted)',
+                color: 'var(--text-secondary)',
               }}
             >
               Already have an account?{' '}
-              <Link href="/login" style={{ color: 'var(--primary)', fontWeight: '700' }}>
+              <Link href="/login" style={{ color: 'var(--accent)', fontWeight: '700', textDecoration: 'none' }}>
                 Sign In
               </Link>
             </div>
           </div>
-        </div>
       </main>
-
-      <Footer />
     </div>
   );
 }

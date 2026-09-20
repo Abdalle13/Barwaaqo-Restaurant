@@ -48,7 +48,7 @@ export default function EditDishPage() {
         setIsPopular(food.isPopular || false);
         setImageUrl(food.image || '');
       }
-    }).catch((err) => {
+    }).catch(() => {
       setError('Failed to load dish details');
     }).finally(() => setIsLoading(false));
   }, [id]);
@@ -82,40 +82,61 @@ export default function EditDishPage() {
       if (res.data.success) {
         router.push('/admin/menu');
       }
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to update dish');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to update dish');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   if (isLoading) {
-    return <div style={{ padding: '60px', textAlign: 'center' }}>Loading dish editor...</div>;
+    return <div style={{ padding: '60px', textAlign: 'center', color: 'var(--text-secondary)' }}>Loading dish editor...</div>;
   }
 
   return (
-    <div style={{ maxWidth: '720px', margin: '0 auto' }}>
-      <div style={{ marginBottom: '24px' }}>
-        <Link href="/admin/menu" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: 'var(--text-muted)' }}>
+    <div style={{ maxWidth: '760px', margin: '0 auto' }}>
+      <div style={{ marginBottom: '28px' }}>
+        <Link
+          href="/admin/menu"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px',
+            fontSize: '13px',
+            color: 'var(--accent)',
+            textDecoration: 'none',
+            fontWeight: '600',
+            marginBottom: '10px',
+          }}
+        >
           <ArrowLeft size={16} />
           <span>Back to Menu List</span>
         </Link>
-        <h1 style={{ fontSize: '28px', fontWeight: '800', marginTop: '8px' }}>
+        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '28px', fontWeight: '700', color: 'var(--text-primary)' }}>
           Edit Dish: {name}
         </h1>
       </div>
 
-      <div className="card">
+      <div
+        style={{
+          backgroundColor: 'var(--bg-surface)',
+          borderRadius: '24px',
+          border: '1px solid var(--border)',
+          padding: '36px',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+        }}
+      >
         {error && (
           <div
             style={{
-              padding: '12px',
-              backgroundColor: 'var(--danger-light)',
+              padding: '14px 18px',
+              backgroundColor: 'rgba(248, 113, 113, 0.12)',
+              border: '1px solid rgba(248, 113, 113, 0.3)',
               color: 'var(--danger)',
-              borderRadius: 'var(--radius-md)',
-              fontSize: '13px',
+              borderRadius: '12px',
+              fontSize: '14px',
               fontWeight: '600',
-              marginBottom: '20px',
+              marginBottom: '24px',
             }}
           >
             {error}
@@ -123,7 +144,7 @@ export default function EditDishPage() {
         )}
 
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
+          <div className="form-group" style={{ marginBottom: '18px' }}>
             <label className="form-label">Dish Name *</label>
             <input
               type="text"
@@ -131,20 +152,30 @@ export default function EditDishPage() {
               onChange={(e) => setName(e.target.value)}
               required
               className="form-input"
+              style={{
+                backgroundColor: 'var(--bg-deep)',
+                border: '1px solid var(--border)',
+                color: 'var(--text-primary)',
+              }}
             />
           </div>
 
-          <div className="form-group">
+          <div className="form-group" style={{ marginBottom: '18px' }}>
             <label className="form-label">Description</label>
             <textarea
               rows={3}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               className="form-textarea"
+              style={{
+                backgroundColor: 'var(--bg-deep)',
+                border: '1px solid var(--border)',
+                color: 'var(--text-primary)',
+              }}
             />
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+          <div className="responsive-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '18px' }}>
             <div className="form-group">
               <label className="form-label">Price (USD) *</label>
               <input
@@ -154,6 +185,11 @@ export default function EditDishPage() {
                 onChange={(e) => setPrice(e.target.value)}
                 required
                 className="form-input"
+                style={{
+                  backgroundColor: 'var(--bg-deep)',
+                  border: '1px solid var(--border)',
+                  color: 'var(--text-primary)',
+                }}
               />
             </div>
 
@@ -164,11 +200,16 @@ export default function EditDishPage() {
                 value={discount}
                 onChange={(e) => setDiscount(e.target.value)}
                 className="form-input"
+                style={{
+                  backgroundColor: 'var(--bg-deep)',
+                  border: '1px solid var(--border)',
+                  color: 'var(--text-primary)',
+                }}
               />
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+          <div className="responsive-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '18px' }}>
             <div className="form-group">
               <label className="form-label">Category *</label>
               <select
@@ -176,9 +217,14 @@ export default function EditDishPage() {
                 onChange={(e) => setCategory(e.target.value)}
                 required
                 className="form-select"
+                style={{
+                  backgroundColor: 'var(--bg-deep)',
+                  border: '1px solid var(--border)',
+                  color: 'var(--text-primary)',
+                }}
               >
                 {categories.map((c) => (
-                  <option key={c._id} value={c._id}>
+                  <option key={c._id} value={c._id} style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)' }}>
                     {c.name}
                   </option>
                 ))}
@@ -191,15 +237,20 @@ export default function EditDishPage() {
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
                 className="form-select"
+                style={{
+                  backgroundColor: 'var(--bg-deep)',
+                  border: '1px solid var(--border)',
+                  color: 'var(--text-primary)',
+                }}
               >
-                <option value="Available">Available</option>
-                <option value="Low Stock">Low Stock</option>
-                <option value="Out of Stock">Out of Stock</option>
+                <option value="Available" style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)' }}>Available</option>
+                <option value="Low Stock" style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)' }}>Low Stock</option>
+                <option value="Out of Stock" style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)' }}>Out of Stock</option>
               </select>
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+          <div className="responsive-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '22px' }}>
             <div className="form-group">
               <label className="form-label">Preparation Time (minutes)</label>
               <input
@@ -207,19 +258,24 @@ export default function EditDishPage() {
                 value={preparationTime}
                 onChange={(e) => setPreparationTime(e.target.value)}
                 className="form-input"
+                style={{
+                  backgroundColor: 'var(--bg-deep)',
+                  border: '1px solid var(--border)',
+                  color: 'var(--text-primary)',
+                }}
               />
             </div>
 
-            <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '26px' }}>
+            <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '28px' }}>
               <input
                 type="checkbox"
                 id="isPopularEdit"
                 checked={isPopular}
                 onChange={(e) => setIsPopular(e.target.checked)}
-                style={{ width: '18px', height: '18px', accentColor: 'var(--primary)' }}
+                style={{ width: '18px', height: '18px', accentColor: 'var(--accent)' }}
               />
-              <label htmlFor="isPopularEdit" style={{ fontSize: '14px', fontWeight: '600', cursor: 'pointer' }}>
-                Featured / Popular Dish
+              <label htmlFor="isPopularEdit" style={{ fontSize: '14px', fontWeight: '600', cursor: 'pointer', color: 'var(--text-primary)' }}>
+                Featured / Signature Dish
               </label>
             </div>
           </div>
@@ -227,27 +283,28 @@ export default function EditDishPage() {
           {/* Current Image Preview & Upload Option */}
           <div
             style={{
-              padding: '18px',
+              padding: '22px',
               border: '1px dashed var(--border)',
-              borderRadius: 'var(--radius-md)',
-              backgroundColor: 'var(--bg-muted)',
-              marginBottom: '24px',
+              borderRadius: '16px',
+              backgroundColor: 'var(--bg-deep)',
+              marginBottom: '28px',
             }}
           >
             {imageUrl && (
-              <div style={{ marginBottom: '14px' }}>
-                <span style={{ fontSize: '12px', color: 'var(--text-muted)', display: 'block', marginBottom: '6px' }}>
+              <div style={{ marginBottom: '16px' }}>
+                <span style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>
                   Current Dish Image:
                 </span>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={imageUrl}
                   alt={name}
-                  style={{ width: '120px', height: '80px', objectFit: 'cover', borderRadius: '8px' }}
+                  style={{ width: '130px', height: '88px', objectFit: 'cover', borderRadius: '10px', border: '1px solid var(--border)' }}
                 />
               </div>
             )}
 
-            <label className="form-label" style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <label className="form-label" style={{ marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--accent)' }}>
               <Upload size={16} />
               <span>Replace Image File</span>
             </label>
@@ -259,10 +316,10 @@ export default function EditDishPage() {
                   setImageFile(e.target.files[0]);
                 }
               }}
-              style={{ marginBottom: '14px', fontSize: '13px' }}
+              style={{ marginBottom: '16px', fontSize: '13px', color: 'var(--text-secondary)' }}
             />
 
-            <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '8px' }}>
+            <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '8px' }}>
               Or update image URL:
             </div>
             <input
@@ -270,15 +327,50 @@ export default function EditDishPage() {
               value={imageUrl}
               onChange={(e) => setImageUrl(e.target.value)}
               className="form-input"
+              style={{
+                backgroundColor: 'var(--bg-surface)',
+                border: '1px solid var(--border)',
+                color: 'var(--text-primary)',
+              }}
             />
           </div>
 
-          <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
-            <Link href="/admin/menu" className="btn btn-secondary">
+          <div style={{ display: 'flex', gap: '14px', justifyContent: 'flex-end' }}>
+            <Link
+              href="/admin/menu"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                padding: '12px 22px',
+                borderRadius: '12px',
+                backgroundColor: 'var(--bg-deep)',
+                border: '1px solid var(--border)',
+                color: 'var(--text-secondary)',
+                fontWeight: '600',
+                fontSize: '14px',
+                textDecoration: 'none',
+              }}
+            >
               Cancel
             </Link>
-            <button type="submit" disabled={isSubmitting} className="btn btn-primary">
-              {isSubmitting ? 'Updating...' : 'Save Dish Changes'}
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                padding: '12px 26px',
+                borderRadius: '12px',
+                backgroundColor: 'var(--accent)',
+                color: 'var(--bg-deep)',
+                fontWeight: '700',
+                fontSize: '14px',
+                border: 'none',
+                cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                boxShadow: '0 4px 18px rgba(212, 165, 116, 0.35)',
+              }}
+            >
+              {isSubmitting ? 'Saving Changes...' : 'Save Dish Changes'}
             </button>
           </div>
         </form>

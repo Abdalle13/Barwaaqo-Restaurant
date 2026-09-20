@@ -12,10 +12,16 @@ import {
   Flame,
   Award,
   Truck,
-  Sparkles,
+  Shield,
+  Zap,
+  ChevronDown,
   CalendarCheck,
-  CheckCircle2,
   ChevronRight,
+  Star,
+  Quote,
+  Clock,
+  Heart,
+  Sparkles,
 } from 'lucide-react';
 
 export default function HomePage() {
@@ -23,275 +29,380 @@ export default function HomePage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    api.get('/foods/popular')
+    api
+      .get('/foods?limit=4')
       .then((res) => {
         if (res.data.success) {
-          setPopularFoods(res.data.data);
+          // Exactly 4 items
+          setPopularFoods(res.data.data.slice(0, 4));
         }
       })
-      .catch((err) => console.log('Could not fetch popular foods:', err))
+      .catch((err) => console.log('Error fetching popular foods:', err))
       .finally(() => setIsLoading(false));
   }, []);
 
+  const testimonials = [
+    {
+      name: 'Dr. Amina Warsame',
+      role: 'Diplomatic Guest',
+      rating: 5,
+      comment:
+        'The Bariis Iskukaris with slow-braised goat meat took me back to my grandmother kitchen in Mogadishu. The subtle balance of cardamom, cloves and tender meat is truly unmatched.',
+    },
+    {
+      name: 'Farhan Nur',
+      role: 'Frequent Diner',
+      rating: 5,
+      comment:
+        'Ordered through the website and paid with EVC Plus. Delivered steaming hot in under 30 minutes! The charcoal grilled Suqaar was flavorful and fresh.',
+    },
+    {
+      name: 'Sofia Lindqvist',
+      role: 'Food Enthusiast',
+      rating: 5,
+      comment:
+        'A magnificent dining experience. The hospitality is warm, the ambiance is peaceful and luxurious, and the homemade basbaas hot sauce is pure art.',
+    },
+    {
+      name: 'Ahmed Hassan',
+      role: 'Business Traveller',
+      rating: 5,
+      comment:
+        'Coming from Dubai, I did not expect to find this level of culinary refinement in Mogadishu. The lamb sabayad platter is world class. I will be back.',
+    },
+    {
+      name: 'Khadija Mohamed',
+      role: 'Local Regular',
+      rating: 5,
+      comment:
+        'I come here every Friday with my family. The xawaash spice aroma alone is worth the trip. Staff always greet us by name and treat us like royalty.',
+    },
+    {
+      name: 'Yusuf Abdi',
+      role: 'Food Blogger',
+      rating: 5,
+      comment:
+        'Barwaqo is the definitive guide to Somali fine dining. From the shaah Carbeed to the slow braised hilib, every element reflects pride and deep culinary knowledge.',
+    },
+    {
+      name: 'Layla Ibrahim',
+      role: 'First Time Visitor',
+      rating: 5,
+      comment:
+        'My first time visiting and I was blown away. The interior is stunning, the service is impeccable and the food is soul-nourishing. Highly recommend the goat stew.',
+    },
+    {
+      name: 'Omar Salah',
+      role: 'Corporate Client',
+      rating: 5,
+      comment:
+        'We hosted our entire regional team dinner here. 30 guests, flawless service, magnificent platters, and a setting that impressed even our international colleagues.',
+    },
+  ];
+
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--bg-deep)' }}>
       <Navbar />
 
       <main style={{ flexGrow: 1 }}>
-        {/* HERO SECTION */}
+        {/* ============================================
+            HERO SECTION — Centered, Modern Luxury
+            ============================================ */}
         <section
           style={{
             position: 'relative',
-            padding: '70px 0 90px 0',
+            minHeight: '100vh',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
             overflow: 'hidden',
-            background: 'linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-base) 100%)',
-            borderBottom: '1px solid var(--border)',
+            paddingTop: '80px',
+            paddingBottom: '60px',
           }}
         >
-          <div className="container">
+          {/* Background image with Ken Burns zoom */}
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              zIndex: 0,
+              overflow: 'hidden',
+            }}
+          >
+            <img
+              src="https://images.unsplash.com/photo-1544025162-d76694265947?w=1920&auto=format&fit=crop&q=90"
+              alt="Barwaaqo Signature Cuisine"
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                animation: 'kenBurns 25s ease-in-out infinite',
+              }}
+            />
+            {/* Centered dark gradient vignette */}
             <div
               style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-                gap: '50px',
-                alignItems: 'center',
+                position: 'absolute',
+                inset: 0,
+                background:
+                  'radial-gradient(circle at center, rgba(5,5,5,0.72) 0%, rgba(5,5,5,0.92) 80%, rgba(5,5,5,0.98) 100%)',
+              }}
+            />
+            {/* Bottom gradient fade */}
+            <div
+              style={{
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                height: '180px',
+                background: 'linear-gradient(to top, var(--bg-deep) 0%, transparent 100%)',
+              }}
+            />
+          </div>
+
+          {/* Hero Content — Centered */}
+          <div
+            className="container"
+            style={{
+              position: 'relative',
+              zIndex: 2,
+              textAlign: 'center',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              maxWidth: '860px',
+              padding: '0 20px',
+            }}
+          >
+            {/* Accent Badge */}
+
+            {/* Main Headline */}
+            <h1
+              style={{
+                fontFamily: 'var(--font-heading)',
+                fontSize: 'clamp(36px, 5.5vw, 64px)',
+                fontWeight: '800',
+                lineHeight: '1.15',
+                marginBottom: '20px',
+                color: '#F5F0EB',
+                letterSpacing: '-0.5px',
               }}
             >
-              {/* Hero Left Content */}
-              <div>
+              A Taste of Heritage &{' '}
+              <span style={{ color: 'var(--accent)' }}>
+                Modern Elegance
+              </span>
+            </h1>
+
+            {/* Subtitle */}
+            <p
+              style={{
+                fontSize: 'clamp(15px, 2vw, 18px)',
+                color: 'var(--text-secondary)',
+                lineHeight: '1.7',
+                marginBottom: '36px',
+                maxWidth: '640px',
+              }}
+            >
+              Immerse yourself in authentic Somali flavors: slow-simmered tender cuts, aromatic cardamom basmati rice, and handcrafted spices prepared with generational passion.
+            </p>
+
+            {/* Hero CTAs — Centered */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '14px',
+                flexWrap: 'wrap',
+                marginBottom: '44px',
+              }}
+            >
+              <Link
+                href="/menu"
+                prefetch={true}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '14px 32px',
+                  borderRadius: '12px',
+                  background: 'var(--accent)',
+                  color: 'var(--bg-deep)',
+                  fontWeight: '700',
+                  fontSize: '15px',
+                  textDecoration: 'none',
+                  boxShadow: '0 4px 20px rgba(212, 165, 116, 0.35)',
+                  transition: 'all 0.25s ease',
+                }}
+              >
+                <span>Explore Menu</span>
+                <ArrowRight size={18} />
+              </Link>
+
+              <Link
+                href="/reservations"
+                prefetch={true}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '14px 30px',
+                  borderRadius: '12px',
+                  background: 'rgba(255, 255, 255, 0.04)',
+                  border: '1px solid rgba(212, 165, 116, 0.3)',
+                  color: 'var(--accent)',
+                  fontWeight: '600',
+                  fontSize: '15px',
+                  textDecoration: 'none',
+                  backdropFilter: 'blur(10px)',
+                  transition: 'all 0.25s ease',
+                }}
+              >
+                <CalendarCheck size={18} />
+                <span>Reserve a Table</span>
+              </Link>
+            </div>
+
+            {/* Trust Badges — Centered */}
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                gap: '16px',
+                flexWrap: 'wrap',
+              }}
+            >
+              {[
+                { icon: <Shield size={15} />, text: 'Award-Winning Cuisine' },
+                { icon: <Zap size={15} />, text: '30-Min Rapid Delivery' },
+                { icon: <Award size={15} />, text: 'Instant EVC Plus Checkout' },
+              ].map((badge, i) => (
                 <div
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    padding: '6px 14px',
-                    backgroundColor: 'var(--primary-light)',
-                    color: 'var(--primary)',
-                    borderRadius: 'var(--radius-full)',
-                    fontSize: '13px',
-                    fontWeight: '700',
-                    marginBottom: '20px',
-                    border: '1px solid var(--primary-border)',
-                  }}
-                >
-                  <Sparkles size={16} />
-                  <span>Welcome to Barwaaqo Restaurant</span>
-                </div>
-
-                <h1
-                  style={{
-                    fontFamily: 'var(--font-display)',
-                    fontSize: 'clamp(36px, 5vw, 56px)',
-                    fontWeight: '800',
-                    lineHeight: '1.15',
-                    marginBottom: '20px',
-                    color: 'var(--text-primary)',
-                  }}
-                >
-                  Authentic Taste, <br />
-                  <span style={{ color: 'var(--primary)' }}>Modern Dining</span> Experience.
-                </h1>
-
-                <p
-                  style={{
-                    fontSize: '16px',
-                    color: 'var(--text-secondary)',
-                    lineHeight: '1.7',
-                    marginBottom: '32px',
-                    maxWidth: '520px',
-                  }}
-                >
-                  Discover the finest Somali traditional cuisine crafted with fresh daily ingredients,
-                  fragrant xawaash spices, and culinary mastery. Order online for swift delivery or reserve
-                  your table today.
-                </p>
-
-                {/* Hero CTAs */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap' }}>
-                  <Link href="/menu" className="btn btn-primary btn-lg">
-                    <span>Explore Our Menu</span>
-                    <ArrowRight size={18} />
-                  </Link>
-
-                  <Link href="/reservations" className="btn btn-secondary btn-lg">
-                    <CalendarCheck size={18} color="var(--primary)" />
-                    <span>Book a Table</span>
-                  </Link>
-                </div>
-
-                {/* Trust Points */}
-                <div
+                  key={i}
                   style={{
                     display: 'flex',
-                    gap: '24px',
-                    marginTop: '36px',
-                    paddingTop: '24px',
-                    borderTop: '1px solid var(--border)',
-                    flexWrap: 'wrap',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '8px 16px',
+                    background: 'rgba(212, 165, 116, 0.06)',
+                    border: '1px solid rgba(212, 165, 116, 0.15)',
+                    borderRadius: '9999px',
+                    backdropFilter: 'blur(8px)',
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <CheckCircle2 size={18} color="var(--success)" />
-                    <span style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-secondary)' }}>
-                      100% Halal Certified
-                    </span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <CheckCircle2 size={18} color="var(--success)" />
-                    <span style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-secondary)' }}>
-                      Speedy 30-Min Delivery
-                    </span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <CheckCircle2 size={18} color="var(--success)" />
-                    <span style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-secondary)' }}>
-                      EVC Plus Supported
-                    </span>
-                  </div>
+                  <span style={{ color: 'var(--accent)', display: 'flex' }}>{badge.icon}</span>
+                  <span style={{ fontSize: '12.5px', fontWeight: '600', color: 'var(--text-secondary)' }}>
+                    {badge.text}
+                  </span>
                 </div>
-              </div>
-
-              {/* Hero Right Visual Presentation */}
-              <div style={{ position: 'relative' }}>
-                <div
-                  style={{
-                    position: 'relative',
-                    width: '100%',
-                    height: '420px',
-                    borderRadius: '24px',
-                    overflow: 'hidden',
-                    boxShadow: 'var(--shadow-lg)',
-                    border: '1px solid var(--border)',
-                  }}
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1544025162-d76694265947?w=1200&auto=format&fit=crop&q=85"
-                    alt="Barwaaqo Signature Dish"
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'cover',
-                    }}
-                  />
-                  <div
-                    style={{
-                      position: 'absolute',
-                      bottom: '0',
-                      left: '0',
-                      right: '0',
-                      padding: '24px',
-                      background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%)',
-                      color: '#ffffff',
-                    }}
-                  >
-                    <span className="badge badge-primary" style={{ marginBottom: '8px' }}>
-                      Chef Specialty
-                    </span>
-                    <h3 style={{ fontSize: '20px', fontWeight: '700', color: '#ffffff' }}>
-                      Bariis Iskukaris & Roasted Goat (Hilib Ari)
-                    </h3>
-                    <p style={{ fontSize: '13px', color: '#e2e8f0', marginTop: '4px' }}>
-                      Slow-cooked basmati spiced with cinnamon, cardamom and cloves.
-                    </p>
-                  </div>
-                </div>
-              </div>
+              ))}
             </div>
+          </div>
+
+          {/* Scroll Down Hint */}
+          <div
+            style={{
+              position: 'absolute',
+              bottom: '24px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              zIndex: 3,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '4px',
+            }}
+          >
+            <span style={{ fontSize: '10px', letterSpacing: '2px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+              Scroll
+            </span>
+            <ChevronDown size={16} color="var(--accent)" />
           </div>
         </section>
 
-        {/* FEATURES HIGHLIGHT SECTION */}
-        <section style={{ padding: '60px 0', borderBottom: '1px solid var(--border)' }}>
+        {/* ============================================
+            CORE PILLARS SECTION
+            ============================================ */}
+        <section style={{ padding: '70px 0', borderBottom: '1px solid var(--border)' }}>
           <div className="container">
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
                 gap: '24px',
               }}
             >
-              <div className="card" style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
+              {[
+                {
+                  icon: <Flame size={22} />,
+                  title: 'Cooked Over Real Charcoal',
+                  desc: 'Every cut of meat and dish is grilled over natural coals for deep, authentic smoky aromas.',
+                },
+                {
+                  icon: <Award size={22} />,
+                  title: 'Generational Xawaash Recipes',
+                  desc: 'Crafted with Somali cinnamon, cloves, cumin, and cardamom roasted fresh every morning.',
+                },
+                {
+                  icon: <Truck size={22} />,
+                  title: 'Live Delivery Tracking',
+                  desc: 'Follow your food with real-time updates from chef preparation straight to your gate.',
+                },
+              ].map((feature, i) => (
                 <div
+                  key={i}
                   style={{
-                    width: '46px',
-                    height: '46px',
-                    borderRadius: '12px',
-                    backgroundColor: 'var(--primary-light)',
-                    color: 'var(--primary)',
                     display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
+                    gap: '16px',
+                    alignItems: 'flex-start',
+                    padding: '28px',
+                    backgroundColor: 'var(--bg-surface)',
+                    borderRadius: '16px',
+                    border: '1px solid var(--border)',
                   }}
                 >
-                  <Flame size={22} />
+                  <div
+                    style={{
+                      width: '46px',
+                      height: '46px',
+                      borderRadius: '12px',
+                      background: 'rgba(212, 165, 116, 0.1)',
+                      border: '1px solid rgba(212, 165, 116, 0.25)',
+                      color: 'var(--accent)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                    }}
+                  >
+                    {feature.icon}
+                  </div>
+                  <div>
+                    <h4
+                      style={{
+                        fontSize: '16px',
+                        fontWeight: '700',
+                        marginBottom: '6px',
+                        color: 'var(--text-primary)',
+                      }}
+                    >
+                      {feature.title}
+                    </h4>
+                    <p style={{ fontSize: '13.5px', color: 'var(--text-secondary)', lineHeight: '1.6' }}>
+                      {feature.desc}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h4 style={{ fontSize: '16px', fontWeight: '700', marginBottom: '6px' }}>
-                    Fresh Daily Cooking
-                  </h4>
-                  <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
-                    Every single dish is freshly cooked on-demand with premium meats and fresh spices.
-                  </p>
-                </div>
-              </div>
-
-              <div className="card" style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
-                <div
-                  style={{
-                    width: '46px',
-                    height: '46px',
-                    borderRadius: '12px',
-                    backgroundColor: 'var(--success-light)',
-                    color: 'var(--success)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
-                  }}
-                >
-                  <Award size={22} />
-                </div>
-                <div>
-                  <h4 style={{ fontSize: '16px', fontWeight: '700', marginBottom: '6px' }}>
-                    Authentic Recipes
-                  </h4>
-                  <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
-                    Heritage recipes passed down through generations for an unforgettable culinary experience.
-                  </p>
-                </div>
-              </div>
-
-              <div className="card" style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
-                <div
-                  style={{
-                    width: '46px',
-                    height: '46px',
-                    borderRadius: '12px',
-                    backgroundColor: 'var(--info-light)',
-                    color: 'var(--info)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
-                  }}
-                >
-                  <Truck size={22} />
-                </div>
-                <div>
-                  <h4 style={{ fontSize: '16px', fontWeight: '700', marginBottom: '6px' }}>
-                    Fast Delivery & Tracking
-                  </h4>
-                  <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
-                    Track your order live in real-time from kitchen preparation right to your doorstep.
-                  </p>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
         </section>
 
-        {/* POPULAR DISHES SHOWCASE */}
+        {/* ============================================
+            POPULAR DISHES SHOWCASE (EXACTLY 4 DISHES)
+            ============================================ */}
         <section style={{ padding: '80px 0' }}>
           <div className="container">
             <div
@@ -307,46 +418,73 @@ export default function HomePage() {
               <div>
                 <span
                   style={{
-                    color: 'var(--primary)',
+                    fontSize: '12px',
                     fontWeight: '700',
-                    fontSize: '13px',
+                    color: 'var(--accent)',
                     textTransform: 'uppercase',
                     letterSpacing: '1px',
+                    display: 'block',
+                    marginBottom: '6px',
                   }}
                 >
-                  Customer Favorites
+                  Chef Selections
                 </span>
-                <h2 style={{ fontSize: '32px', fontWeight: '800', marginTop: '6px' }}>
-                  Popular Signature Dishes
+                <h2
+                  style={{
+                    fontFamily: 'var(--font-heading)',
+                    fontSize: '32px',
+                    fontWeight: '700',
+                    color: 'var(--text-primary)',
+                  }}
+                >
+                  Our Signature Dishes
                 </h2>
               </div>
 
               <Link
                 href="/menu"
+                prefetch={true}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   gap: '6px',
-                  color: 'var(--primary)',
-                  fontWeight: '700',
-                  fontSize: '15px',
+                  color: 'var(--accent)',
+                  fontWeight: '600',
+                  fontSize: '14px',
+                  textDecoration: 'none',
                 }}
               >
-                <span>View Full Menu</span>
-                <ChevronRight size={18} />
+                <span>View Complete Menu</span>
+                <ChevronRight size={16} />
               </Link>
             </div>
 
-            {/* Dishes Grid */}
+            {/* Dishes Grid — 4 dishes */}
             {isLoading ? (
-              <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--text-muted)' }}>
-                Loading delicious dishes...
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+                  gap: '24px',
+                }}
+              >
+                {[1, 2, 3, 4].map((n) => (
+                  <div
+                    key={n}
+                    style={{
+                      height: '340px',
+                      backgroundColor: 'var(--bg-surface)',
+                      borderRadius: '16px',
+                      border: '1px solid var(--border)',
+                    }}
+                  />
+                ))}
               </div>
             ) : (
               <div
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
                   gap: '24px',
                 }}
               >
@@ -358,10 +496,12 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* RESERVATION CTA BANNER */}
+        {/* ============================================
+            CULINARY STORY / HERITAGE FEATURE
+            ============================================ */}
         <section
           style={{
-            padding: '70px 0',
+            padding: '80px 0',
             backgroundColor: 'var(--bg-surface)',
             borderTop: '1px solid var(--border)',
             borderBottom: '1px solid var(--border)',
@@ -370,57 +510,306 @@ export default function HomePage() {
           <div className="container">
             <div
               style={{
-                background: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+                gap: '48px',
+                alignItems: 'center',
+              }}
+            >
+              {/* Left Image Showcase */}
+              <div style={{ position: 'relative' }}>
+                <img
+                  src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&auto=format&fit=crop&q=80"
+                  alt="Barwaaqo Restaurant Dining Atmosphere"
+                  style={{
+                    width: '100%',
+                    height: '380px',
+                    objectFit: 'cover',
+                    borderRadius: '20px',
+                    border: '1px solid var(--border)',
+                  }}
+                />
+                <div
+                  style={{
+                    position: 'absolute',
+                    bottom: '-20px',
+                    right: '20px',
+                    backgroundColor: 'var(--bg-deep)',
+                    border: '1px solid var(--border)',
+                    borderRadius: '14px',
+                    padding: '16px 20px',
+                    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.5)',
+                  }}
+                >
+                  <p style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Mogadishu, Somalia</p>
+                  <p style={{ fontSize: '15px', fontWeight: '700', color: 'var(--accent)' }}>Maka Al-Mukarama Road</p>
+                </div>
+              </div>
+
+              {/* Right Story Content */}
+              <div>
+                <span
+                  style={{
+                    fontSize: '12px',
+                    fontWeight: '700',
+                    color: 'var(--accent)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '1px',
+                    display: 'block',
+                    marginBottom: '8px',
+                  }}
+                >
+                  Our Philosophy
+                </span>
+                <h2
+                  style={{
+                    fontFamily: 'var(--font-heading)',
+                    fontSize: 'clamp(26px, 3.5vw, 36px)',
+                    fontWeight: '800',
+                    color: 'var(--text-primary)',
+                    marginBottom: '18px',
+                    lineHeight: 1.25,
+                  }}
+                >
+                  Where Somali Hospitality Meets Culinary Perfection
+                </h2>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '15px', lineHeight: '1.7', marginBottom: '18px' }}>
+                  At Barwaaqo Restaurant, dining is an art of hospitality. We celebrate the richness of the Horn of Africa, blending historic trade-route spices with modern techniques.
+                </p>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '15px', lineHeight: '1.7', marginBottom: '28px' }}>
+                  Whether savoring our signature slow-braised goat, freshly prepared flatbreads, or indulging in coastal seafood, every dish is an invitation to taste home at its finest.
+                </p>
+                <div style={{ display: 'flex', gap: '24px' }}>
+                  <div>
+                    <span style={{ fontSize: '28px', fontWeight: '800', color: 'var(--accent)', display: 'block' }}>100%</span>
+                    <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Fresh Ingredients</span>
+                  </div>
+                  <div style={{ borderLeft: '1px solid var(--border)', paddingLeft: '24px' }}>
+                    <span style={{ fontSize: '28px', fontWeight: '800', color: 'var(--accent)', display: 'block' }}>25+</span>
+                    <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Authentic Recipes</span>
+                  </div>
+                  <div style={{ borderLeft: '1px solid var(--border)', paddingLeft: '24px' }}>
+                    <span style={{ fontSize: '28px', fontWeight: '800', color: 'var(--accent)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      4.9 <Star size={20} fill="var(--accent)" color="var(--accent)" />
+                    </span>
+                    <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Guest Rating</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* GUEST STORIES - Auto-scrolling marquee */}
+        <section style={{ padding: '80px 0', overflow: 'hidden' }}>
+          <div className="container">
+            <div style={{ textAlign: 'center', marginBottom: '48px' }}>
+              <span
+                style={{
+                  fontSize: '12px',
+                  fontWeight: '700',
+                  color: 'var(--accent)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px',
+                  display: 'block',
+                  marginBottom: '8px',
+                }}
+              >
+                Guest Stories
+              </span>
+              <h2
+                style={{
+                  fontFamily: 'var(--font-heading)',
+                  fontSize: '32px',
+                  fontWeight: '700',
+                  color: 'var(--text-primary)',
+                  marginBottom: '10px',
+                }}
+              >
+                What Our Diners Say
+              </h2>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '15px', maxWidth: '500px', margin: '0 auto' }}>
+                Honest feedback from our valued customers across Mogadishu and worldwide visitors.
+              </p>
+            </div>
+          </div>
+
+          {/* Marquee track - overflows container intentionally */}
+          <div style={{ overflow: 'hidden', width: '100%' }}>
+            <div
+              style={{
+                display: 'flex',
+                gap: '20px',
+                animation: 'marqueeScroll 32s linear infinite',
+                width: 'max-content',
+              }}
+            >
+              {/* Duplicate the array so the scroll loops seamlessly */}
+              {[...testimonials, ...testimonials].map((t, idx) => {
+                const initials = t.name
+                  .split(' ')
+                  .map((n: string) => n[0])
+                  .slice(0, 2)
+                  .join('')
+                  .toUpperCase();
+
+                const colors = [
+                  { bg: 'rgba(212, 165, 116, 0.18)', color: '#D4A574' },
+                  { bg: 'rgba(96, 165, 250, 0.15)', color: '#60A5FA' },
+                  { bg: 'rgba(74, 222, 128, 0.15)', color: '#4ADE80' },
+                  { bg: 'rgba(248, 113, 113, 0.15)', color: '#F87171' },
+                  { bg: 'rgba(167, 139, 250, 0.15)', color: '#A78BFA' },
+                  { bg: 'rgba(251, 191, 36, 0.15)', color: '#FBBF24' },
+                  { bg: 'rgba(34, 211, 238, 0.15)', color: '#22D3EE' },
+                  { bg: 'rgba(212, 165, 116, 0.18)', color: '#D4A574' },
+                ];
+                const colorSet = colors[idx % colors.length];
+
+                return (
+                  <div
+                    key={idx}
+                    style={{
+                      flexShrink: 0,
+                      width: '320px',
+                      backgroundColor: 'var(--bg-surface)',
+                      borderRadius: '20px',
+                      border: '1px solid var(--border)',
+                      padding: '26px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                      boxShadow: '0 8px 30px rgba(0, 0, 0, 0.3)',
+                    }}
+                  >
+                    <div>
+                      <div style={{ display: 'flex', gap: '4px', marginBottom: '14px' }}>
+                        {Array.from({ length: t.rating }).map((_, i) => (
+                          <Star key={i} size={14} fill="#FBBF24" color="#FBBF24" />
+                        ))}
+                      </div>
+                      <p
+                        style={{
+                          fontSize: '14px',
+                          color: 'var(--text-primary)',
+                          lineHeight: '1.7',
+                          fontStyle: 'italic',
+                          marginBottom: '20px',
+                        }}
+                      >
+                        "{t.comment}"
+                      </p>
+                    </div>
+
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '12px',
+                        borderTop: '1px solid var(--border)',
+                        paddingTop: '16px',
+                      }}
+                    >
+                      {/* Initials Avatar */}
+                      <div
+                        style={{
+                          width: '42px',
+                          height: '42px',
+                          borderRadius: '50%',
+                          backgroundColor: colorSet.bg,
+                          border: `1px solid ${colorSet.color}`,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontWeight: '800',
+                          fontSize: '15px',
+                          color: colorSet.color,
+                          flexShrink: 0,
+                        }}
+                      >
+                        {initials}
+                      </div>
+                      <div>
+                        <h4 style={{ fontSize: '14px', fontWeight: '700', color: 'var(--text-primary)' }}>{t.name}</h4>
+                        <span style={{ fontSize: '12px', color: 'var(--accent)' }}>{t.role}</span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <style>{`
+            @keyframes marqueeScroll {
+              from { transform: translateX(0); }
+              to { transform: translateX(-50%); }
+            }
+          `}</style>
+        </section>
+
+        {/* ============================================
+            TABLE RESERVATION CTA
+            ============================================ */}
+        <section style={{ padding: '60px 0 90px' }}>
+          <div className="container">
+            <div
+              style={{
+                backgroundColor: 'var(--bg-surface)',
+                border: '1px solid rgba(212, 165, 116, 0.25)',
                 borderRadius: '24px',
                 padding: '50px 40px',
-                color: '#ffffff',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 flexWrap: 'wrap',
                 gap: '30px',
-                boxShadow: 'var(--shadow-glow)',
+                boxShadow: '0 12px 40px rgba(0, 0, 0, 0.5)',
               }}
             >
-              <div style={{ maxWidth: '600px' }}>
+              <div style={{ maxWidth: '540px' }}>
                 <span
                   style={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                    padding: '4px 12px',
-                    borderRadius: '20px',
                     fontSize: '12px',
                     fontWeight: '700',
+                    color: 'var(--accent)',
                     textTransform: 'uppercase',
-                    display: 'inline-block',
-                    marginBottom: '14px',
+                    letterSpacing: '1px',
                   }}
                 >
-                  Table Bookings
+                  Table Reservations
                 </span>
-                <h2 style={{ fontSize: '32px', fontWeight: '800', color: '#ffffff', marginBottom: '12px' }}>
-                  Planning an Evening Out or Special Event?
+                <h2
+                  style={{
+                    fontFamily: 'var(--font-heading)',
+                    fontSize: '28px',
+                    fontWeight: '800',
+                    color: 'var(--text-primary)',
+                    marginTop: '6px',
+                    marginBottom: '10px',
+                  }}
+                >
+                  Plan Your Dining Experience
                 </h2>
-                <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: '15px', lineHeight: '1.6' }}>
-                  Reserve your table online in advance. Whether it is an intimate family dinner, a business lunch,
-                  or a celebration in our VIP lounge, we guarantee prompt hospitality.
+                <p style={{ color: 'var(--text-secondary)', fontSize: '14.5px', lineHeight: '1.6' }}>
+                  Secure your preferred booth or terrace seating for celebrations, family dinners, or meetings.
                 </p>
               </div>
 
               <Link
                 href="/reservations"
+                prefetch={true}
                 style={{
-                  backgroundColor: '#ffffff',
-                  color: '#ea580c',
-                  padding: '14px 28px',
-                  borderRadius: '12px',
-                  fontWeight: '700',
-                  fontSize: '16px',
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '8px',
-                  boxShadow: '0 4px 14px rgba(0,0,0,0.15)',
-                  transition: 'transform 0.2s',
+                  padding: '14px 32px',
+                  borderRadius: '12px',
+                  backgroundColor: 'var(--accent)',
+                  color: 'var(--bg-deep)',
+                  fontWeight: '700',
+                  fontSize: '15px',
                   textDecoration: 'none',
+                  boxShadow: '0 4px 18px rgba(212, 165, 116, 0.35)',
                 }}
               >
                 <span>Book a Table Now</span>

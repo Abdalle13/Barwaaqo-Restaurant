@@ -6,7 +6,7 @@ import Footer from '@/components/Footer';
 import FoodCard from '@/components/FoodCard';
 import api from '@/lib/api';
 import { Food, Category } from '@/types';
-import { Search, Filter, Sparkles, UtensilsCrossed } from 'lucide-react';
+import { Search, Sparkles, UtensilsCrossed, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function MenuPage() {
   const [foods, setFoods] = useState<Food[]>([]);
@@ -51,66 +51,73 @@ export default function MenuPage() {
   }, [selectedCategory, searchQuery, page]);
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--bg-deep)' }}>
       <Navbar />
 
-      <main style={{ flexGrow: 1, padding: '40px 0 80px 0' }}>
+      <main style={{ flexGrow: 1, padding: '120px 0 90px 0' }}>
         <div className="container">
-          {/* Header Banner */}
-          <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-            <div
+          {/* Compact header */}
+          <div style={{ marginBottom: '36px' }}>
+            <h1
               style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '4px 14px',
-                backgroundColor: 'var(--primary-light)',
-                color: 'var(--primary)',
-                borderRadius: 'var(--radius-full)',
-                fontSize: '12px',
+                fontFamily: 'var(--font-display)',
+                fontSize: 'clamp(28px, 4vw, 40px)',
                 fontWeight: '700',
-                marginBottom: '12px',
+                color: 'var(--text-primary)',
+                marginBottom: '6px',
               }}
             >
-              <Sparkles size={14} />
-              <span>Finest Somali & Continental Cuisine</span>
-            </div>
-            <h1 style={{ fontSize: '38px', fontWeight: '800', marginBottom: '10px' }}>
-              Our Delicious Menu
+              Our Menu
             </h1>
-            <p style={{ color: 'var(--text-muted)', maxWidth: '540px', margin: '0 auto', fontSize: '15px' }}>
-              From aromatic slow-cooked Bariis to sizzling grilled meat and freshly squeezed tropical juices.
+            <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
+              Each recipe crafted with time-honored Somali cardamom, cloves, and freshly harvested spices.
             </p>
           </div>
 
-          {/* Search & Category Filter Bar */}
+          {/* Compact Search & Filter Row */}
           <div
             style={{
-              backgroundColor: 'var(--bg-surface)',
-              border: '1px solid var(--border)',
-              borderRadius: 'var(--radius-lg)',
-              padding: '20px',
-              boxShadow: 'var(--shadow-sm)',
-              marginBottom: '40px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              flexWrap: 'wrap',
+              marginBottom: '36px',
             }}
           >
             {/* Search Input */}
-            <div style={{ position: 'relative', marginBottom: '20px' }}>
+            <div
+              style={{
+                position: 'relative',
+                flexGrow: 1,
+                minWidth: '220px',
+              }}
+            >
               <Search
-                size={18}
-                color="var(--text-muted)"
-                style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)' }}
+                size={15}
+                color="var(--text-secondary)"
+                style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', opacity: 0.7 }}
               />
               <input
                 type="text"
-                placeholder="Search by dish name, spices, ingredients..."
+                placeholder="e.g. Bariis, Suqaar, Sambusa"
                 value={searchQuery}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
                   setPage(1);
                 }}
-                className="form-input"
-                style={{ paddingLeft: '46px', fontSize: '15px' }}
+                style={{
+                  width: '100%',
+                  paddingLeft: '40px',
+                  paddingRight: '14px',
+                  paddingTop: '9px',
+                  paddingBottom: '9px',
+                  fontSize: '13.5px',
+                  backgroundColor: 'var(--bg-surface)',
+                  border: '1px solid var(--border)',
+                  color: 'var(--text-primary)',
+                  borderRadius: '10px',
+                  outline: 'none',
+                }}
               />
             </div>
 
@@ -118,10 +125,11 @@ export default function MenuPage() {
             <div
               style={{
                 display: 'flex',
-                gap: '10px',
+                gap: '8px',
                 overflowX: 'auto',
-                paddingBottom: '4px',
+                paddingBottom: '2px',
                 scrollbarWidth: 'none',
+                flexShrink: 0,
               }}
             >
               <button
@@ -130,20 +138,20 @@ export default function MenuPage() {
                   setPage(1);
                 }}
                 style={{
-                  padding: '8px 18px',
-                  borderRadius: 'var(--radius-full)',
+                  padding: '7px 16px',
+                  borderRadius: '8px',
                   border: '1px solid',
-                  borderColor: selectedCategory === 'all' ? 'var(--primary)' : 'var(--border)',
-                  backgroundColor: selectedCategory === 'all' ? 'var(--primary)' : 'var(--bg-surface)',
-                  color: selectedCategory === 'all' ? '#ffffff' : 'var(--text-secondary)',
+                  borderColor: selectedCategory === 'all' ? 'var(--accent)' : 'var(--border)',
+                  backgroundColor: selectedCategory === 'all' ? 'var(--accent)' : 'var(--bg-surface)',
+                  color: selectedCategory === 'all' ? 'var(--bg-deep)' : 'var(--text-secondary)',
                   fontWeight: '600',
-                  fontSize: '13px',
+                  fontSize: '12.5px',
                   cursor: 'pointer',
                   whiteSpace: 'nowrap',
-                  transition: 'all 0.2s',
+                  transition: 'all 0.2s ease',
                 }}
               >
-                All Categories
+                All
               </button>
 
               {categories.map((cat) => {
@@ -156,17 +164,17 @@ export default function MenuPage() {
                       setPage(1);
                     }}
                     style={{
-                      padding: '8px 18px',
-                      borderRadius: 'var(--radius-full)',
+                      padding: '7px 16px',
+                      borderRadius: '8px',
                       border: '1px solid',
-                      borderColor: isSelected ? 'var(--primary)' : 'var(--border)',
-                      backgroundColor: isSelected ? 'var(--primary)' : 'var(--bg-surface)',
-                      color: isSelected ? '#ffffff' : 'var(--text-secondary)',
+                      borderColor: isSelected ? 'var(--accent)' : 'var(--border)',
+                      backgroundColor: isSelected ? 'var(--accent)' : 'var(--bg-surface)',
+                      color: isSelected ? 'var(--bg-deep)' : 'var(--text-secondary)',
                       fontWeight: '600',
-                      fontSize: '13px',
+                      fontSize: '12.5px',
                       cursor: 'pointer',
                       whiteSpace: 'nowrap',
-                      transition: 'all 0.2s',
+                      transition: 'all 0.2s ease',
                     }}
                   >
                     {cat.name}
@@ -178,20 +186,20 @@ export default function MenuPage() {
 
           {/* Dishes Grid */}
           {isLoading ? (
-            <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--text-muted)' }}>
+            <div style={{ textAlign: 'center', padding: '100px 0', color: 'var(--text-secondary)' }}>
               <div
                 style={{
                   display: 'inline-block',
-                  width: '36px',
-                  height: '36px',
-                  border: '3px solid var(--border)',
-                  borderTopColor: 'var(--primary)',
+                  width: '38px',
+                  height: '38px',
+                  border: '3px solid rgba(212, 165, 116, 0.15)',
+                  borderTopColor: 'var(--accent)',
                   borderRadius: '50%',
                   animation: 'spin 0.8s linear infinite',
-                  marginBottom: '16px',
+                  marginBottom: '18px',
                 }}
               />
-              <p>Fetching menu items...</p>
+              <p style={{ fontSize: '14px', letterSpacing: '0.5px' }}>Loading delicacies...</p>
               <style jsx>{`
                 @keyframes spin {
                   to { transform: rotate(360deg); }
@@ -202,26 +210,26 @@ export default function MenuPage() {
             <div
               style={{
                 textAlign: 'center',
-                padding: '70px 20px',
+                padding: '80px 20px',
                 backgroundColor: 'var(--bg-surface)',
-                borderRadius: 'var(--radius-lg)',
+                borderRadius: '20px',
                 border: '1px solid var(--border)',
               }}
             >
-              <UtensilsCrossed size={48} color="var(--text-muted)" style={{ margin: '0 auto 16px auto' }} />
-              <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '8px' }}>
+              <UtensilsCrossed size={48} color="var(--accent)" style={{ margin: '0 auto 16px auto', opacity: 0.6 }} />
+              <h3 style={{ fontSize: '20px', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '8px', fontFamily: 'var(--font-display)' }}>
                 No dishes found
               </h3>
-              <p style={{ color: 'var(--text-muted)', fontSize: '14px', maxWidth: '400px', margin: '0 auto' }}>
-                We couldn't find any meal matching your search criteria. Try selecting another category or clear your search query.
+              <p style={{ color: 'var(--text-secondary)', fontSize: '14px', maxWidth: '420px', margin: '0 auto', lineHeight: 1.6 }}>
+                We couldn't locate any culinary selections matching your criteria. Try another category or clear your search keyword.
               </p>
             </div>
           ) : (
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-                gap: '24px',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(290px, 1fr))',
+                gap: '28px',
               }}
             >
               {foods.map((food) => (
@@ -237,15 +245,29 @@ export default function MenuPage() {
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
-                gap: '8px',
-                marginTop: '50px',
+                gap: '10px',
+                marginTop: '60px',
               }}
             >
               <button
                 disabled={page <= 1}
                 onClick={() => setPage(page - 1)}
-                className="btn btn-secondary btn-sm"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  padding: '9px 18px',
+                  borderRadius: '10px',
+                  backgroundColor: 'var(--bg-surface)',
+                  border: '1px solid var(--border)',
+                  color: page <= 1 ? 'var(--text-muted)' : 'var(--text-primary)',
+                  cursor: page <= 1 ? 'not-allowed' : 'pointer',
+                  fontSize: '13px',
+                  fontWeight: '600',
+                  transition: 'all 0.2s',
+                }}
               >
+                <ChevronLeft size={16} />
                 Previous
               </button>
 
@@ -254,16 +276,18 @@ export default function MenuPage() {
                   key={p}
                   onClick={() => setPage(p)}
                   style={{
-                    width: '36px',
-                    height: '36px',
-                    borderRadius: '8px',
+                    width: '38px',
+                    height: '38px',
+                    borderRadius: '10px',
                     border: '1px solid',
-                    borderColor: page === p ? 'var(--primary)' : 'var(--border)',
-                    backgroundColor: page === p ? 'var(--primary)' : 'var(--bg-surface)',
-                    color: page === p ? '#ffffff' : 'var(--text-primary)',
+                    borderColor: page === p ? 'var(--accent)' : 'var(--border)',
+                    backgroundColor: page === p ? 'var(--accent)' : 'var(--bg-surface)',
+                    color: page === p ? 'var(--bg-deep)' : 'var(--text-primary)',
                     fontWeight: '700',
                     fontSize: '13px',
                     cursor: 'pointer',
+                    boxShadow: page === p ? '0 4px 14px rgba(212, 165, 116, 0.3)' : 'none',
+                    transition: 'all 0.2s',
                   }}
                 >
                   {p}
@@ -273,9 +297,23 @@ export default function MenuPage() {
               <button
                 disabled={page >= totalPages}
                 onClick={() => setPage(page + 1)}
-                className="btn btn-secondary btn-sm"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  padding: '9px 18px',
+                  borderRadius: '10px',
+                  backgroundColor: 'var(--bg-surface)',
+                  border: '1px solid var(--border)',
+                  color: page >= totalPages ? 'var(--text-muted)' : 'var(--text-primary)',
+                  cursor: page >= totalPages ? 'not-allowed' : 'pointer',
+                  fontSize: '13px',
+                  fontWeight: '600',
+                  transition: 'all 0.2s',
+                }}
               >
                 Next
+                <ChevronRight size={16} />
               </button>
             </div>
           )}

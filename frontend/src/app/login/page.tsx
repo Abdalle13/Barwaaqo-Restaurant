@@ -3,11 +3,9 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
 import { useAuth } from '@/context/AuthContext';
 import api from '@/lib/api';
-import { LogIn, Lock, Mail, ArrowRight } from 'lucide-react';
+import { ArrowLeft, LogIn, Lock, Mail, Eye, EyeOff } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -15,6 +13,7 @@ export default function LoginPage() {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -46,33 +45,38 @@ export default function LoginPage() {
     }
   };
 
-  return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <Navbar />
 
-      <main style={{ flexGrow: 1, padding: '60px 20px 90px 20px', display: 'flex', alignItems: 'center' }}>
-        <div className="container" style={{ maxWidth: '440px' }}>
-          <div className="card" style={{ padding: '36px' }}>
-            <div style={{ textAlign: 'center', marginBottom: '28px' }}>
-              <div
+  return (
+    <div style={{ minHeight: '100vh', backgroundColor: 'var(--bg-base)', color: 'var(--text-primary)' }}>
+      <header style={{ height: '72px', borderBottom: '1px solid var(--border)', padding: '0 20px' }}>
+        <div style={{ width: '100%', maxWidth: '1180px', height: '100%', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Link href="/" style={{ fontFamily: 'var(--font-heading)', fontSize: '19px', fontWeight: '700', color: 'var(--accent)', textDecoration: 'none' }}>
+            Barwaaqo Restaurant
+          </Link>
+          <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'var(--text-secondary)', fontSize: '13px', textDecoration: 'none' }}>
+            <ArrowLeft size={15} /> Back to home
+          </Link>
+        </div>
+      </header>
+
+      <main style={{ width: '100%', maxWidth: '460px', margin: '0 auto', padding: 'clamp(40px, 8vh, 76px) 20px 56px' }}>
+        <div style={{ padding: '42px 36px', backgroundColor: 'var(--bg-surface)', borderRadius: '24px', border: '1px solid var(--border)', boxShadow: '0 20px 50px rgba(0, 0, 0, 0.5)' }}>
+            <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+              <div style={{ width: '58px', height: '58px', borderRadius: '16px', background: 'linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%)', color: 'var(--bg-deep)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 18px auto', boxShadow: '0 8px 24px rgba(212, 165, 116, 0.3)' }}>
+                <LogIn size={26} strokeWidth={2.2} />
+              </div>
+              <h2
                 style={{
-                  width: '54px',
-                  height: '54px',
-                  borderRadius: '14px',
-                  backgroundColor: 'var(--primary-light)',
-                  color: 'var(--primary)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  margin: '0 auto 14px auto',
+                  fontFamily: 'var(--font-display)',
+                  fontSize: '30px',
+                  fontWeight: '700',
+                  color: 'var(--text-primary)',
+                  marginBottom: '8px',
                 }}
               >
-                <LogIn size={26} />
-              </div>
-              <h2 style={{ fontSize: '24px', fontWeight: '800', marginBottom: '6px' }}>
                 Welcome Back
               </h2>
-              <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
                 Sign in to your Barwaaqo Restaurant account
               </p>
             </div>
@@ -80,13 +84,14 @@ export default function LoginPage() {
             {error && (
               <div
                 style={{
-                  padding: '12px',
-                  backgroundColor: 'var(--danger-light)',
+                  padding: '12px 16px',
+                  backgroundColor: 'rgba(248, 113, 113, 0.12)',
+                  border: '1px solid rgba(248, 113, 113, 0.3)',
                   color: 'var(--danger)',
-                  borderRadius: 'var(--radius-md)',
+                  borderRadius: '12px',
                   fontSize: '13px',
                   fontWeight: '600',
-                  marginBottom: '20px',
+                  marginBottom: '22px',
                   textAlign: 'center',
                 }}
               >
@@ -95,95 +100,117 @@ export default function LoginPage() {
             )}
 
             <form onSubmit={handleSubmit}>
-              <div className="form-group">
-                <label className="form-label">Email Address</label>
+              <div className="form-group" style={{ marginBottom: '20px' }}>
+                <label className="form-label" style={{ color: 'var(--text-secondary)', fontSize: '13px', fontWeight: '600' }}>
+                  Email Address
+                </label>
                 <div style={{ position: 'relative' }}>
                   <Mail
-                    size={16}
-                    color="var(--text-muted)"
-                    style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }}
+                    size={17}
+                    color="var(--accent)"
+                    style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', opacity: 0.8 }}
                   />
                   <input
                     type="email"
-                    placeholder="admin@barwaaqo.com"
+                    placeholder="you@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     className="form-input"
-                    style={{ paddingLeft: '40px' }}
+                    style={{
+                      paddingLeft: '48px',
+                      backgroundColor: 'var(--bg-deep)',
+                      border: '1px solid var(--border)',
+                      color: 'var(--text-primary)',
+                      borderRadius: '7px',
+                      height: '48px',
+                    }}
                   />
                 </div>
               </div>
 
-              <div className="form-group" style={{ marginBottom: '24px' }}>
-                <label className="form-label">Password</label>
+              <div className="form-group" style={{ marginBottom: '26px' }}>
+                <label className="form-label" style={{ color: 'var(--text-secondary)', fontSize: '13px', fontWeight: '600' }}>
+                  Password
+                </label>
                 <div style={{ position: 'relative' }}>
                   <Lock
-                    size={16}
-                    color="var(--text-muted)"
-                    style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }}
+                    size={17}
+                    color="var(--accent)"
+                    style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', opacity: 0.8 }}
                   />
                   <input
-                    type="password"
+                    type={showPassword ? 'text' : 'password'}
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     className="form-input"
-                    style={{ paddingLeft: '40px' }}
+                    style={{
+                      paddingLeft: '48px',
+                      paddingRight: '48px',
+                      backgroundColor: 'var(--bg-deep)',
+                      border: '1px solid var(--border)',
+                      color: 'var(--text-primary)',
+                      borderRadius: '7px',
+                      height: '48px',
+                    }}
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    style={{
+                      position: 'absolute',
+                      right: '16px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      background: 'none',
+                      border: 'none',
+                      color: 'var(--text-secondary)',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      padding: 0
+                    }}
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
                 </div>
               </div>
 
               <button
                 type="submit"
                 disabled={isLoading}
-                className="btn btn-primary"
-                style={{ width: '100%', padding: '12px', display: 'flex', justifyContent: 'center' }}
+                style={{
+                  width: '100%',
+                  padding: '14px',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: 'var(--accent)',
+                  color: 'var(--bg-deep)',
+                  borderRadius: '7px',
+                  border: 'none',
+                  fontWeight: '700',
+                  fontSize: '15px',
+                  cursor: isLoading ? 'not-allowed' : 'pointer',
+                  transition: 'all 0.25s',
+                }}
               >
                 {isLoading ? 'Signing in...' : 'Sign In'}
               </button>
             </form>
 
-            <div
-              style={{
-                textAlign: 'center',
-                marginTop: '24px',
-                paddingTop: '20px',
-                borderTop: '1px solid var(--border)',
-                fontSize: '14px',
-                color: 'var(--text-muted)',
-              }}
-            >
+            <div style={{ textAlign: 'center', marginTop: '26px', paddingTop: '20px', borderTop: '1px solid var(--border)', fontSize: '14px', color: 'var(--text-secondary)' }}>
               Don't have an account?{' '}
-              <Link href="/register" style={{ color: 'var(--primary)', fontWeight: '700' }}>
+              <Link href="/register" style={{ color: 'var(--accent)', fontWeight: '700', textDecoration: 'none' }}>
                 Create Account
               </Link>
             </div>
-
-            {/* Quick Demo Credentials Box */}
-            <div
-              style={{
-                marginTop: '20px',
-                padding: '12px',
-                borderRadius: '8px',
-                backgroundColor: 'var(--bg-muted)',
-                fontSize: '11px',
-                color: 'var(--text-muted)',
-                lineHeight: '1.5',
-              }}
-            >
-              <strong>Demo Logins:</strong>
-              <br />
-              Admin: <code>admin@barwaaqo.com</code> / <code>admin123456</code>
-              <br />
-              Customer: <code>customer@barwaaqo.com</code> / <code>customer123456</code>
-            </div>
           </div>
-        </div>
-      </main>
 
-      <Footer />
+      </main>
     </div>
   );
 }

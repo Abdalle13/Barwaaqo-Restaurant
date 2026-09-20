@@ -54,6 +54,7 @@ export interface Order {
   deliveryFee: number;
   serviceTax: number;
   totalAmount: number;
+  orderType?: 'DELIVERY' | 'TAKEAWAY' | 'DINE_IN';
   shippingAddress: string;
   paymentMethod: 'evc_plus' | 'cash_on_delivery';
   paymentPhone: string;
@@ -107,6 +108,7 @@ export interface Settings {
 export interface DashboardStats {
   totalSales: number;
   activeOrders: number;
+  completedOrders: number;
   newOrders: number;
   totalItems: number;
   totalCustomers: number;

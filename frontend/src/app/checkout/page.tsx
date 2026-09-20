@@ -1,35 +1,60 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import api from '@/lib/api';
-import { Phone, MapPin, CreditCard, DollarSign, CheckCircle, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Phone, MapPin, DollarSign, CheckCircle, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Order } from '@/types';
+
+interface ConfirmedOrderItem {
+  food: string;
+  name: string;
+  quantity: number;
+  price: number;
+  image?: string;
+}
 
 export default function CheckoutPage() {
   const router = useRouter();
   const { items, subtotal, deliveryFee, tax, totalAmount, clearCart } = useCart();
-  const { user } = useAuth();
+  const { user, isLoading: isAuthLoading } = useAuth();
 
   const [shippingAddress, setShippingAddress] = useState(user?.address || '');
+  const [orderType, setOrderType] = useState<'DELIVERY' | 'TAKEAWAY' | 'DINE_IN'>('DELIVERY');
   const [paymentPhone, setPaymentPhone] = useState(user?.phone || '');
   const [paymentMethod, setPaymentMethod] = useState<'evc_plus' | 'cash_on_delivery'>('evc_plus');
   const [notes, setNotes] = useState('');
   const [evcPin, setEvcPin] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
-  const [orderSuccess, setOrderSuccess] = useState<any>(null);
+  const [orderSuccess, setOrderSuccess] = useState<Order | null>(null);
+  const [confirmedItems, setConfirmedItems] = useState<ConfirmedOrderItem[]>([]);
+  const orderDeliveryFee = orderType === 'DELIVERY' ? deliveryFee : 0;
+  const orderTotal = subtotal + orderDeliveryFee + tax;
+
+  useEffect(() => {
+    if (!isAuthLoading && !user) {
+      router.replace('/login');
+    }
+  }, [isAuthLoading, user, router]);
 
   const handleSubmitOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
+    if (!user) {
+      router.replace('/login');
+      return;
+    }
+
     if (!shippingAddress.trim()) {
-      setError('Please provide a specific delivery address');
+      setError(orderType === 'DELIVERY' ? 'Please provide a specific delivery address' : 'Please provide a pickup or table location');
       return;
     }
 
@@ -46,112 +71,289 @@ export default function CheckoutPage() {
     setIsSubmitting(true);
 
     try {
+      const itemsToOrder = items.map((item) => ({
+        food: item.food._id,
+        name: item.food.name,
+        quantity: item.quantity,
+        price: item.price,
+        image: item.food.image,
+      }));
+
       const orderPayload = {
-        items: items.map((item) => ({
-          food: item.food._id,
-          name: item.food.name,
-          quantity: item.quantity,
-          price: item.price,
+        items: itemsToOrder.map((it) => ({
+          food: it.food,
+          name: it.name,
+          quantity: it.quantity,
+          price: it.price,
         })),
         shippingAddress,
         paymentPhone,
         paymentMethod,
         notes,
+        orderType,
       };
 
       const res = await api.post('/orders', orderPayload);
       if (res.data.success) {
+        setConfirmedItems(itemsToOrder);
         setOrderSuccess(res.data.data);
+        if (typeof window !== 'undefined' && res.data.data?.orderId) {
+          localStorage.setItem('barwaaqo_last_order_code', res.data.data.orderId);
+        }
         clearCart();
       }
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to place order. Please make sure you are logged in.');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to place order. Please make sure you are logged in.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  if (isAuthLoading || !user) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-deep)', color: 'var(--text-secondary)' }}>
+        Checking your account...
+      </div>
+    );
+  }
+
   if (orderSuccess) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--bg-deep)' }}>
         <Navbar />
-        <main style={{ flexGrow: 1, padding: '70px 0' }}>
-          <div className="container" style={{ maxWidth: '600px' }}>
+        <main style={{ flexGrow: 1, padding: '120px 0 90px 0' }}>
+          <div className="container" style={{ maxWidth: '640px' }}>
             <div
-              className="card"
               style={{
                 textAlign: 'center',
-                padding: '48px 32px',
-                borderTop: '6px solid var(--success)',
+                padding: '48px 36px',
+                backgroundColor: 'var(--bg-surface)',
+                borderRadius: '24px',
+                border: '1px solid var(--border)',
+                boxShadow: '0 20px 50px rgba(0, 0, 0, 0.5)',
+                position: 'relative',
+                overflow: 'hidden',
               }}
             >
+              <div
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: '4px',
+                  background: 'linear-gradient(90deg, var(--accent) 0%, #4ADE80 100%)',
+                }}
+              />
+
               <div
                 style={{
                   width: '72px',
                   height: '72px',
                   borderRadius: '50%',
-                  backgroundColor: 'var(--success-light)',
-                  color: 'var(--success)',
+                  backgroundColor: 'rgba(74, 222, 128, 0.12)',
+                  border: '1px solid rgba(74, 222, 128, 0.3)',
+                  color: '#4ADE80',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  margin: '0 auto 20px auto',
+                  margin: '0 auto 18px auto',
                 }}
               >
-                <CheckCircle size={38} />
+                <CheckCircle size={36} />
               </div>
 
-              <span className="badge badge-success" style={{ marginBottom: '12px' }}>
-                Order Placed Successfully
+              <span
+                style={{
+                  display: 'inline-block',
+                  padding: '4px 14px',
+                  backgroundColor: 'rgba(74, 222, 128, 0.12)',
+                  color: '#4ADE80',
+                  borderRadius: '9999px',
+                  fontSize: '12px',
+                  fontWeight: '700',
+                  letterSpacing: '1px',
+                  textTransform: 'uppercase',
+                  marginBottom: '12px',
+                }}
+              >
+                Order Confirmed & In Kitchen
               </span>
 
-              <h2 style={{ fontSize: '28px', fontWeight: '800', marginBottom: '8px' }}>
-                Mahadsanid! Dalabkaagu Wuu Qabsoomay
+              <h2
+                style={{
+                  fontFamily: 'var(--font-heading)',
+                  fontSize: '26px',
+                  fontWeight: '800',
+                  color: 'var(--text-primary)',
+                  marginBottom: '8px',
+                }}
+              >
+                Your Meal is Being Prepared!
               </h2>
 
-              <p style={{ color: 'var(--text-muted)', fontSize: '15px', marginBottom: '24px' }}>
-                Your order is confirmed and our chefs at Barwaaqo are now preparing your delicious meal.
+              <p style={{ color: 'var(--text-secondary)', fontSize: '14.5px', marginBottom: '28px', lineHeight: 1.6 }}>
+                Mahadsanid! Our culinary team at Barwaaqo is preparing your fresh meal with authentic Somali spices.
               </p>
 
-              {/* Order Details Badge */}
+              {/* What You Ordered Card */}
               <div
                 style={{
-                  backgroundColor: 'var(--bg-muted)',
-                  borderRadius: 'var(--radius-md)',
-                  padding: '20px',
+                  backgroundColor: 'var(--bg-deep)',
+                  borderRadius: '18px',
+                  border: '1px solid var(--border)',
+                  padding: '24px',
                   marginBottom: '28px',
                   textAlign: 'left',
                 }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-                  <span style={{ color: 'var(--text-muted)', fontSize: '13px' }}>Order Tracking ID:</span>
-                  <span style={{ fontWeight: '800', fontSize: '15px', color: 'var(--primary)' }}>
-                    {orderSuccess.orderId}
-                  </span>
+                <h4
+                  style={{
+                    fontFamily: 'var(--font-heading)',
+                    fontSize: '15px',
+                    fontWeight: '700',
+                    color: 'var(--accent)',
+                    marginBottom: '14px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                  }}
+                >
+                  What You Ordered ({confirmedItems.length} items)
+                </h4>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '18px' }}>
+                  {confirmedItems.map((it, idx) => (
+                    <div
+                      key={idx}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        paddingBottom: '10px',
+                        borderBottom: idx !== confirmedItems.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none',
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        {it.image && (
+                          <Image
+                            src={it.image}
+                            alt={it.name}
+                            width={40}
+                            height={40}
+                            unoptimized
+                            loader={({ src }) => src}
+                            style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'cover' }}
+                          />
+                        )}
+                        <div>
+                          <p style={{ fontWeight: '600', fontSize: '14px', color: 'var(--text-primary)' }}>
+                            {it.name}
+                          </p>
+                          <p style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                            Qty: {it.quantity} × ${it.price.toFixed(2)}
+                          </p>
+                        </div>
+                      </div>
+
+                      <span style={{ fontWeight: '700', fontSize: '14px', color: 'var(--text-primary)' }}>
+                        ${(it.price * it.quantity).toFixed(2)}
+                      </span>
+                    </div>
+                  ))}
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-                  <span style={{ color: 'var(--text-muted)', fontSize: '13px' }}>Payment Method:</span>
-                  <span style={{ fontWeight: '600', fontSize: '13px', textTransform: 'capitalize' }}>
-                    {orderSuccess.paymentMethod.replace('_', ' ')}
-                  </span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--text-muted)', fontSize: '13px' }}>Total Paid/Due:</span>
-                  <span style={{ fontWeight: '800', fontSize: '16px' }}>
-                    ${orderSuccess.totalAmount.toFixed(2)}
-                  </span>
+
+                <div
+                  style={{
+                    borderTop: '1px solid var(--border)',
+                    paddingTop: '12px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '8px',
+                    fontSize: '13px',
+                    color: 'var(--text-secondary)',
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Payment Mode</span>
+                    <span style={{ color: 'var(--text-primary)', fontWeight: '600', textTransform: 'capitalize' }}>
+                      {orderSuccess.paymentMethod.replace('_', ' ')}
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Delivering To</span>
+                    <span style={{ color: 'var(--text-primary)', fontWeight: '500', maxWidth: '300px', textAlign: 'right' }}>
+                      {shippingAddress}
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Estimated Arrival</span>
+                    <span style={{ color: '#4ADE80', fontWeight: '700' }}>
+                      25 - 35 Minutes
+                    </span>
+                  </div>
+                  <div
+                    style={{
+                      borderTop: '1px solid var(--border)',
+                      paddingTop: '10px',
+                      marginTop: '4px',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      fontSize: '16px',
+                      fontWeight: '800',
+                      color: 'var(--text-primary)',
+                    }}
+                  >
+                    <span>Total Amount</span>
+                    <span style={{ color: 'var(--accent)', fontSize: '18px' }}>
+                      ${orderSuccess.totalAmount.toFixed(2)}
+                    </span>
+                  </div>
                 </div>
               </div>
 
-              <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
-                <Link href={`/track?orderId=${orderSuccess.orderId}`} className="btn btn-primary">
-                  <span>Track Live Status</span>
+              {/* Actions */}
+              <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '16px' }}>
+                <Link
+                  href={`/track?orderId=${orderSuccess.orderId}`}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '12px 26px',
+                    borderRadius: '12px',
+                    backgroundColor: 'var(--accent)',
+                    color: 'var(--bg-deep)',
+                    fontWeight: '700',
+                    fontSize: '14px',
+                    textDecoration: 'none',
+                    boxShadow: '0 4px 18px rgba(212, 165, 116, 0.35)',
+                  }}
+                >
+                  <span>Track Live Delivery</span>
                   <ArrowRight size={16} />
                 </Link>
-                <Link href="/menu" className="btn btn-secondary">
+                <Link
+                  href="/menu"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    padding: '12px 24px',
+                    borderRadius: '12px',
+                    backgroundColor: 'var(--bg-deep)',
+                    border: '1px solid var(--border)',
+                    color: 'var(--text-primary)',
+                    fontWeight: '600',
+                    fontSize: '14px',
+                    textDecoration: 'none',
+                  }}
+                >
                   Back to Menu
                 </Link>
               </div>
+
+              <p style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                Order Ref: {orderSuccess.orderId} • Saved to your profile history
+              </p>
             </div>
           </div>
         </main>
@@ -161,24 +363,69 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--bg-deep)' }}>
       <Navbar />
 
-      <main style={{ flexGrow: 1, padding: '40px 0 80px 0' }}>
+      <main style={{ flexGrow: 1, padding: '120px 0 90px 0' }}>
         <div className="container">
-          <div style={{ marginBottom: '32px' }}>
-            <h1 style={{ fontSize: '32px', fontWeight: '800', marginBottom: '8px' }}>
+          <div style={{ marginBottom: '36px' }}>
+            <span
+              style={{
+                fontSize: '12px',
+                fontWeight: '600',
+                letterSpacing: '1px',
+                textTransform: 'uppercase',
+                color: 'var(--accent)',
+                marginBottom: '8px',
+                display: 'block',
+              }}
+            >
+              Order Finalization
+            </span>
+            <h1
+              style={{
+                fontFamily: 'var(--font-display)',
+                fontSize: 'clamp(28px, 3.5vw, 42px)',
+                fontWeight: '700',
+                color: 'var(--text-primary)',
+                letterSpacing: '-0.5px',
+                marginBottom: '8px',
+              }}
+            >
               Checkout & Delivery Details
             </h1>
-            <p style={{ color: 'var(--text-muted)', fontSize: '15px' }}>
-              Confirm your delivery location and payment option to complete your order.
+            <p style={{ color: 'var(--text-secondary)', fontSize: '15px' }}>
+              Confirm your delivery address and instant mobile payment option.
             </p>
           </div>
 
           {items.length === 0 ? (
-            <div className="card" style={{ textAlign: 'center', padding: '50px 20px' }}>
-              <p style={{ marginBottom: '16px' }}>Your cart is empty.</p>
-              <Link href="/menu" className="btn btn-primary">Browse Menu</Link>
+            <div
+              style={{
+                textAlign: 'center',
+                padding: '60px 20px',
+                backgroundColor: 'var(--bg-surface)',
+                borderRadius: '20px',
+                border: '1px solid var(--border)',
+                maxWidth: '460px',
+                margin: '0 auto',
+              }}
+            >
+              <p style={{ marginBottom: '20px', color: 'var(--text-secondary)' }}>Your cart is empty.</p>
+              <Link
+                href="/menu"
+                style={{
+                  display: 'inline-flex',
+                  padding: '12px 26px',
+                  borderRadius: '12px',
+                  backgroundColor: 'var(--accent)',
+                  color: 'var(--bg-deep)',
+                  fontWeight: '700',
+                  textDecoration: 'none',
+                }}
+              >
+                Browse Menu
+              </Link>
             </div>
           ) : (
             <form onSubmit={handleSubmitOrder}>
@@ -196,9 +443,10 @@ export default function CheckoutPage() {
                     <div
                       style={{
                         padding: '14px 18px',
-                        backgroundColor: 'var(--danger-light)',
+                        backgroundColor: 'rgba(248, 113, 113, 0.12)',
+                        border: '1px solid rgba(248, 113, 113, 0.3)',
                         color: 'var(--danger)',
-                        borderRadius: 'var(--radius-md)',
+                        borderRadius: '12px',
                         fontSize: '14px',
                         fontWeight: '600',
                       }}
@@ -208,25 +456,68 @@ export default function CheckoutPage() {
                   )}
 
                   {/* Delivery Location */}
-                  <div className="card">
-                    <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <MapPin size={20} color="var(--primary)" />
-                      <span>Delivery Information</span>
+                  <div
+                    style={{
+                      backgroundColor: 'var(--bg-surface)',
+                      borderRadius: '20px',
+                      border: '1px solid var(--border)',
+                      padding: '28px',
+                    }}
+                  >
+                    <h3
+                      style={{
+                        fontFamily: 'var(--font-display)',
+                        fontSize: '19px',
+                        fontWeight: '700',
+                        marginBottom: '20px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '10px',
+                        color: 'var(--text-primary)',
+                      }}
+                    >
+                      <MapPin size={20} color="var(--accent)" />
+                      <span>Order Details</span>
                     </h3>
 
-                    <div className="form-group">
-                      <label className="form-label">Full Street Address & Landmark *</label>
+                    <div className="form-group" style={{ marginBottom: '18px' }}>
+                      <label className="form-label">How will the customer receive the order? *</label>
+                      <select
+                        value={orderType}
+                        onChange={(e) => {
+                          const nextType = e.target.value as 'DELIVERY' | 'TAKEAWAY' | 'DINE_IN';
+                          setOrderType(nextType);
+                          if (nextType === 'TAKEAWAY') setShippingAddress('Takeaway counter');
+                          if (nextType === 'DINE_IN') setShippingAddress('Restaurant dining table');
+                          if (nextType === 'DELIVERY' && shippingAddress !== user?.address) setShippingAddress(user?.address || '');
+                        }}
+                        className="form-select"
+                        style={{ backgroundColor: 'var(--bg-deep)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
+                      >
+                        <option value="DELIVERY">Delivery to customer</option>
+                        <option value="TAKEAWAY">Takeaway from restaurant</option>
+                        <option value="DINE_IN">Dine-in at restaurant</option>
+                      </select>
+                    </div>
+
+                    <div className="form-group" style={{ marginBottom: '18px' }}>
+                      <label className="form-label">{orderType === 'DELIVERY' ? 'Full Street Address & Landmark *' : 'Pickup or Table Location *'}</label>
                       <input
                         type="text"
-                        placeholder="e.g. Maka Al-Mukarama Road, Near Sahafi Hotel, KM4"
+                        placeholder={orderType === 'DELIVERY' ? 'Maka Al-Mukarama Road, Near Sahafi Hotel, KM4' : orderType === 'TAKEAWAY' ? 'Takeaway counter' : 'Table number or dining area'}
                         value={shippingAddress}
                         onChange={(e) => setShippingAddress(e.target.value)}
                         required
                         className="form-input"
+                        style={{
+                          backgroundColor: 'var(--bg-deep)',
+                          border: '1px solid var(--border)',
+                          color: 'var(--text-primary)',
+                        }}
                       />
                     </div>
 
-                    <div className="form-group">
+                    <div className="form-group" style={{ marginBottom: '18px' }}>
                       <label className="form-label">Contact Phone Number *</label>
                       <input
                         type="text"
@@ -235,48 +526,77 @@ export default function CheckoutPage() {
                         onChange={(e) => setPaymentPhone(e.target.value)}
                         required
                         className="form-input"
+                        style={{
+                          backgroundColor: 'var(--bg-deep)',
+                          border: '1px solid var(--border)',
+                          color: 'var(--text-primary)',
+                        }}
                       />
                     </div>
 
                     <div className="form-group" style={{ marginBottom: 0 }}>
-                      <label className="form-label">Special Delivery Instructions (Optional)</label>
+                      <label className="form-label">Special Instructions (Optional)</label>
                       <textarea
                         rows={2}
-                        placeholder="e.g. Ring the bell twice, or extra banana and basbaas..."
+                        placeholder="e.g. Extra basbaas and fresh banana, deliver to 2nd floor..."
                         value={notes}
                         onChange={(e) => setNotes(e.target.value)}
                         className="form-textarea"
+                        style={{
+                          backgroundColor: 'var(--bg-deep)',
+                          border: '1px solid var(--border)',
+                          color: 'var(--text-primary)',
+                        }}
                       />
                     </div>
                   </div>
 
                   {/* Payment Method Selector */}
-                  <div className="card">
-                    <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <ShieldCheck size={20} color="var(--primary)" />
+                  <div
+                    style={{
+                      backgroundColor: 'var(--bg-surface)',
+                      borderRadius: '20px',
+                      border: '1px solid var(--border)',
+                      padding: '28px',
+                    }}
+                  >
+                    <h3
+                      style={{
+                        fontFamily: 'var(--font-display)',
+                        fontSize: '19px',
+                        fontWeight: '700',
+                        marginBottom: '20px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '10px',
+                        color: 'var(--text-primary)',
+                      }}
+                    >
+                      <ShieldCheck size={20} color="var(--accent)" />
                       <span>Payment Method</span>
                     </h3>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '20px' }}>
+                    <div className="responsive-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '20px' }}>
                       {/* EVC Plus Option */}
                       <div
                         onClick={() => setPaymentMethod('evc_plus')}
                         style={{
                           border: '2px solid',
-                          borderColor: paymentMethod === 'evc_plus' ? 'var(--primary)' : 'var(--border)',
-                          borderRadius: 'var(--radius-md)',
-                          padding: '16px',
+                          borderColor: paymentMethod === 'evc_plus' ? 'var(--accent)' : 'var(--border)',
+                          borderRadius: '14px',
+                          padding: '18px',
                           cursor: 'pointer',
-                          backgroundColor: paymentMethod === 'evc_plus' ? 'var(--primary-light)' : 'var(--bg-surface)',
-                          transition: 'all 0.2s',
+                          backgroundColor: paymentMethod === 'evc_plus' ? 'rgba(212, 165, 116, 0.08)' : 'var(--bg-deep)',
+                          boxShadow: paymentMethod === 'evc_plus' ? '0 4px 16px rgba(212, 165, 116, 0.15)' : 'none',
+                          transition: 'all 0.25s ease',
                         }}
                       >
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-                          <Phone size={18} color="var(--primary)" />
-                          <span style={{ fontWeight: '700', fontSize: '15px' }}>EVC Plus</span>
+                          <Phone size={18} color="var(--accent)" />
+                          <span style={{ fontWeight: '700', fontSize: '15px', color: 'var(--text-primary)' }}>EVC Plus</span>
                         </div>
-                        <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-                          Hormuud EVC Mobile Money (Simulated)
+                        <p style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                          Hormuud Mobile Money (Instant PIN)
                         </p>
                       </div>
 
@@ -285,20 +605,21 @@ export default function CheckoutPage() {
                         onClick={() => setPaymentMethod('cash_on_delivery')}
                         style={{
                           border: '2px solid',
-                          borderColor: paymentMethod === 'cash_on_delivery' ? 'var(--primary)' : 'var(--border)',
-                          borderRadius: 'var(--radius-md)',
-                          padding: '16px',
+                          borderColor: paymentMethod === 'cash_on_delivery' ? 'var(--accent)' : 'var(--border)',
+                          borderRadius: '14px',
+                          padding: '18px',
                           cursor: 'pointer',
-                          backgroundColor: paymentMethod === 'cash_on_delivery' ? 'var(--primary-light)' : 'var(--bg-surface)',
-                          transition: 'all 0.2s',
+                          backgroundColor: paymentMethod === 'cash_on_delivery' ? 'rgba(212, 165, 116, 0.08)' : 'var(--bg-deep)',
+                          boxShadow: paymentMethod === 'cash_on_delivery' ? '0 4px 16px rgba(212, 165, 116, 0.15)' : 'none',
+                          transition: 'all 0.25s ease',
                         }}
                       >
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-                          <DollarSign size={18} color="var(--success)" />
-                          <span style={{ fontWeight: '700', fontSize: '15px' }}>Cash On Delivery</span>
+                          <DollarSign size={18} color="#4ADE80" />
+                          <span style={{ fontWeight: '700', fontSize: '15px', color: 'var(--text-primary)' }}>Cash On Delivery</span>
                         </div>
-                        <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-                          Pay with cash upon meal delivery
+                        <p style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                          Pay with cash upon handoff
                         </p>
                       </div>
                     </div>
@@ -307,9 +628,9 @@ export default function CheckoutPage() {
                     {paymentMethod === 'evc_plus' && (
                       <div
                         style={{
-                          padding: '16px',
-                          borderRadius: 'var(--radius-md)',
-                          backgroundColor: 'var(--bg-muted)',
+                          padding: '18px',
+                          borderRadius: '14px',
+                          backgroundColor: 'var(--bg-deep)',
                           border: '1px solid var(--border)',
                         }}
                       >
@@ -317,18 +638,26 @@ export default function CheckoutPage() {
                           <label className="form-label" style={{ marginBottom: 0 }}>
                             Enter EVC Demo PIN (Demo: 1234)
                           </label>
-                          <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--primary)' }}>
+                          <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--accent)' }}>
                             PIN: 1234
                           </span>
                         </div>
                         <input
                           type="password"
                           maxLength={4}
-                          placeholder="Enter 1234"
+                          placeholder="••••"
                           value={evcPin}
                           onChange={(e) => setEvcPin(e.target.value)}
                           className="form-input"
-                          style={{ letterSpacing: '4px', textAlign: 'center', fontSize: '18px', fontWeight: '800' }}
+                          style={{
+                            letterSpacing: '8px',
+                            textAlign: 'center',
+                            fontSize: '22px',
+                            fontWeight: '800',
+                            backgroundColor: 'var(--bg-surface)',
+                            border: '1px solid var(--border)',
+                            color: 'var(--accent)',
+                          }}
                         />
                       </div>
                     )}
@@ -336,18 +665,38 @@ export default function CheckoutPage() {
                 </div>
 
                 {/* Right Order Summary */}
-                <div className="card" style={{ position: 'sticky', top: '100px' }}>
-                  <h3 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '16px' }}>
+                <div
+                  style={{
+                    position: 'sticky',
+                    top: '100px',
+                    backgroundColor: 'var(--bg-surface)',
+                    borderRadius: '20px',
+                    border: '1px solid var(--border)',
+                    padding: '28px',
+                    boxShadow: '0 12px 36px rgba(0, 0, 0, 0.4)',
+                  }}
+                >
+                  <h3
+                    style={{
+                      fontFamily: 'var(--font-display)',
+                      fontSize: '20px',
+                      fontWeight: '700',
+                      color: 'var(--text-primary)',
+                      marginBottom: '18px',
+                    }}
+                  >
                     Order Review
                   </h3>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '16px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
                     {items.map((it) => (
                       <div key={it.food._id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px' }}>
                         <span style={{ color: 'var(--text-secondary)' }}>
                           {it.quantity}x {it.food.name}
                         </span>
-                        <span style={{ fontWeight: '600' }}>${(it.price * it.quantity).toFixed(2)}</span>
+                        <span style={{ fontWeight: '600', color: 'var(--text-primary)' }}>
+                          ${(it.price * it.quantity).toFixed(2)}
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -355,31 +704,31 @@ export default function CheckoutPage() {
                   <div
                     style={{
                       borderTop: '1px solid var(--border)',
-                      paddingTop: '12px',
+                      paddingTop: '14px',
                       display: 'flex',
                       flexDirection: 'column',
-                      gap: '8px',
+                      gap: '10px',
                       fontSize: '13px',
-                      color: 'var(--text-muted)',
-                      marginBottom: '16px',
+                      color: 'var(--text-secondary)',
+                      marginBottom: '20px',
                     }}
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                       <span>Subtotal</span>
-                      <span>${subtotal.toFixed(2)}</span>
+                      <span style={{ color: 'var(--text-primary)', fontWeight: '600' }}>${subtotal.toFixed(2)}</span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                       <span>Delivery Fee</span>
-                      <span>${deliveryFee.toFixed(2)}</span>
+                      <span style={{ color: 'var(--text-primary)', fontWeight: '600' }}>${orderDeliveryFee.toFixed(2)}</span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                       <span>Service Tax (5%)</span>
-                      <span>${tax.toFixed(2)}</span>
+                      <span style={{ color: 'var(--text-primary)', fontWeight: '600' }}>${tax.toFixed(2)}</span>
                     </div>
                     <div
                       style={{
                         borderTop: '1px solid var(--border)',
-                        paddingTop: '10px',
+                        paddingTop: '14px',
                         display: 'flex',
                         justifyContent: 'space-between',
                         fontSize: '18px',
@@ -388,17 +737,32 @@ export default function CheckoutPage() {
                       }}
                     >
                       <span>Total Amount</span>
-                      <span style={{ color: 'var(--primary)' }}>${totalAmount.toFixed(2)}</span>
+                      <span style={{ color: 'var(--accent)', fontSize: '20px' }}>${orderTotal.toFixed(2)}</span>
                     </div>
                   </div>
 
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="btn btn-primary btn-lg"
-                    style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
+                    style={{
+                      width: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
+                      padding: '14px 20px',
+                      borderRadius: '12px',
+                      backgroundColor: 'var(--accent)',
+                      color: 'var(--bg-deep)',
+                      fontWeight: '700',
+                      fontSize: '15px',
+                      border: 'none',
+                      cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                      boxShadow: '0 6px 24px rgba(212, 165, 116, 0.35)',
+                      transition: 'all 0.25s',
+                    }}
                   >
-                    {isSubmitting ? 'Placing Order...' : `Pay & Place Order ($${totalAmount.toFixed(2)})`}
+                    {isSubmitting ? 'Processing Order...' : `Pay & Place Order ($${orderTotal.toFixed(2)})`}
                   </button>
                 </div>
               </div>

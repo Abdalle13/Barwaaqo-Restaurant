@@ -1,23 +1,22 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
+import { useSettings } from '@/context/SettingsContext';
 import {
-  Utensils,
   ShoppingBag,
   Sun,
   Moon,
   User as UserIcon,
-  Calendar,
   LogOut,
   LayoutDashboard,
   Menu as MenuIcon,
   X,
-  Compass,
+  Utensils,
 } from 'lucide-react';
 
 export default function Navbar() {
@@ -25,25 +24,38 @@ export default function Navbar() {
   const { theme, toggleTheme } = useTheme();
   const { user, logout, isAdmin } = useAuth();
   const { totalItems } = useCart();
+  const { settings } = useSettings();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   const navLinks = [
     { name: 'Home', href: '/' },
     { name: 'Menu', href: '/menu' },
+    { name: 'About', href: '/about' },
     { name: 'Reservations', href: '/reservations' },
+    { name: 'Contact', href: '/contact' },
     { name: 'Track Order', href: '/track' },
   ];
 
   return (
     <header
       style={{
-        position: 'sticky',
+        position: 'fixed',
         top: 0,
-        zIndex: 50,
-        backgroundColor: 'var(--bg-surface)',
+        left: 0,
+        right: 0,
+        zIndex: 100,
+        background: scrolled ? 'var(--bg-glass)' : 'var(--bg-base)',
+        backdropFilter: scrolled ? 'blur(10px)' : 'none',
+        WebkitBackdropFilter: scrolled ? 'blur(10px)' : 'none',
         borderBottom: '1px solid var(--border)',
-        boxShadow: 'var(--shadow-sm)',
-        transition: 'background-color 0.3s ease',
+        transition: 'all 0.3s ease',
       }}
     >
       <div
@@ -52,63 +64,26 @@ export default function Navbar() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          height: '72px',
+          height: '68px',
         }}
       >
-        {/* Brand Logo */}
+        {/* Brand: name only */}
         <Link
           href="/"
-          prefetch={false}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
-            textDecoration: 'none',
-          }}
+          prefetch={true}
+          style={{ textDecoration: 'none' }}
         >
-          <div
+          <span
             style={{
-              width: '42px',
-              height: '42px',
-              borderRadius: '12px',
-              background: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#ffffff',
-              boxShadow: '0 4px 12px rgba(249, 115, 22, 0.3)',
+              fontFamily: 'var(--font-heading)',
+              fontSize: '20px',
+              fontWeight: '700',
+              letterSpacing: '0.5px',
+              color: 'var(--accent)',
             }}
           >
-            <Utensils size={22} />
-          </div>
-          <div>
-            <span
-              style={{
-                fontFamily: 'var(--font-heading)',
-                fontSize: '20px',
-                fontWeight: '800',
-                letterSpacing: '-0.5px',
-                color: 'var(--text-primary)',
-                display: 'block',
-                lineHeight: 1,
-              }}
-            >
-              BARWAAQO
-            </span>
-            <span
-              style={{
-                fontSize: '10px',
-                fontWeight: '600',
-                letterSpacing: '2px',
-                color: 'var(--primary)',
-                textTransform: 'uppercase',
-                display: 'block',
-                marginTop: '2px',
-              }}
-            >
-              RESTAURANT
-            </span>
-          </div>
+            {settings.restaurantName}
+          </span>
         </Link>
 
         {/* Desktop Navigation Links */}
@@ -116,7 +91,7 @@ export default function Navbar() {
           style={{
             display: 'none',
             alignItems: 'center',
-            gap: '32px',
+            gap: '28px',
           }}
           className="desktop-nav"
         >
@@ -126,12 +101,15 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
+                prefetch={true}
                 style={{
-                  fontWeight: isActive ? '700' : '500',
-                  fontSize: '15px',
-                  color: isActive ? 'var(--primary)' : 'var(--text-secondary)',
+                  fontFamily: 'var(--font-heading)',
+                  fontWeight: isActive ? '600' : '400',
+                  fontSize: '13.5px',
+                  color: isActive ? 'var(--accent)' : 'var(--text-secondary)',
                   position: 'relative',
                   padding: '6px 0',
+                  textDecoration: 'none',
                   transition: 'color 0.2s ease',
                 }}
               >
@@ -141,10 +119,11 @@ export default function Navbar() {
                     style={{
                       position: 'absolute',
                       bottom: 0,
-                      left: 0,
-                      right: 0,
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                      width: '100%',
                       height: '2px',
-                      backgroundColor: 'var(--primary)',
+                      backgroundColor: 'var(--accent)',
                       borderRadius: '2px',
                     }}
                   />
@@ -155,14 +134,14 @@ export default function Navbar() {
         </nav>
 
         {/* Action Controls */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           {/* Light/Dark Toggle */}
           <button
             onClick={toggleTheme}
             aria-label="Toggle theme"
             style={{
-              width: '40px',
-              height: '40px',
+              width: '36px',
+              height: '36px',
               borderRadius: '10px',
               border: '1px solid var(--border)',
               background: 'var(--bg-surface)',
@@ -174,16 +153,17 @@ export default function Navbar() {
               transition: 'all 0.2s ease',
             }}
           >
-            {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
+            {theme === 'light' ? <Moon size={15} /> : <Sun size={15} />}
           </button>
 
           {/* Cart Trigger */}
           <Link
             href="/cart"
+            prefetch={true}
             style={{
               position: 'relative',
-              width: '40px',
-              height: '40px',
+              width: '36px',
+              height: '36px',
               borderRadius: '10px',
               border: '1px solid var(--border)',
               background: 'var(--bg-surface)',
@@ -194,24 +174,24 @@ export default function Navbar() {
               transition: 'all 0.2s ease',
             }}
           >
-            <ShoppingBag size={18} />
+            <ShoppingBag size={16} />
             {totalItems > 0 && (
               <span
                 style={{
                   position: 'absolute',
                   top: '-4px',
                   right: '-4px',
-                  backgroundColor: 'var(--primary)',
-                  color: '#ffffff',
-                  fontSize: '11px',
-                  fontWeight: '700',
-                  width: '20px',
-                  height: '20px',
+                  background: 'var(--accent)',
+                  color: 'var(--bg-deep)',
+                  fontSize: '10px',
+                  fontWeight: '800',
+                  width: '18px',
+                  height: '18px',
                   borderRadius: '50%',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  boxShadow: '0 2px 6px rgba(249, 115, 22, 0.4)',
+                  boxShadow: 'var(--shadow-sm)',
                 }}
               >
                 {totalItems}
@@ -219,29 +199,52 @@ export default function Navbar() {
             )}
           </Link>
 
-          {/* User / Admin Controls */}
+          {/* User Controls: Sleek icon buttons without displaying text name */}
           {user ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               {isAdmin && (
                 <Link
                   href="/admin"
-                  className="btn btn-primary btn-sm"
-                  style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+                  prefetch={true}
+                  title="Admin Dashboard"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '5px',
+                    padding: '6px 12px',
+                    borderRadius: '8px',
+                    background: 'var(--accent-muted)',
+                    color: 'var(--accent)',
+                    fontSize: '12px',
+                    fontWeight: '600',
+                    border: '1px solid var(--accent-border)',
+                    textDecoration: 'none',
+                  }}
                 >
-                  <LayoutDashboard size={15} />
+                  <LayoutDashboard size={13} />
                   <span>Admin</span>
                 </Link>
               )}
 
               <Link
                 href="/profile"
-                className="btn btn-secondary btn-sm"
-                style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+                prefetch={true}
+                title="My Profile & Orders"
+                style={{
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '10px',
+                  border: '1px solid var(--border)',
+                  background: 'var(--bg-surface)',
+                  color: 'var(--text-primary)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  textDecoration: 'none',
+                  transition: 'all 0.2s ease',
+                }}
               >
                 <UserIcon size={15} />
-                <span style={{ maxWidth: '90px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                  {user.name.split(' ')[0]}
-                </span>
               </Link>
 
               <button
@@ -251,25 +254,49 @@ export default function Navbar() {
                 style={{
                   width: '36px',
                   height: '36px',
-                  borderRadius: '8px',
-                  border: '1px solid var(--border)',
-                  background: 'transparent',
+                  borderRadius: '10px',
+                  border: '1px solid rgba(248, 113, 113, 0.2)',
+                  background: 'rgba(248, 113, 113, 0.05)',
                   color: 'var(--danger)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   cursor: 'pointer',
+                  transition: 'all 0.2s ease',
                 }}
               >
-                <LogOut size={16} />
+                <LogOut size={14} />
               </button>
             </div>
           ) : (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Link href="/login" className="btn btn-secondary btn-sm">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <Link
+                href="/login"
+                prefetch={true}
+                style={{
+                  padding: '6px 14px',
+                  fontSize: '13px',
+                  color: 'var(--text-secondary)',
+                  textDecoration: 'none',
+                  fontWeight: '500',
+                }}
+              >
                 Sign In
               </Link>
-              <Link href="/register" className="btn btn-primary btn-sm">
+              <Link
+                href="/register"
+                prefetch={true}
+                style={{
+                  padding: '7px 16px',
+                  borderRadius: '10px',
+                  backgroundColor: 'var(--accent)',
+                  color: 'var(--bg-deep)',
+                  fontWeight: '700',
+                  fontSize: '13px',
+                  textDecoration: 'none',
+                  boxShadow: 'var(--shadow-sm)',
+                }}
+              >
                 Register
               </Link>
             </div>
@@ -278,35 +305,36 @@ export default function Navbar() {
           {/* Mobile Menu Toggle */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Menu"
             style={{
-              display: 'none',
-              width: '40px',
-              height: '40px',
-              borderRadius: '10px',
-              border: '1px solid var(--border)',
-              background: 'transparent',
-              color: 'var(--text-primary)',
+              display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
+              width: '36px',
+              height: '36px',
+              borderRadius: '10px',
+              border: '1px solid var(--border)',
+              background: 'var(--bg-surface)',
+              color: 'var(--text-primary)',
               cursor: 'pointer',
             }}
-            className="mobile-menu-btn"
+            className="mobile-toggle"
           >
-            {mobileMenuOpen ? <X size={20} /> : <MenuIcon size={20} />}
+            {mobileMenuOpen ? <X size={18} /> : <MenuIcon size={18} />}
           </button>
         </div>
       </div>
 
-      {/* Mobile Dropdown */}
+      {/* Mobile Drawer */}
       {mobileMenuOpen && (
         <div
           style={{
-            backgroundColor: 'var(--bg-surface)',
-            borderTop: '1px solid var(--border)',
-            padding: '16px 24px',
+            backgroundColor: 'var(--bg-glass)',
+            borderBottom: '1px solid var(--border)',
+            padding: '20px 24px',
             display: 'flex',
             flexDirection: 'column',
-            gap: '12px',
+            gap: '16px',
           }}
         >
           {navLinks.map((link) => (
@@ -315,44 +343,19 @@ export default function Navbar() {
               href={link.href}
               onClick={() => setMobileMenuOpen(false)}
               style={{
+                fontSize: '15px',
+                fontWeight: pathname === link.href ? '700' : '500',
+                color: pathname === link.href ? 'var(--accent)' : 'var(--text-secondary)',
+                textDecoration: 'none',
                 padding: '8px 0',
-                fontSize: '16px',
-                fontWeight: '600',
-                color: pathname === link.href ? 'var(--primary)' : 'var(--text-primary)',
               }}
             >
               {link.name}
             </Link>
           ))}
-          {isAdmin && (
-            <Link
-              href="/admin"
-              onClick={() => setMobileMenuOpen(false)}
-              style={{
-                padding: '8px 0',
-                fontSize: '16px',
-                fontWeight: '700',
-                color: 'var(--primary)',
-              }}
-            >
-              Admin Dashboard
-            </Link>
-          )}
         </div>
       )}
 
-      <style jsx>{`
-        @media (min-width: 768px) {
-          .desktop-nav {
-            display: flex !important;
-          }
-        }
-        @media (max-width: 767px) {
-          .mobile-menu-btn {
-            display: flex !important;
-          }
-        }
-      `}</style>
     </header>
   );
 }

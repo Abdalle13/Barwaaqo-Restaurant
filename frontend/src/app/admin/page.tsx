@@ -10,14 +10,14 @@ import {
   Utensils,
   Users,
   TrendingUp,
-  ArrowUpRight,
-  Clock,
   ChevronRight,
-  Eye,
+  Sparkles,
 } from 'lucide-react';
 import {
   AreaChart,
   Area,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -62,29 +62,31 @@ export default function AdminDashboardPage() {
       console.error(err);
     }
   };
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good Morning';
+    if (hour < 18) return 'Good Afternoon';
+    return 'Good Evening';
+  };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       {/* Top Welcome Title */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '16px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '14px', paddingBottom: '20px', borderBottom: '1px solid var(--border)' }}>
         <div>
-          <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--primary)', textTransform: 'uppercase' }}>
-            Barwaaqo Restaurant Operations
+          <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '1.2px' }}>
+            Restaurant overview
           </span>
-          <h1 style={{ fontSize: '32px', fontWeight: '800', marginTop: '4px' }}>
-            Executive Dashboard
+          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '30px', fontWeight: '700', marginTop: '5px', color: 'var(--text-primary)' }}>
+            {getGreeting()}
           </h1>
+          <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginTop: '5px' }}>
+            A quick view of today&apos;s sales, orders, and menu activity.
+          </p>
         </div>
-
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <Link href="/admin/orders" className="btn btn-primary btn-sm">
-            <ShoppingBag size={15} />
-            <span>Manage Orders</span>
-          </Link>
-          <Link href="/admin/menu/new" className="btn btn-secondary btn-sm">
-            <Utensils size={15} />
-            <span>Add New Dish</span>
-          </Link>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', fontSize: '13px' }}>
+          <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--success)' }} />
+          <span>System active</span>
         </div>
       </div>
 
@@ -93,18 +95,29 @@ export default function AdminDashboardPage() {
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-          gap: '20px',
+          gap: '12px',
         }}
       >
         {/* Card 1: Sales */}
-        <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '18px',
+            backgroundColor: 'var(--bg-surface)',
+            borderRadius: '10px',
+            border: '1px solid var(--border)',
+            padding: '18px',
+          }}
+        >
           <div
             style={{
-              width: '52px',
-              height: '52px',
-              borderRadius: '12px',
-              backgroundColor: 'var(--success-light)',
-              color: 'var(--success)',
+              width: '44px',
+              height: '44px',
+              borderRadius: '9px',
+              backgroundColor: 'rgba(74, 222, 128, 0.12)',
+              border: '1px solid rgba(74, 222, 128, 0.25)',
+              color: '#4ADE80',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -114,24 +127,35 @@ export default function AdminDashboardPage() {
             <DollarSign size={26} />
           </div>
           <div>
-            <span style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-muted)' }}>
+            <span style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-secondary)' }}>
               Completed Revenue
             </span>
-            <h2 style={{ fontSize: '26px', fontWeight: '800', marginTop: '2px' }}>
+            <h2 style={{ fontSize: '26px', fontWeight: '800', marginTop: '2px', color: 'var(--text-primary)' }}>
               ${stats?.totalSales?.toFixed(2) || '0.00'}
             </h2>
           </div>
         </div>
 
         {/* Card 2: Active Orders */}
-        <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '18px',
+            backgroundColor: 'var(--bg-surface)',
+            borderRadius: '10px',
+            border: '1px solid var(--border)',
+            padding: '18px',
+          }}
+        >
           <div
             style={{
-              width: '52px',
-              height: '52px',
-              borderRadius: '12px',
-              backgroundColor: 'var(--primary-light)',
-              color: 'var(--primary)',
+              width: '44px',
+              height: '44px',
+              borderRadius: '9px',
+              backgroundColor: 'rgba(212, 165, 116, 0.12)',
+              border: '1px solid rgba(212, 165, 116, 0.25)',
+              color: 'var(--accent)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -141,24 +165,35 @@ export default function AdminDashboardPage() {
             <ShoppingBag size={26} />
           </div>
           <div>
-            <span style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-muted)' }}>
+            <span style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-secondary)' }}>
               Active Orders
             </span>
-            <h2 style={{ fontSize: '26px', fontWeight: '800', marginTop: '2px' }}>
+            <h2 style={{ fontSize: '26px', fontWeight: '800', marginTop: '2px', color: 'var(--text-primary)' }}>
               {stats?.activeOrders || 0}
             </h2>
           </div>
         </div>
 
         {/* Card 3: Menu Items */}
-        <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '18px',
+            backgroundColor: 'var(--bg-surface)',
+            borderRadius: '10px',
+            border: '1px solid var(--border)',
+            padding: '18px',
+          }}
+        >
           <div
             style={{
-              width: '52px',
-              height: '52px',
-              borderRadius: '12px',
-              backgroundColor: 'var(--info-light)',
-              color: 'var(--info)',
+              width: '44px',
+              height: '44px',
+              borderRadius: '9px',
+              backgroundColor: 'rgba(96, 165, 250, 0.12)',
+              border: '1px solid rgba(96, 165, 250, 0.25)',
+              color: '#60A5FA',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -168,24 +203,35 @@ export default function AdminDashboardPage() {
             <Utensils size={26} />
           </div>
           <div>
-            <span style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-muted)' }}>
+            <span style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-secondary)' }}>
               Active Dishes
             </span>
-            <h2 style={{ fontSize: '26px', fontWeight: '800', marginTop: '2px' }}>
+            <h2 style={{ fontSize: '26px', fontWeight: '800', marginTop: '2px', color: 'var(--text-primary)' }}>
               {stats?.totalItems || 0}
             </h2>
           </div>
         </div>
 
         {/* Card 4: Customers */}
-        <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '18px',
+            backgroundColor: 'var(--bg-surface)',
+            borderRadius: '10px',
+            border: '1px solid var(--border)',
+            padding: '18px',
+          }}
+        >
           <div
             style={{
-              width: '52px',
-              height: '52px',
-              borderRadius: '12px',
-              backgroundColor: 'var(--warning-light)',
-              color: 'var(--warning)',
+              width: '44px',
+              height: '44px',
+              borderRadius: '9px',
+              backgroundColor: 'rgba(251, 191, 36, 0.12)',
+              border: '1px solid rgba(251, 191, 36, 0.25)',
+              color: '#FBBF24',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -195,12 +241,33 @@ export default function AdminDashboardPage() {
             <Users size={26} />
           </div>
           <div>
-            <span style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-muted)' }}>
-              Total Users
+            <span style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-secondary)' }}>
+              Total Customers
             </span>
-            <h2 style={{ fontSize: '26px', fontWeight: '800', marginTop: '2px' }}>
+            <h2 style={{ fontSize: '26px', fontWeight: '800', marginTop: '2px', color: 'var(--text-primary)' }}>
               {stats?.totalCustomers || 0}
             </h2>
+          </div>
+        </div>
+
+        {/* Card 5: Completed Orders */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '18px',
+            backgroundColor: 'var(--bg-surface)',
+            borderRadius: '10px',
+            border: '1px solid var(--border)',
+            padding: '18px',
+          }}
+        >
+          <div style={{ width: '44px', height: '44px', borderRadius: '9px', backgroundColor: 'rgba(74, 222, 128, 0.12)', border: '1px solid rgba(74, 222, 128, 0.25)', color: 'var(--success)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <TrendingUp size={22} />
+          </div>
+          <div>
+            <span style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-secondary)' }}>Completed Orders</span>
+            <h2 style={{ fontSize: '26px', fontWeight: '800', marginTop: '2px', color: 'var(--text-primary)' }}>{stats?.completedOrders || 0}</h2>
           </div>
         </div>
       </div>
@@ -209,22 +276,29 @@ export default function AdminDashboardPage() {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
           gap: '24px',
         }}
       >
         {/* Revenue Analytics Chart */}
-        <div className="card" style={{ padding: '24px' }}>
+        <div
+          style={{
+            padding: '24px',
+            backgroundColor: 'var(--bg-surface)',
+            borderRadius: '10px',
+            border: '1px solid var(--border)',
+          }}
+        >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
             <div>
-              <h3 style={{ fontSize: '18px', fontWeight: '800' }}>
+              <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: '700', color: 'var(--text-primary)' }}>
                 7-Day Revenue Trends
               </h3>
-              <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
+              <p style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
                 Real-time sales performance over the past week
               </p>
             </div>
-            <TrendingUp size={20} color="var(--primary)" />
+            <TrendingUp size={20} color="var(--accent)" />
           </div>
 
           <div style={{ width: '100%', height: '270px' }}>
@@ -232,96 +306,99 @@ export default function AdminDashboardPage() {
               <AreaChart data={revenueData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="revenueColor" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#f97316" stopOpacity={0.4} />
-                    <stop offset="95%" stopColor="#f97316" stopOpacity={0.0} />
+                    <stop offset="5%" stopColor="#D4A574" stopOpacity={0.4} />
+                    <stop offset="95%" stopColor="#D4A574" stopOpacity={0.0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
-                <XAxis dataKey="day" stroke="var(--text-muted)" fontSize={12} tickLine={false} />
-                <YAxis stroke="var(--text-muted)" fontSize={12} tickLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(212, 165, 116, 0.08)" vertical={false} />
+                <XAxis dataKey="day" stroke="var(--text-secondary)" fontSize={12} tickLine={false} />
+                <YAxis stroke="var(--text-secondary)" fontSize={12} tickLine={false} />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: 'var(--bg-surface)',
+                    backgroundColor: 'var(--bg-elevated)',
                     borderColor: 'var(--border)',
-                    borderRadius: '8px',
+                    borderRadius: '10px',
                     color: 'var(--text-primary)',
-                    boxShadow: 'var(--shadow-md)',
+                    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.6)',
                   }}
                   formatter={(value: any) => [`$${value}`, 'Revenue']}
                 />
-                <Area type="monotone" dataKey="revenue" stroke="#f97316" strokeWidth={3} fillOpacity={1} fill="url(#revenueColor)" />
+                <Area type="monotone" dataKey="revenue" stroke="#D4A574" strokeWidth={3} fillOpacity={1} fill="url(#revenueColor)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        {/* Top Selling Foods List */}
-        <div className="card" style={{ padding: '24px' }}>
-          <h3 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '4px' }}>
+        {/* Top Selling Foods Chart */}
+        <div
+          style={{
+            padding: '24px',
+            backgroundColor: 'var(--bg-surface)',
+            borderRadius: '10px',
+            border: '1px solid var(--border)',
+          }}
+        >
+          <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: '700', marginBottom: '4px', color: 'var(--text-primary)' }}>
             Top Selling Dishes
           </h3>
-          <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '20px' }}>
-            Highest demand customer favorites
+          <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '20px' }}>
+            Most ordered dishes by quantity
           </p>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            {topFoods.length === 0 ? (
-              <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>No sales data recorded yet.</p>
-            ) : (
-              topFoods.map((dish, idx) => (
-                <div
-                  key={dish._id || idx}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    paddingBottom: '12px',
-                    borderBottom: idx !== topFoods.length - 1 ? '1px solid var(--border)' : 'none',
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <span
-                      style={{
-                        width: '24px',
-                        height: '24px',
-                        borderRadius: '50%',
-                        backgroundColor: idx === 0 ? 'var(--primary)' : 'var(--bg-muted)',
-                        color: idx === 0 ? '#ffffff' : 'var(--text-muted)',
-                        fontSize: '11px',
-                        fontWeight: '800',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      {idx + 1}
-                    </span>
-                    <div>
-                      <h4 style={{ fontSize: '14px', fontWeight: '700' }}>{dish.name}</h4>
-                      <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-                        {dish.totalOrdered} orders fulfilled
-                      </p>
-                    </div>
-                  </div>
-
-                  <span style={{ fontWeight: '800', fontSize: '14px', color: 'var(--primary)' }}>
-                    ${dish.totalRevenue?.toFixed(2)}
-                  </span>
-                </div>
-              ))
-            )}
-          </div>
+          {topFoods.length === 0 ? (
+            <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>No sales data recorded yet.</p>
+          ) : (
+            <div style={{ width: '100%', height: '270px' }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={topFoods} layout="vertical" margin={{ top: 0, right: 12, left: 8, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" horizontal={false} />
+                  <XAxis type="number" allowDecimals={false} stroke="var(--text-muted)" fontSize={11} tickLine={false} axisLine={false} />
+                  <YAxis type="category" dataKey="name" width={125} stroke="var(--text-secondary)" fontSize={11} tickLine={false} axisLine={false} />
+                  <Tooltip
+                    cursor={{ fill: 'var(--accent-muted)' }}
+                    contentStyle={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border)', borderRadius: '8px', color: 'var(--text-primary)' }}
+                    formatter={(value) => [value, 'Items sold']}
+                  />
+                  <Bar dataKey="totalOrdered" name="Items sold" fill="var(--accent)" radius={[0, 4, 4, 0]} barSize={22} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          )}
         </div>
       </div>
 
       {/* Recent Orders Overview */}
-      <div className="card" style={{ padding: '24px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+      <div
+        style={{
+          padding: '24px',
+          backgroundColor: 'var(--bg-surface)',
+          borderRadius: '10px',
+          border: '1px solid var(--border)',
+        }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px', marginBottom: '20px' }}>
           <div>
-            <h3 style={{ fontSize: '18px', fontWeight: '800' }}>Recent Orders</h3>
-            <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Live stream of incoming dining orders</p>
+            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: '700', color: 'var(--text-primary)' }}>
+              Recent Orders
+            </h3>
+            <p style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Live stream of incoming dining orders</p>
           </div>
-          <Link href="/admin/orders" className="btn btn-secondary btn-sm">
+          <Link
+            href="/admin/orders"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '4px',
+              padding: '8px 16px',
+              borderRadius: '10px',
+              backgroundColor: 'var(--bg-elevated)',
+              border: '1px solid var(--border)',
+              color: 'var(--text-primary)',
+              fontSize: '13px',
+              fontWeight: '600',
+              textDecoration: 'none',
+              transition: 'background 0.2s',
+            }}
+          >
             <span>View All Orders</span>
             <ChevronRight size={14} />
           </Link>
@@ -330,7 +407,7 @@ export default function AdminDashboardPage() {
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '14px' }}>
             <thead>
-              <tr style={{ borderBottom: '2px solid var(--border)', color: 'var(--text-muted)', fontSize: '12px' }}>
+              <tr style={{ borderBottom: '1px solid var(--border)', color: 'var(--text-secondary)', fontSize: '12px' }}>
                 <th style={{ padding: '12px 16px' }}>ORDER ID</th>
                 <th style={{ padding: '12px 16px' }}>CUSTOMER</th>
                 <th style={{ padding: '12px 16px' }}>TOTAL</th>
@@ -341,31 +418,62 @@ export default function AdminDashboardPage() {
             <tbody>
               {!stats?.recentOrders || stats.recentOrders.length === 0 ? (
                 <tr>
-                  <td colSpan={5} style={{ textAlign: 'center', padding: '30px', color: 'var(--text-muted)' }}>
+                  <td colSpan={5} style={{ textAlign: 'center', padding: '30px', color: 'var(--text-secondary)' }}>
                     No recent orders.
                   </td>
                 </tr>
               ) : (
                 stats.recentOrders.map((ord) => (
                   <tr key={ord._id} style={{ borderBottom: '1px solid var(--border)' }}>
-                    <td style={{ padding: '14px 16px', fontWeight: '700', color: 'var(--primary)' }}>
+                    <td style={{ padding: '14px 16px', fontWeight: '700', color: 'var(--accent)' }}>
                       {ord.orderId}
                     </td>
                     <td style={{ padding: '14px 16px' }}>
-                      {typeof ord.user === 'object' ? ord.user.name : 'Customer'}
+                      <p style={{ fontWeight: '600', color: 'var(--text-primary)', marginBottom: '2px' }}>
+                        {typeof ord.user === 'object' ? ord.user.name : 'Customer'}
+                      </p>
+                      {typeof ord.user === 'object' && ord.user.phone && (
+                        <p style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
+                          {ord.user.phone}
+                        </p>
+                      )}
+                      {typeof ord.user === 'object' && ord.user.email && (
+                        <p style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                          {ord.user.email}
+                        </p>
+                      )}
                     </td>
-                    <td style={{ padding: '14px 16px', fontWeight: '800' }}>
+                    <td style={{ padding: '14px 16px', fontWeight: '800', color: 'var(--text-primary)' }}>
                       ${ord.totalAmount.toFixed(2)}
                     </td>
                     <td style={{ padding: '14px 16px' }}>
                       <span
-                        className={`badge ${
-                          ord.status === 'Completed'
-                            ? 'badge-success'
-                            : ord.status === 'Cancelled'
-                            ? 'badge-danger'
-                            : 'badge-warning'
-                        }`}
+                        style={{
+                          padding: '4px 10px',
+                          borderRadius: '9999px',
+                          fontSize: '11px',
+                          fontWeight: '700',
+                          textTransform: 'uppercase',
+                          backgroundColor:
+                            ord.status === 'Completed'
+                              ? 'rgba(74, 222, 128, 0.12)'
+                              : ord.status === 'Cancelled'
+                              ? 'rgba(248, 113, 113, 0.12)'
+                              : 'rgba(251, 191, 36, 0.12)',
+                          color:
+                            ord.status === 'Completed'
+                              ? '#4ADE80'
+                              : ord.status === 'Cancelled'
+                              ? '#F87171'
+                              : '#FBBF24',
+                          border: `1px solid ${
+                            ord.status === 'Completed'
+                              ? 'rgba(74, 222, 128, 0.3)'
+                              : ord.status === 'Cancelled'
+                              ? 'rgba(248, 113, 113, 0.3)'
+                              : 'rgba(251, 191, 36, 0.3)'
+                          }`,
+                        }}
                       >
                         {ord.status}
                       </span>
@@ -375,10 +483,10 @@ export default function AdminDashboardPage() {
                         value={ord.status}
                         onChange={(e) => handleUpdateStatus(ord._id, e.target.value)}
                         style={{
-                          padding: '4px 8px',
-                          borderRadius: '6px',
+                          padding: '6px 10px',
+                          borderRadius: '8px',
                           border: '1px solid var(--border)',
-                          backgroundColor: 'var(--bg-surface)',
+                          backgroundColor: 'var(--bg-deep)',
                           color: 'var(--text-primary)',
                           fontSize: '12px',
                           cursor: 'pointer',

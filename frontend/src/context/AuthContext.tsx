@@ -12,6 +12,7 @@ interface AuthContextType {
   logout: () => void;
   updateUser: (updatedUser: Partial<User>) => void;
   isAdmin: boolean;
+  isStaff: boolean;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -22,6 +23,7 @@ const AuthContext = createContext<AuthContextType>({
   logout: () => {},
   updateUser: () => {},
   isAdmin: false,
+  isStaff: false,
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
@@ -68,6 +70,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setUser(null);
     localStorage.removeItem('barwaaqo_token');
     localStorage.removeItem('barwaaqo_user');
+    localStorage.removeItem('barwaaqo_last_order_code'); // SECURITY: clear order cache on logout
   };
 
   const updateUser = (updatedFields: Partial<User>) => {
@@ -79,9 +82,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const isAdmin = user?.role === 'ADMIN';
+  const isStaff = user?.role === 'ADMIN' || user?.role === 'RECEPTIONIST';
 
   return (
-    <AuthContext.Provider value={{ user, token, isLoading, login, logout, updateUser, isAdmin }}>
+    <AuthContext.Provider value={{ user, token, isLoading, login, logout, updateUser, isAdmin, isStaff }}>
       {children}
     </AuthContext.Provider>
   );

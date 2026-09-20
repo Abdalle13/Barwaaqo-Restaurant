@@ -50,85 +50,124 @@ export default function ReservationsPage() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--bg-deep)' }}>
       <Navbar />
 
-      <main style={{ flexGrow: 1, padding: '50px 0 90px 0' }}>
-        <div className="container" style={{ maxWidth: '780px' }}>
-          <div style={{ textAlign: 'center', marginBottom: '36px' }}>
-            <span
+      <main style={{ flexGrow: 1, padding: '120px 0 90px 0' }}>
+        <div className="container" style={{ maxWidth: '800px' }}>
+          <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+            <h1
               style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '4px 14px',
-                backgroundColor: 'var(--primary-light)',
-                color: 'var(--primary)',
-                borderRadius: 'var(--radius-full)',
-                fontSize: '12px',
+                fontFamily: 'var(--font-display)',
+                fontSize: 'clamp(30px, 4vw, 46px)',
                 fontWeight: '700',
-                marginBottom: '10px',
+                color: 'var(--text-primary)',
+                letterSpacing: '-0.5px',
+                marginBottom: '12px',
               }}
             >
-              <Utensils size={14} />
-              <span>Hospitality & Fine Dining</span>
-            </span>
-            <h1 style={{ fontSize: '34px', fontWeight: '800', marginBottom: '8px' }}>
-              Book Your Table at Barwaaqo
+              Reserve Your Table at Barwaaqo
             </h1>
-            <p style={{ color: 'var(--text-muted)', fontSize: '15px' }}>
-              Reserve your dining table online. Receive instant confirmation and guaranteed seating.
+            <p style={{ color: 'var(--text-secondary)', fontSize: '15px', maxWidth: '560px', margin: '0 auto', lineHeight: 1.6 }}>
+              Whether an intimate evening, family feast, or diplomatic gathering, guarantee your seating with bespoke Somali hospitality.
             </p>
           </div>
 
           {isSuccess ? (
             <div
-              className="card"
               style={{
                 textAlign: 'center',
-                padding: '60px 30px',
-                borderTop: '6px solid var(--success)',
+                padding: '60px 36px',
+                backgroundColor: 'var(--bg-surface)',
+                borderRadius: '24px',
+                border: '1px solid var(--border)',
+                boxShadow: '0 20px 50px rgba(0, 0, 0, 0.5)',
+                position: 'relative',
+                overflow: 'hidden',
               }}
             >
               <div
                 style={{
-                  width: '68px',
-                  height: '68px',
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: '4px',
+                  background: 'linear-gradient(90deg, var(--accent) 0%, #4ADE80 100%)',
+                }}
+              />
+              <div
+                style={{
+                  width: '74px',
+                  height: '74px',
                   borderRadius: '50%',
-                  backgroundColor: 'var(--success-light)',
-                  color: 'var(--success)',
+                  backgroundColor: 'rgba(74, 222, 128, 0.12)',
+                  border: '1px solid rgba(74, 222, 128, 0.3)',
+                  color: '#4ADE80',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   margin: '0 auto 20px auto',
                 }}
               >
-                <CheckCircle2 size={36} />
+                <CheckCircle2 size={38} />
               </div>
-              <h2 style={{ fontSize: '26px', fontWeight: '800', marginBottom: '8px' }}>
-                Reservation Request Received!
+              <h2
+                style={{
+                  fontFamily: 'var(--font-display)',
+                  fontSize: '26px',
+                  fontWeight: '700',
+                  color: 'var(--text-primary)',
+                  marginBottom: '10px',
+                }}
+              >
+                Reservation Request Confirmed!
               </h2>
-              <p style={{ color: 'var(--text-muted)', fontSize: '15px', maxWidth: '500px', margin: '0 auto 24px auto' }}>
-                Thank you, <strong>{customerName}</strong>. We have booked a table for <strong>{guests} guests</strong> on{' '}
-                <strong>{reservationDate}</strong> at <strong>{reservationTime}</strong>. A confirmation email has been sent to{' '}
-                <strong>{customerEmail}</strong>.
+              <p style={{ color: 'var(--text-secondary)', fontSize: '15px', maxWidth: '520px', margin: '0 auto 28px auto', lineHeight: 1.6 }}>
+                Thank you, <strong style={{ color: 'var(--accent)' }}>{customerName}</strong>. We have booked a table for{' '}
+                <strong style={{ color: 'var(--text-primary)' }}>{guests} guests</strong> on{' '}
+                <strong style={{ color: 'var(--text-primary)' }}>{reservationDate}</strong> at{' '}
+                <strong style={{ color: 'var(--text-primary)' }}>{reservationTime}</strong>. A confirmation has been registered with{' '}
+                <strong style={{ color: 'var(--text-primary)' }}>{customerEmail}</strong>.
               </p>
-              <button onClick={() => setIsSuccess(false)} className="btn btn-primary" style={{ margin: '0 auto' }}>
+              <button
+                onClick={() => setIsSuccess(false)}
+                style={{
+                  padding: '12px 28px',
+                  borderRadius: '12px',
+                  backgroundColor: 'var(--accent)',
+                  color: 'var(--bg-deep)',
+                  fontWeight: '700',
+                  fontSize: '14px',
+                  border: 'none',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 18px rgba(212, 165, 116, 0.35)',
+                }}
+              >
                 Make Another Booking
               </button>
             </div>
           ) : (
-            <div className="card" style={{ padding: '36px' }}>
+            <div
+              style={{
+                padding: '40px',
+                backgroundColor: 'var(--bg-surface)',
+                borderRadius: '24px',
+                border: '1px solid var(--border)',
+                boxShadow: '0 20px 50px rgba(0, 0, 0, 0.5)',
+              }}
+            >
               {error && (
                 <div
                   style={{
-                    padding: '14px',
-                    backgroundColor: 'var(--danger-light)',
+                    padding: '14px 18px',
+                    backgroundColor: 'rgba(248, 113, 113, 0.12)',
+                    border: '1px solid rgba(248, 113, 113, 0.3)',
                     color: 'var(--danger)',
-                    borderRadius: 'var(--radius-md)',
+                    borderRadius: '12px',
                     fontSize: '14px',
                     fontWeight: '600',
-                    marginBottom: '20px',
+                    marginBottom: '24px',
                   }}
                 >
                   {error}
@@ -140,8 +179,8 @@ export default function ReservationsPage() {
                   style={{
                     display: 'grid',
                     gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-                    gap: '20px',
-                    marginBottom: '20px',
+                    gap: '22px',
+                    marginBottom: '22px',
                   }}
                 >
                   <div className="form-group" style={{ marginBottom: 0 }}>
@@ -153,6 +192,11 @@ export default function ReservationsPage() {
                       onChange={(e) => setCustomerName(e.target.value)}
                       required
                       className="form-input"
+                      style={{
+                        backgroundColor: 'var(--bg-deep)',
+                        border: '1px solid var(--border)',
+                        color: 'var(--text-primary)',
+                      }}
                     />
                   </div>
 
@@ -165,6 +209,11 @@ export default function ReservationsPage() {
                       onChange={(e) => setCustomerEmail(e.target.value)}
                       required
                       className="form-input"
+                      style={{
+                        backgroundColor: 'var(--bg-deep)',
+                        border: '1px solid var(--border)',
+                        color: 'var(--text-primary)',
+                      }}
                     />
                   </div>
 
@@ -177,6 +226,11 @@ export default function ReservationsPage() {
                       onChange={(e) => setCustomerPhone(e.target.value)}
                       required
                       className="form-input"
+                      style={{
+                        backgroundColor: 'var(--bg-deep)',
+                        border: '1px solid var(--border)',
+                        color: 'var(--text-primary)',
+                      }}
                     />
                   </div>
 
@@ -187,9 +241,14 @@ export default function ReservationsPage() {
                         value={guests}
                         onChange={(e) => setGuests(Number(e.target.value))}
                         className="form-select"
+                        style={{
+                          backgroundColor: 'var(--bg-deep)',
+                          border: '1px solid var(--border)',
+                          color: 'var(--text-primary)',
+                        }}
                       >
                         {[1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 15, 20].map((num) => (
-                          <option key={num} value={num}>
+                          <option key={num} value={num} style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)' }}>
                             {num} {num === 1 ? 'Guest' : 'Guests'}
                           </option>
                         ))}
@@ -206,6 +265,11 @@ export default function ReservationsPage() {
                       onChange={(e) => setReservationDate(e.target.value)}
                       required
                       className="form-input"
+                      style={{
+                        backgroundColor: 'var(--bg-deep)',
+                        border: '1px solid var(--border)',
+                        color: 'var(--text-primary)',
+                      }}
                     />
                   </div>
 
@@ -215,9 +279,14 @@ export default function ReservationsPage() {
                       value={reservationTime}
                       onChange={(e) => setReservationTime(e.target.value)}
                       className="form-select"
+                      style={{
+                        backgroundColor: 'var(--bg-deep)',
+                        border: '1px solid var(--border)',
+                        color: 'var(--text-primary)',
+                      }}
                     >
                       {timeSlots.map((slot) => (
-                        <option key={slot} value={slot}>
+                        <option key={slot} value={slot} style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)' }}>
                           {slot}
                         </option>
                       ))}
@@ -225,24 +294,43 @@ export default function ReservationsPage() {
                   </div>
                 </div>
 
-                <div className="form-group" style={{ marginBottom: '28px' }}>
-                  <label className="form-label">Special Requests or Occasion</label>
+                <div className="form-group" style={{ marginBottom: '30px' }}>
+                  <label className="form-label">Special Requests or Occasion (Optional)</label>
                   <textarea
                     rows={3}
-                    placeholder="e.g. Birthday celebration, window seat preference, quiet corner..."
+                    placeholder="e.g. Birthday celebration, window view preference, private booth..."
                     value={specialRequests}
                     onChange={(e) => setSpecialRequests(e.target.value)}
                     className="form-textarea"
+                    style={{
+                      backgroundColor: 'var(--bg-deep)',
+                      border: '1px solid var(--border)',
+                      color: 'var(--text-primary)',
+                    }}
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="btn btn-primary btn-lg"
-                  style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
+                  style={{
+                    width: '100%',
+                    padding: '15px',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    backgroundColor: 'var(--accent)',
+                    color: 'var(--bg-deep)',
+                    fontWeight: '700',
+                    fontSize: '15px',
+                    borderRadius: '12px',
+                    border: 'none',
+                    cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                    boxShadow: '0 6px 24px rgba(212, 165, 116, 0.35)',
+                    transition: 'all 0.25s',
+                  }}
                 >
-                  {isSubmitting ? 'Confirming Booking...' : 'Reserve Table Now'}
+                  {isSubmitting ? 'Securing Your Table...' : 'Reserve Table Now'}
                 </button>
               </form>
             </div>

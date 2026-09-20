@@ -3,12 +3,19 @@ import './globals.css';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { AuthProvider } from '@/context/AuthContext';
 import { CartProvider } from '@/context/CartContext';
+import { SettingsProvider } from '@/context/SettingsContext';
 
 export const metadata: Metadata = {
-  title: 'Barwaaqo Restaurant | Modern Dining & Authentic Flavors',
+  title: 'barwaqo restaurant',
   description:
     'Experience premier dining, fresh Somali delicacies, online food ordering, and table reservations at Barwaaqo Restaurant.',
   keywords: ['restaurant', 'Somali food', 'online ordering', 'Barwaaqo', 'Mogadishu dining', 'halal food'],
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+    ],
+    shortcut: '/favicon.svg',
+  },
 };
 
 export default function RootLayout({
@@ -25,9 +32,11 @@ export default function RootLayout({
       <body>
         <ThemeProvider>
           <AuthProvider>
-            <CartProvider>
-              {children}
-            </CartProvider>
+            <SettingsProvider>
+              <CartProvider>
+                {children}
+              </CartProvider>
+            </SettingsProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>
