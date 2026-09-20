@@ -51,12 +51,34 @@ const seedData = async () => {
       permissions: permissionDocs.map((p) => p._id),
     });
 
-    // 2. Create Admin & Demo Customer User
+    // Create DELIVERY Role
+    const deliveryPermIds = permissionDocs
+      .filter((p) => ROLES.DELIVERY.permissions.includes(p.name))
+      .map((p) => p._id);
+
+    const deliveryRole = await Role.create({
+      name: ROLES.DELIVERY.name,
+      description: ROLES.DELIVERY.description,
+      permissions: deliveryPermIds,
+    });
+
+    // Create RECEPTIONIST Role
+    const receptionistPermIds = permissionDocs
+      .filter((p) => ROLES.RECEPTIONIST.permissions.includes(p.name))
+      .map((p) => p._id);
+
+    await Role.create({
+      name: ROLES.RECEPTIONIST.name,
+      description: ROLES.RECEPTIONIST.description,
+      permissions: receptionistPermIds,
+    });
+
+    // 2. Create Admin, Demo Customer & Delivery Users
     console.log('Seeding Users...');
     const adminUser = {
       name: 'Restaurant Admin',
-      email: 'admin@barwaaqo.com',
-      password: 'admin123456',
+      email: 'admin@gmail.com', // Updated to gmail per request
+      password: 'newadminpassword123',
       role: adminRole._id,
       phone: '+252610000000',
       address: 'KM4 Maka Al-Mukarama, Mogadishu',
@@ -68,7 +90,7 @@ const seedData = async () => {
 
     const demoCustomer = {
       name: 'Hassan Ali',
-      email: 'customer@barwaaqo.com',
+      email: 'customer@gmail.com', // Updated to gmail
       password: 'customer123456',
       role: customerRole._id,
       phone: '+252615555555',
@@ -77,7 +99,20 @@ const seedData = async () => {
     };
 
     await User.deleteOne({ email: demoCustomer.email });
-    await User.create(demoCustomer);
+    const createdCustomer = await User.create(demoCustomer);
+
+    const demoDelivery = {
+      name: 'Ahmed Delivery',
+      email: 'delivery@gmail.com',
+      password: 'delivery123456',
+      role: deliveryRole._id,
+      phone: '+252616666666',
+      address: 'Hodan District, Mogadishu',
+      status: 'active',
+    };
+
+    await User.deleteOne({ email: demoDelivery.email });
+    await User.create(demoDelivery);
 
     // 3. Seed Default Restaurant Settings
     console.log('Seeding Settings...');
@@ -220,6 +255,68 @@ const seedData = async () => {
         rating: 4.8,
         numReviews: 22,
         image: 'https://images.unsplash.com/photo-1587314168485-3236d6710814?w=800&auto=format&fit=crop&q=80',
+      },
+    ]);
+
+    // 7. Seed Sample Orders
+    console.log('Seeding Sample Orders...');
+    const Order = require('../models/Order');
+    await Order.deleteMany();
+    const seededFoods = await Food.find();
+    const bariisFood = seededFoods.find((f) => f.name.includes('Bariis')) || seededFoods[0];
+    const teaFood = seededFoods.find((f) => f.name.includes('Shaah')) || seededFoods[1];
+    const suqaarFood = seededFoods.find((f) => f.name.includes('Suqaar')) || seededFoods[2];
+
+    await Order.create([
+      {
+        orderId: 'BW-10293',
+        user: createdCustomer._id,
+        items: [
+          {
+            food: bariisFood._id,
+            name: bariisFood.name,
+            quantity: 2,
+            price: bariisFood.price,
+          },
+          {
+            food: teaFood._id,
+            name: teaFood.name,
+            quantity: 2,
+            price: teaFood.price,
+          },
+        ],
+        subtotal: bariisFood.price * 2 + teaFood.price * 2,
+        deliveryFee: 2.0,
+        serviceTax: 1.5,
+        totalAmount: bariisFood.price * 2 + teaFood.price * 2 + 3.5,
+        shippingAddress: 'KM4 Maka Al-Mukarama Road, Hodan District, Mogadishu',
+        paymentPhone: '+252615555555',
+        paymentMethod: 'evc_plus',
+        paymentStatus: 'Paid',
+        status: 'Pending',
+        notes: 'Extra basbaas on the side please.',
+      },
+      {
+        orderId: 'BW-91612',
+        user: createdCustomer._id,
+        items: [
+          {
+            food: suqaarFood._id,
+            name: suqaarFood.name,
+            quantity: 1,
+            price: suqaarFood.price,
+          },
+        ],
+        subtotal: suqaarFood.price,
+        deliveryFee: 2.0,
+        serviceTax: 0.55,
+        totalAmount: suqaarFood.price + 2.55,
+        shippingAddress: 'Waberi District, Near Airport Road, Mogadishu',
+        paymentPhone: '+252615555555',
+        paymentMethod: 'cash_on_delivery',
+        paymentStatus: 'Pending',
+        status: 'Completed',
+        isDelivered: true,
       },
     ]);
 

@@ -45,6 +45,11 @@ const OrderSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  orderType: {
+    type: String,
+    enum: ['DELIVERY', 'TAKEAWAY', 'DINE_IN'],
+    default: 'DELIVERY',
+  },
   shippingAddress: {
     type: String,
     required: [true, 'Please provide delivery address'],

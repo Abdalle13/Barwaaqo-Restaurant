@@ -56,6 +56,7 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 // --- 2. Import Routes ---
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
+const staffRoutes = require('./routes/staffRoutes');
 const foodRoutes = require('./routes/foodRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const orderRoutes = require('./routes/orderRoutes');
@@ -65,10 +66,12 @@ const permissionRoutes = require('./routes/permissionRoutes');
 const tableRoutes = require('./routes/tableRoutes');
 const reservationRoutes = require('./routes/reservationRoutes');
 const settingsRoutes = require('./routes/settingsRoutes');
+const messageRoutes = require('./routes/messageRoutes');
 
 // --- 3. Mount Routes ---
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/staff', staffRoutes);
 app.use('/api/foods', foodRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/orders', orderRoutes);
@@ -78,6 +81,7 @@ app.use('/api/reservations', reservationRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/roles', roleRoutes);
 app.use('/api/permissions', permissionRoutes);
+app.use('/api/messages', messageRoutes);
 
 // Test & Health Check Route
 app.get('/', (req, res) => {

@@ -26,6 +26,19 @@ exports.getAdminDashboardStats = async (req, res) => {
       createdAt: { $gte: twentyFourHoursAgo },
     });
 
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const [totalOrders, ordersToday, pendingOrders, completedOrders, revenueTodayData] = await Promise.all([
+      Order.countDocuments(),
+      Order.countDocuments({ createdAt: { $gte: todayStart } }),
+      Order.countDocuments({ status: 'Pending' }),
+      Order.countDocuments({ status: 'Completed' }),
+      Order.aggregate([
+        { $match: { status: 'Completed', createdAt: { $gte: todayStart } } },
+        { $group: { _id: null, revenueToday: { $sum: '$totalAmount' } } },
+      ]),
+    ]);
+
     // 4. Total Menu Dishes
     const totalItemsCount = await Food.countDocuments({ isDeleted: false });
 
@@ -47,6 +60,12 @@ exports.getAdminDashboardStats = async (req, res) => {
       success: true,
       data: {
         totalSales: salesData.length > 0 ? salesData[0].totalSales : 0,
+        totalRevenue: salesData.length > 0 ? salesData[0].totalSales : 0,
+        revenueToday: revenueTodayData.length > 0 ? revenueTodayData[0].revenueToday : 0,
+        totalOrders,
+        ordersToday,
+        pendingOrders,
+        completedOrders,
         activeOrders: activeOrdersCount,
         newOrders: newOrdersCount,
         totalItems: totalItemsCount,
@@ -147,6 +166,7 @@ exports.getTopSellingFoods = async (req, res) => {
           image: '$foodDetails.image',
           price: '$foodDetails.price',
           totalOrdered: 1,
+          totalOrders: '$totalOrdered',
           totalRevenue: { $round: ['$totalRevenue', 2] },
         },
       },

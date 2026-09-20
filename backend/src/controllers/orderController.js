@@ -7,13 +7,16 @@ const sendEmail = require('../utils/sendEmail');
 exports.createOrder = async (req, res) => {
   try {
     const { items, shippingAddress, paymentPhone, paymentMethod, notes } = req.body;
+    const orderType = ['DELIVERY', 'TAKEAWAY', 'DINE_IN'].includes(req.body.orderType)
+      ? req.body.orderType
+      : 'DELIVERY';
 
     if (!items || !Array.isArray(items) || items.length === 0) {
       return res.status(400).json({ success: false, message: 'Your order cart is empty' });
     }
 
     if (!shippingAddress) {
-      return res.status(400).json({ success: false, message: 'Please provide a delivery address' });
+      return res.status(400).json({ success: false, message: orderType === 'DELIVERY' ? 'Please provide a delivery address' : 'Please provide a table or pickup location' });
     }
 
     if (!paymentPhone) {
@@ -22,7 +25,7 @@ exports.createOrder = async (req, res) => {
 
     // Calculate subtotal, delivery fee, tax, and total
     const subtotal = items.reduce((acc, item) => acc + (Number(item.price) * Number(item.quantity)), 0);
-    const deliveryFee = 2.0; // Standard $2.00 delivery
+    const deliveryFee = orderType === 'DELIVERY' ? 2.0 : 0;
     const serviceTax = Math.round(subtotal * 0.05 * 100) / 100; // 5% tax
     const totalAmount = Math.round((subtotal + deliveryFee + serviceTax) * 100) / 100;
 
@@ -33,6 +36,7 @@ exports.createOrder = async (req, res) => {
       deliveryFee,
       serviceTax,
       totalAmount,
+      orderType,
       shippingAddress,
       paymentMethod: paymentMethod === 'cash_on_delivery' ? 'cash_on_delivery' : 'evc_plus',
       paymentPhone,
@@ -154,17 +158,82 @@ exports.getOrderById = async (req, res) => {
   }
 };
 
-// @desc    Track Order by orderId (e.g. BW-10293)
+// @desc    Track Order by item name, orderId, or latest
 // @route   GET /api/orders/track/:orderId
 // @access  Public
 exports.trackOrderByCode = async (req, res) => {
   try {
-    const order = await Order.findOne({ orderId: req.params.orderId.toUpperCase() })
-      .select('orderId status items totalAmount createdAt shippingAddress isDelivered deliveredAt')
+    const rawParam = req.params.orderId ? req.params.orderId.trim() : '';
+
+    const Food = require('../models/Food');
+    const User = require('../models/User');
+
+    let order = null;
+
+    // 1. If 'latest' or 'active' or empty, fetch the most recent active/pending order
+    if (!rawParam || rawParam.toLowerCase() === 'latest' || rawParam.toLowerCase() === 'active') {
+      // SECURITY: Only return orders belonging to the currently authenticated user
+      if (!req.user) {
+        return res.status(401).json({ success: false, message: 'Please log in to track your orders' });
+      }
+
+      order = await Order.findOne({ user: req.user._id, status: { $ne: 'Cancelled' } })
+        .sort({ createdAt: -1 })
+        .select('orderId status items totalAmount createdAt shippingAddress paymentPhone paymentMethod isDelivered deliveredAt user')
+        .populate('user', 'name phone email')
+        .populate('items.food', 'name image price');
+
+      if (!order) {
+        order = await Order.findOne({ user: req.user._id })
+          .sort({ createdAt: -1 })
+          .select('orderId status items totalAmount createdAt shippingAddress paymentPhone paymentMethod isDelivered deliveredAt user')
+          .populate('user', 'name phone email')
+          .populate('items.food', 'name image price');
+      }
+
+      if (!order) {
+        return res.status(404).json({ success: false, message: 'You have no orders yet' });
+      }
+
+      return res.status(200).json({ success: true, data: order });
+    }
+
+    // 2. Find any food IDs matching the dish name keyword
+    const matchedFoods = await Food.find({ name: { $regex: rawParam, $options: 'i' } }).select('_id');
+    const foodIds = matchedFoods.map((f) => f._id);
+
+    // 3. Search orders by exact/partial orderId, items.name, food ID, or phone
+    order = await Order.findOne({
+      $or: [
+        { orderId: new RegExp(`^${rawParam}$`, 'i') },
+        { orderId: { $regex: rawParam, $options: 'i' } },
+        { 'items.name': { $regex: rawParam, $options: 'i' } },
+        { 'items.food': { $in: foodIds } },
+        { paymentPhone: { $regex: rawParam, $options: 'i' } },
+      ],
+    })
+      .sort({ createdAt: -1 })
+      .select('orderId status items totalAmount createdAt shippingAddress paymentPhone paymentMethod isDelivered deliveredAt user')
+      .populate('user', 'name phone email')
       .populate('items.food', 'name image price');
 
+    // 4. Fallback search by customer name
     if (!order) {
-      return res.status(404).json({ success: false, message: 'Order not found with this code' });
+      const matchedUsers = await User.find({ name: { $regex: rawParam, $options: 'i' } }).select('_id');
+      if (matchedUsers.length > 0) {
+        order = await Order.findOne({ user: { $in: matchedUsers.map((u) => u._id) } })
+          .sort({ createdAt: -1 })
+          .select('orderId status items totalAmount createdAt shippingAddress paymentPhone paymentMethod isDelivered deliveredAt user')
+          .populate('user', 'name phone email')
+          .populate('items.food', 'name image price');
+      }
+    }
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: `No order found matching "${rawParam}". Try searching for another dish name (e.g. Bariis, Goat, Suqaar).`,
+      });
     }
 
     res.status(200).json({ success: true, data: order });

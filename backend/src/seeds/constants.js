@@ -11,6 +11,7 @@ const PERMISSIONS = {
   VIEW_USERS: 'view_users',
   DELETE_USER: 'delete_user',
   UPDATE_PROFILE: 'update_profile',
+  MANAGE_STAFF: 'manage_staff',
 
   // Food Management
   VIEW_FOOD: 'view_food',
@@ -58,6 +59,33 @@ const ROLES = {
       PERMISSIONS.VIEW_MY_ORDERS,
       PERMISSIONS.CREATE_RESERVATION,
       PERMISSIONS.VIEW_MY_RESERVATIONS,
+      PERMISSIONS.UPDATE_PROFILE,
+    ],
+  },
+  DELIVERY: {
+    name: 'DELIVERY',
+    description: 'Role for delivery personnel',
+    permissions: [
+      PERMISSIONS.VIEW_FOOD,
+      PERMISSIONS.VIEW_CATEGORIES,
+      PERMISSIONS.VIEW_ALL_ORDERS,
+      PERMISSIONS.UPDATE_ORDER_STATUS,
+      PERMISSIONS.UPDATE_PROFILE,
+    ],
+  },
+  RECEPTIONIST: {
+    name: 'RECEPTIONIST',
+    description: 'Front desk role for reservations, POS, tables, and customer service',
+    permissions: [
+      PERMISSIONS.VIEW_FOOD,
+      PERMISSIONS.VIEW_CATEGORIES,
+      PERMISSIONS.CREATE_ORDER,
+      PERMISSIONS.VIEW_ALL_ORDERS,
+      PERMISSIONS.UPDATE_ORDER_STATUS,
+      PERMISSIONS.VIEW_USERS,
+      PERMISSIONS.MANAGE_RESERVATIONS,
+      PERMISSIONS.MANAGE_TABLES,
+      PERMISSIONS.VIEW_DASHBOARD,
       PERMISSIONS.UPDATE_PROFILE,
     ],
   },
