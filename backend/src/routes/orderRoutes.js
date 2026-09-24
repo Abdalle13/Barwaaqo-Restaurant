@@ -18,7 +18,7 @@ router.get('/track/:orderId', trackOrderByCode);
 
 // Customer orders
 router.post('/', protect, authorize(PERMISSIONS.CREATE_ORDER), createOrder);
-router.get('/my-orders', protect, authorize(PERMISSIONS.VIEW_MY_ORDERS), getMyOrders);
+router.get('/my-orders', protect, getMyOrders);
 
 // Admin orders
 router.get('/', protect, authorize(PERMISSIONS.VIEW_ALL_ORDERS), getAllOrders);

@@ -1,4 +1,5 @@
 const Order = require('../models/Order');
+const User = require('../models/User');
 const sendEmail = require('../utils/sendEmail');
 
 // @desc    CREATE New Order
@@ -6,7 +7,7 @@ const sendEmail = require('../utils/sendEmail');
 // @access  Private (Customer/User)
 exports.createOrder = async (req, res) => {
   try {
-    const { items, shippingAddress, paymentPhone, paymentMethod, notes } = req.body;
+    const { items, shippingAddress, paymentPhone, paymentMethod, notes, customerId } = req.body;
     const orderType = ['DELIVERY', 'TAKEAWAY', 'DINE_IN'].includes(req.body.orderType)
       ? req.body.orderType
       : 'DELIVERY';
@@ -29,8 +30,17 @@ exports.createOrder = async (req, res) => {
     const serviceTax = Math.round(subtotal * 0.05 * 100) / 100; // 5% tax
     const totalAmount = Math.round((subtotal + deliveryFee + serviceTax) * 100) / 100;
 
+    let orderUserId = req.user._id;
+    if (customerId && ['ADMIN', 'RECEPTIONIST'].includes(req.user.role?.name)) {
+      const selectedCustomer = await User.findOne({ _id: customerId }).populate('role', 'name');
+      if (!selectedCustomer || selectedCustomer.role?.name !== 'CUSTOMER') {
+        return res.status(400).json({ success: false, message: 'Please select a valid customer' });
+      }
+      orderUserId = selectedCustomer._id;
+    }
+
     const order = new Order({
-      user: req.user._id,
+      user: orderUserId,
       items,
       subtotal,
       deliveryFee,
@@ -52,7 +62,7 @@ exports.createOrder = async (req, res) => {
 
     // Attempt to send customer email notification in background
     try {
-      if (req.user.email) {
+      if (req.user.email && orderUserId.toString() === req.user._id.toString()) {
         sendEmail({
           email: req.user.email,
           subject: `Order Confirmed: ${createdOrder.orderId} - Barwaaqo Restaurant`,
@@ -118,6 +128,7 @@ exports.getAllOrders = async (req, res) => {
 exports.getMyOrders = async (req, res) => {
   try {
     const orders = await Order.find({ user: req.user._id })
+      .populate('user', 'name email phone')
       .populate('items.food', 'name image price')
       .sort({ createdAt: -1 });
 
@@ -179,14 +190,14 @@ exports.trackOrderByCode = async (req, res) => {
 
       order = await Order.findOne({ user: req.user._id, status: { $ne: 'Cancelled' } })
         .sort({ createdAt: -1 })
-        .select('orderId status items totalAmount createdAt shippingAddress paymentPhone paymentMethod isDelivered deliveredAt user')
+        .select('orderId orderType status items totalAmount createdAt shippingAddress paymentPhone paymentMethod isDelivered deliveredAt user')
         .populate('user', 'name phone email')
         .populate('items.food', 'name image price');
 
       if (!order) {
         order = await Order.findOne({ user: req.user._id })
           .sort({ createdAt: -1 })
-          .select('orderId status items totalAmount createdAt shippingAddress paymentPhone paymentMethod isDelivered deliveredAt user')
+          .select('orderId orderType status items totalAmount createdAt shippingAddress paymentPhone paymentMethod isDelivered deliveredAt user')
           .populate('user', 'name phone email')
           .populate('items.food', 'name image price');
       }
@@ -213,7 +224,7 @@ exports.trackOrderByCode = async (req, res) => {
       ],
     })
       .sort({ createdAt: -1 })
-      .select('orderId status items totalAmount createdAt shippingAddress paymentPhone paymentMethod isDelivered deliveredAt user')
+      .select('orderId orderType status items totalAmount createdAt shippingAddress paymentPhone paymentMethod isDelivered deliveredAt user')
       .populate('user', 'name phone email')
       .populate('items.food', 'name image price');
 
@@ -223,7 +234,7 @@ exports.trackOrderByCode = async (req, res) => {
       if (matchedUsers.length > 0) {
         order = await Order.findOne({ user: { $in: matchedUsers.map((u) => u._id) } })
           .sort({ createdAt: -1 })
-          .select('orderId status items totalAmount createdAt shippingAddress paymentPhone paymentMethod isDelivered deliveredAt user')
+          .select('orderId orderType status items totalAmount createdAt shippingAddress paymentPhone paymentMethod isDelivered deliveredAt user')
           .populate('user', 'name phone email')
           .populate('items.food', 'name image price');
       }
