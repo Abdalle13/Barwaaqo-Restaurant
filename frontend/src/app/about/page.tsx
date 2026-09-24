@@ -35,13 +35,13 @@ export default function AboutPage() {
             Left: Our Story tag, Heading, short paragraph, button
             Right: Large food / restaurant image
         ===================================================== */}
-        <section style={{ padding: '120px 20px 70px 20px', borderBottom: '1px solid var(--border)' }}>
+        <section style={{ padding: 'clamp(90px, 15vw, 120px) clamp(14px, 4vw, 20px) clamp(40px, 8vw, 70px)', borderBottom: '1px solid var(--border)' }}>
           <div className="container">
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-                gap: '50px',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))',
+                gap: '40px',
                 alignItems: 'center',
               }}
             >

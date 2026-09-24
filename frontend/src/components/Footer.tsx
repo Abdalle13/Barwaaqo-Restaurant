@@ -12,7 +12,7 @@ export default function Footer() {
       style={{
         backgroundColor: 'var(--bg-deep)',
         borderTop: '1px solid var(--border)',
-        paddingTop: '70px',
+        paddingTop: 'clamp(40px, 8vw, 70px)',
         paddingBottom: '30px',
         transition: 'background-color 0.4s ease',
       }}
@@ -22,9 +22,9 @@ export default function Footer() {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-            gap: '48px',
-            marginBottom: '50px',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))',
+            gap: 'clamp(24px, 5vw, 48px)',
+            marginBottom: '40px',
           }}
         >
           {/* Col 1: Brand Info */}
@@ -116,7 +116,7 @@ export default function Footer() {
                 { name: 'About Us', href: '/about' },
                 { name: 'Contact Us', href: '/contact' },
                 { name: 'Book a Table', href: '/reservations' },
-                { name: 'Track Order', href: '/track' },
+                { name: 'My Orders', href: '/orders' },
                 { name: 'Your Cart', href: '/cart' },
               ].map((link) => (
                 <li key={link.href}>

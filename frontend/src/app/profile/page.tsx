@@ -5,17 +5,22 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useAuth } from '@/context/AuthContext';
 import api from '@/lib/api';
-import { User, Phone, MapPin, Lock, CheckCircle, Package, ArrowRight } from 'lucide-react';
+import { User, Phone, MapPin, Lock, CheckCircle, ShoppingBag, Clock, ArrowRight, ExternalLink, Receipt } from 'lucide-react';
 import Link from 'next/link';
+import { Order } from '@/types';
 
 export default function ProfilePage() {
-  const { user, updateUser, token } = useAuth();
+  const { user, updateUser } = useAuth();
 
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
   const [profileSuccess, setProfileSuccess] = useState('');
+
+  // Orders state
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loadingOrders, setLoadingOrders] = useState(false);
 
   // Password state
   const [currentPassword, setCurrentPassword] = useState('');
@@ -24,28 +29,24 @@ export default function ProfilePage() {
   const [passwordSuccess, setPasswordSuccess] = useState('');
   const [passwordError, setPasswordError] = useState('');
 
-  // Orders
-  const [myOrders, setMyOrders] = useState<any[]>([]);
-  const [isLoadingOrders, setIsLoadingOrders] = useState(true);
-
   useEffect(() => {
     if (user) {
       setName(user.name || '');
       setPhone(user.phone || '');
       setAddress(user.address || '');
-    }
 
-    if (token) {
+      setLoadingOrders(true);
       api.get('/orders/my-orders')
         .then((res) => {
           if (res.data.success) {
-            setMyOrders(res.data.data);
+            setOrders(res.data.data || []);
           }
         })
-        .catch(() => {})
-        .finally(() => setIsLoadingOrders(false));
+        .catch((err) => console.error('Error fetching profile orders:', err))
+        .finally(() => setLoadingOrders(false));
     }
-  }, [user, token]);
+  }, [user]);
+
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,7 +92,7 @@ export default function ProfilePage() {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--bg-deep)' }}>
         <Navbar />
-        <main style={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '120px 20px' }}>
+        <main style={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 'clamp(90px, 15vw, 120px) 16px 60px' }}>
           <div
             style={{
               textAlign: 'center',
@@ -128,7 +129,7 @@ export default function ProfilePage() {
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--bg-deep)' }}>
       <Navbar />
 
-      <main style={{ flexGrow: 1, padding: '120px 0 90px 0' }}>
+      <main style={{ flexGrow: 1, padding: 'clamp(90px, 15vw, 120px) 0 60px' }}>
         <div className="container">
           <div style={{ marginBottom: '36px' }}>
             <span
@@ -164,8 +165,8 @@ export default function ProfilePage() {
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-              gap: '32px',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
+              gap: '24px',
               alignItems: 'flex-start',
             }}
           >
@@ -412,124 +413,230 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* Recent Orders Section */}
-          <div style={{ marginTop: '56px' }}>
-            <h3
+          {/* Bottom: Recent Orders History Section */}
+          <div
+            style={{
+              marginTop: '40px',
+              backgroundColor: 'var(--bg-surface)',
+              borderRadius: '20px',
+              border: '1px solid var(--border)',
+              padding: '30px',
+            }}
+          >
+            <div
               style={{
-                fontFamily: 'var(--font-display)',
-                fontSize: '22px',
-                fontWeight: '700',
-                marginBottom: '20px',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '10px',
-                color: 'var(--text-primary)',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                gap: '12px',
+                marginBottom: '20px',
+                borderBottom: '1px solid var(--border)',
+                paddingBottom: '16px',
               }}
             >
-              <Package size={22} color="var(--accent)" />
-              <span>My Recent Orders</span>
-            </h3>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <ShoppingBag size={20} color="var(--accent)" />
+                <h3
+                  style={{
+                    fontFamily: 'var(--font-display)',
+                    fontSize: '20px',
+                    fontWeight: '700',
+                    color: 'var(--text-primary)',
+                  }}
+                >
+                  My Orders (Dalabyadayda)
+                </h3>
+                <span
+                  style={{
+                    padding: '2px 8px',
+                    borderRadius: '8px',
+                    backgroundColor: 'var(--bg-deep)',
+                    border: '1px solid var(--border)',
+                    fontSize: '12px',
+                    fontWeight: '700',
+                    color: 'var(--accent)',
+                  }}
+                >
+                  {orders.length}
+                </span>
+              </div>
 
-            {isLoadingOrders ? (
-              <p style={{ color: 'var(--text-secondary)' }}>Loading order history...</p>
-            ) : myOrders.length === 0 ? (
-              <div
+              <Link
+                href="/orders"
                 style={{
-                  textAlign: 'center',
-                  padding: '48px 20px',
-                  backgroundColor: 'var(--bg-surface)',
-                  borderRadius: '16px',
-                  border: '1px solid var(--border)',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  fontSize: '13.5px',
+                  fontWeight: '700',
+                  color: 'var(--accent)',
+                  textDecoration: 'none',
                 }}
               >
-                <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>You have not placed any orders yet.</p>
+                <span>View All Orders ({orders.length})</span>
+                <ArrowRight size={15} />
+              </Link>
+            </div>
+
+            {loadingOrders ? (
+              <div style={{ padding: '24px', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                Loading your orders...
+              </div>
+            ) : orders.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '36px 20px', color: 'var(--text-secondary)' }}>
+                <p style={{ fontSize: '15px', color: 'var(--text-primary)', fontWeight: '600', marginBottom: '6px' }}>
+                  Ma haysatid wax dalab ah hadda (No orders yet)
+                </p>
+                <p style={{ fontSize: '13.5px', marginBottom: '20px' }}>
+                  You have not placed any orders yet. Check out our fresh Somali menu!
+                </p>
+                <Link
+                  href="/menu"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '10px 22px',
+                    borderRadius: '12px',
+                    backgroundColor: 'var(--accent)',
+                    color: 'var(--bg-deep)',
+                    fontWeight: '700',
+                    fontSize: '13px',
+                    textDecoration: 'none',
+                  }}
+                >
+                  Order Food Now
+                </Link>
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                {myOrders.map((ord) => (
-                  <div
-                    key={ord._id}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      padding: '20px 24px',
-                      backgroundColor: 'var(--bg-surface)',
-                      borderRadius: '16px',
-                      border: '1px solid var(--border)',
-                      flexWrap: 'wrap',
-                      gap: '14px',
-                    }}
-                  >
-                    <div>
-                      <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
-                        {new Date(ord.createdAt).toLocaleDateString()}
-                      </span>
-                      <h4 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--accent)', marginTop: '2px' }}>
-                        {ord.orderId}
-                      </h4>
-                      <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '4px' }}>
-                        {ord.items.length} dishes • Total: ${ord.totalAmount.toFixed(2)}
-                      </p>
-                    </div>
+                {orders.slice(0, 4).map((ord) => {
+                  const formattedDate = new Date(ord.createdAt).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                  });
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                      <span
-                        style={{
-                          padding: '4px 12px',
-                          borderRadius: '9999px',
-                          fontSize: '12px',
-                          fontWeight: '700',
-                          textTransform: 'uppercase',
-                          backgroundColor:
-                            ord.status === 'Completed'
-                              ? 'rgba(74, 222, 128, 0.12)'
-                              : ord.status === 'Cancelled'
-                              ? 'rgba(248, 113, 113, 0.12)'
-                              : 'rgba(251, 191, 36, 0.12)',
-                          color:
-                            ord.status === 'Completed'
-                              ? '#4ADE80'
-                              : ord.status === 'Cancelled'
-                              ? '#F87171'
-                              : '#FBBF24',
-                          border: `1px solid ${
-                            ord.status === 'Completed'
-                              ? 'rgba(74, 222, 128, 0.3)'
-                              : ord.status === 'Cancelled'
-                              ? 'rgba(248, 113, 113, 0.3)'
-                              : 'rgba(251, 191, 36, 0.3)'
-                          }`,
-                        }}
-                      >
-                        {ord.status}
-                      </span>
+                  return (
+                    <div
+                      key={ord._id}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        flexWrap: 'wrap',
+                        gap: '14px',
+                        padding: '14px 18px',
+                        borderRadius: '14px',
+                        backgroundColor: 'var(--bg-deep)',
+                        border: '1px solid var(--border)',
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div
+                          style={{
+                            padding: '6px 10px',
+                            borderRadius: '8px',
+                            backgroundColor: 'var(--bg-surface)',
+                            border: '1px solid var(--border)',
+                            fontWeight: '700',
+                            fontSize: '13px',
+                            color: 'var(--accent)',
+                          }}
+                        >
+                          {ord.orderId}
+                        </div>
 
-                      <Link
-                        href={`/track?orderId=${ord.orderId}`}
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '6px',
-                          padding: '8px 16px',
-                          borderRadius: '10px',
-                          backgroundColor: 'var(--bg-deep)',
-                          border: '1px solid var(--border)',
-                          color: 'var(--text-primary)',
-                          fontWeight: '600',
-                          fontSize: '13px',
-                          textDecoration: 'none',
-                        }}
-                      >
-                        <span>Track</span>
-                        <ArrowRight size={14} />
-                      </Link>
+                        <div>
+                          <p style={{ fontWeight: '600', fontSize: '13.5px', color: 'var(--text-primary)' }}>
+                            {ord.items.map((it) => (typeof it.food === 'object' && it.food?.name) || it.name || 'Item').join(', ')}
+                          </p>
+                          <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                            {formattedDate} • {ord.orderType || 'Delivery'}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                        <span
+                          style={{
+                            padding: '4px 10px',
+                            borderRadius: '9999px',
+                            fontSize: '11.5px',
+                            fontWeight: '700',
+                            textTransform: 'uppercase',
+                            backgroundColor:
+                              ord.status === 'Completed'
+                                ? 'rgba(74, 222, 128, 0.12)'
+                                : ord.status === 'Cancelled'
+                                ? 'rgba(248, 113, 113, 0.12)'
+                                : 'rgba(251, 191, 36, 0.12)',
+                            color:
+                              ord.status === 'Completed'
+                                ? '#4ADE80'
+                                : ord.status === 'Cancelled'
+                                ? '#F87171'
+                                : '#FBBF24',
+                            border: `1px solid ${
+                              ord.status === 'Completed'
+                                ? 'rgba(74, 222, 128, 0.3)'
+                                : ord.status === 'Cancelled'
+                                ? 'rgba(248, 113, 113, 0.3)'
+                                : 'rgba(251, 191, 36, 0.3)'
+                            }`,
+                          }}
+                        >
+                          {ord.status}
+                        </span>
+
+                        <span style={{ fontWeight: '800', fontSize: '15px', color: 'var(--accent)' }}>
+                          ${Number(ord.totalAmount).toFixed(2)}
+                        </span>
+
+                        <Link
+                          href="/orders"
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '5px',
+                            padding: '7px 14px',
+                            borderRadius: '8px',
+                            backgroundColor: 'var(--bg-surface)',
+                            border: '1px solid var(--border)',
+                            color: 'var(--text-primary)',
+                            fontSize: '12px',
+                            fontWeight: '600',
+                            textDecoration: 'none',
+                          }}
+                        >
+                          <span>View Orders</span>
+                          <ExternalLink size={12} />
+                        </Link>
+                      </div>
                     </div>
+                  );
+                })}
+
+                {orders.length > 4 && (
+                  <div style={{ textAlign: 'center', marginTop: '10px' }}>
+                    <Link
+                      href="/orders"
+                      style={{
+                        fontSize: '13px',
+                        fontWeight: '700',
+                        color: 'var(--accent)',
+                        textDecoration: 'none',
+                      }}
+                    >
+                      Daawo dhammaan {orders.length} dalab (View all {orders.length} orders) →
+                    </Link>
                   </div>
-                ))}
+                )}
               </div>
             )}
           </div>
+
         </div>
       </main>
 

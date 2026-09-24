@@ -39,7 +39,7 @@ export default function LoginPage() {
         }
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Invalid email or password');
+      setError(err.response?.data?.message || 'Login failed. Please check your credentials and try again.');
     } finally {
       setIsLoading(false);
     }

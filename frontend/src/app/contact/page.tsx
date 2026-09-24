@@ -81,10 +81,10 @@ export default function ContactPage() {
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-                gap: '36px',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))',
+                gap: '24px',
                 alignItems: 'start',
-                marginBottom: '50px',
+                marginBottom: '40px',
               }}
             >
               {/* Inquiry Form */}

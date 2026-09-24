@@ -14,7 +14,7 @@ export default function CartPage() {
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--bg-deep)' }}>
       <Navbar />
 
-      <main style={{ flexGrow: 1, padding: '120px 0 90px 0' }}>
+      <main style={{ flexGrow: 1, padding: 'clamp(90px, 15vw, 120px) 0 60px' }}>
         <div className="container">
           <div style={{ marginBottom: '36px' }}>
             <span
@@ -115,8 +115,8 @@ export default function CartPage() {
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-                gap: '40px',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
+                gap: '24px',
                 alignItems: 'flex-start',
               }}
             >
@@ -168,8 +168,8 @@ export default function CartPage() {
                       src={item.food.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400'}
                       alt={item.food.name}
                       style={{
-                        width: '84px',
-                        height: '84px',
+                        width: 'clamp(60px, 10vw, 84px)',
+                        height: 'clamp(60px, 10vw, 84px)',
                         borderRadius: '12px',
                         objectFit: 'cover',
                         flexShrink: 0,
@@ -180,13 +180,12 @@ export default function CartPage() {
                     <div style={{ flexGrow: 1, minWidth: 0 }}>
                       <h4
                         style={{
-                          fontSize: '16px',
+                          fontSize: '15px',
                           fontWeight: '700',
                           marginBottom: '4px',
                           color: 'var(--text-primary)',
-                          whiteSpace: 'nowrap',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
+                          overflowWrap: 'break-word',
+                          wordBreak: 'break-word',
                         }}
                       >
                         {item.food.name}

@@ -18,6 +18,13 @@ import { useToast } from '@/components/ui/Toast';
 
 const formatCurrency = (value: number) => `$${value.toFixed(2)}`;
 
+interface PosCustomer {
+  _id: string;
+  name: string;
+  phone?: string;
+  role?: { name: string };
+}
+
 export default function AdminPosPage() {
   const [foods, setFoods] = useState<Food[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -25,6 +32,8 @@ export default function AdminPosPage() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [location, setLocation] = useState('Counter Order');
   const [orderType, setOrderType] = useState<'DELIVERY' | 'TAKEAWAY' | 'DINE_IN'>('TAKEAWAY');
+  const [customers, setCustomers] = useState<PosCustomer[]>([]);
+  const [selectedCustomerId, setSelectedCustomerId] = useState('');
   const [paymentPhone, setPaymentPhone] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<'cash_on_delivery' | 'evc_plus'>('cash_on_delivery');
   const [notes, setNotes] = useState('');
@@ -36,8 +45,14 @@ export default function AdminPosPage() {
     const fetchFoods = async () => {
       setIsLoading(true);
       try {
-        const response = await api.get('/foods?limit=100&status=Available');
-        if (response.data.success) setFoods(response.data.data);
+        const [foodResponse, customerResponse] = await Promise.all([
+          api.get('/foods?limit=100&status=Available'),
+          api.get('/users'),
+        ]);
+        if (foodResponse.data.success) setFoods(foodResponse.data.data);
+        if (customerResponse.data.success) {
+          setCustomers((customerResponse.data.data || []).filter((customer: PosCustomer) => customer.role?.name === 'CUSTOMER'));
+        }
       } catch (error) {
         showToast('Could not load available menu items', 'error');
       } finally {
@@ -113,6 +128,7 @@ export default function AdminPosPage() {
         paymentPhone: paymentPhone.trim(),
         paymentMethod,
         orderType,
+        ...(selectedCustomerId ? { customerId: selectedCustomerId } : {}),
         notes: notes.trim(),
       });
 
@@ -120,6 +136,7 @@ export default function AdminPosPage() {
         showToast(`Order ${response.data.data.orderId} created successfully`, 'success');
         setCart([]);
         setPaymentPhone('');
+        setSelectedCustomerId('');
         setNotes('');
         setLocation('Counter Order');
       }
@@ -223,6 +240,22 @@ export default function AdminPosPage() {
 
           <div style={{ padding: '14px 18px', borderTop: '1px solid var(--border)' }}>
             <div style={{ display: 'grid', gap: '10px' }}>
+              <select
+                value={selectedCustomerId}
+                onChange={(event) => {
+                  const customerId = event.target.value;
+                  setSelectedCustomerId(customerId);
+                  const customer = customers.find((item) => item._id === customerId);
+                  if (customer?.phone) setPaymentPhone(customer.phone);
+                }}
+                className="form-select"
+                style={{ backgroundColor: 'var(--bg-deep)', border: '1px solid var(--border)', borderRadius: '9px' }}
+              >
+                <option value="">Walk-in customer (not linked)</option>
+                {customers.map((customer) => (
+                  <option key={customer._id} value={customer._id}>{customer.name}{customer.phone ? ` - ${customer.phone}` : ''}</option>
+                ))}
+              </select>
               <select value={orderType} onChange={(event) => setOrderType(event.target.value as 'DELIVERY' | 'TAKEAWAY' | 'DINE_IN')} className="form-select" style={{ backgroundColor: 'var(--bg-deep)', border: '1px solid var(--border)', borderRadius: '9px' }}>
                 <option value="TAKEAWAY">Takeaway</option>
                 <option value="DINE_IN">Dine-in</option>

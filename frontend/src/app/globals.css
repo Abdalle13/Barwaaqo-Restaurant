@@ -191,7 +191,7 @@ img {
   width: 100%;
   max-width: 1280px;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 clamp(14px, 4vw, 24px);
 }
 
 .section-label {
@@ -500,13 +500,38 @@ img {
 }
 
 /* ============================================
+   Table — Horizontal Scroll Wrapper
+   ============================================ */
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: var(--radius-lg);
+}
+
+/* Mobile Drawer — hidden on desktop */
+.mobile-drawer {
+  display: flex;
+}
+
+/* ============================================
    Responsive Media Queries
    ============================================ */
-@media (max-width: 768px) {
+@media (max-width: 480px) {
   .container {
-    padding: 0 16px;
+    padding: 0 14px;
   }
 
+  .section-title {
+    font-size: clamp(22px, 6vw, 32px);
+  }
+
+  .btn-lg {
+    padding: 12px 22px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 640px) {
   .responsive-form-grid {
     grid-template-columns: 1fr !important;
   }
@@ -521,7 +546,25 @@ img {
   }
 
   .admin-card {
+    padding: 14px;
+  }
+
+  .card {
     padding: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .responsive-two-col {
+    grid-template-columns: 1fr !important;
+  }
+
+  .responsive-three-col {
+    grid-template-columns: 1fr !important;
+  }
+
+  .hide-mobile {
+    display: none !important;
   }
 }
 
@@ -530,6 +573,9 @@ img {
     display: flex !important;
   }
   .mobile-toggle {
+    display: none !important;
+  }
+  .mobile-drawer {
     display: none !important;
   }
 }
@@ -579,3 +625,46 @@ img {
 .data-table tr:hover td {
   background: var(--accent-muted);
 }
+
+/* ============================================
+   Modal & Card Micro-Interactions
+   ============================================ */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Food Detail Modal — Bottom Sheet on Mobile, Centered on Desktop */
+@media (min-width: 560px) {
+  /* On desktop: center the modal and round all corners */
+  [class*="food-modal-dialog"] {
+    border-radius: 24px !important;
+    margin: 16px;
+  }
+}
+
+/* Override backdrop alignment for desktop */
+@media (min-width: 560px) {
+  /* The backdrop uses inline flex-end for mobile sheet;
+     on desktop we center it instead via this rule */
+  .food-modal-backdrop {
+    align-items: center !important;
+    padding: 16px !important;
+  }
+}
+

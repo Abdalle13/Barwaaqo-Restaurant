@@ -116,8 +116,8 @@ export default function HomePage() {
             alignItems: 'center',
             justifyContent: 'center',
             overflow: 'hidden',
-            paddingTop: '80px',
-            paddingBottom: '60px',
+            paddingTop: 'clamp(80px, 15vw, 120px)',
+            paddingBottom: 'clamp(40px, 8vw, 80px)',
           }}
         >
           {/* Background image with Ken Burns zoom */}
@@ -181,7 +181,7 @@ export default function HomePage() {
             <h1
               style={{
                 fontFamily: 'var(--font-heading)',
-                fontSize: 'clamp(36px, 5.5vw, 64px)',
+                fontSize: 'clamp(28px, 6vw, 64px)',
                 fontWeight: '800',
                 lineHeight: '1.15',
                 marginBottom: '20px',
@@ -214,19 +214,21 @@ export default function HomePage() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: '14px',
+                gap: '12px',
                 flexWrap: 'wrap',
                 marginBottom: '44px',
+                width: '100%',
               }}
             >
               <Link
                 href="/menu"
                 prefetch={true}
+                className="hero-cta-primary"
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '8px',
-                  padding: '14px 32px',
+                  padding: '14px 28px',
                   borderRadius: '12px',
                   background: 'var(--accent)',
                   color: 'var(--bg-deep)',
@@ -244,11 +246,12 @@ export default function HomePage() {
               <Link
                 href="/reservations"
                 prefetch={true}
+                className="hero-cta-secondary"
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '8px',
-                  padding: '14px 30px',
+                  padding: '14px 26px',
                   borderRadius: '12px',
                   background: 'rgba(255, 255, 255, 0.04)',
                   border: '1px solid rgba(212, 165, 116, 0.3)',
@@ -325,13 +328,13 @@ export default function HomePage() {
         {/* ============================================
             CORE PILLARS SECTION
             ============================================ */}
-        <section style={{ padding: '70px 0', borderBottom: '1px solid var(--border)' }}>
+        <section style={{ padding: 'clamp(40px, 8vw, 70px) 0', borderBottom: '1px solid var(--border)' }}>
           <div className="container">
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-                gap: '24px',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
+                gap: '20px',
               }}
             >
               {[
@@ -464,15 +467,15 @@ export default function HomePage() {
               <div
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-                  gap: '24px',
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 240px), 1fr))',
+                  gap: '20px',
                 }}
               >
                 {[1, 2, 3, 4].map((n) => (
                   <div
                     key={n}
                     style={{
-                      height: '340px',
+                      height: '320px',
                       backgroundColor: 'var(--bg-surface)',
                       borderRadius: '16px',
                       border: '1px solid var(--border)',
@@ -484,8 +487,8 @@ export default function HomePage() {
               <div
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-                  gap: '24px',
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 240px), 1fr))',
+                  gap: '20px',
                 }}
               >
                 {popularFoods.map((food) => (
@@ -501,7 +504,7 @@ export default function HomePage() {
             ============================================ */}
         <section
           style={{
-            padding: '80px 0',
+            padding: 'clamp(40px, 8vw, 80px) 0',
             backgroundColor: 'var(--bg-surface)',
             borderTop: '1px solid var(--border)',
             borderBottom: '1px solid var(--border)',
@@ -511,8 +514,8 @@ export default function HomePage() {
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-                gap: '48px',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
+                gap: '40px',
                 alignItems: 'center',
               }}
             >
@@ -523,7 +526,7 @@ export default function HomePage() {
                   alt="Barwaaqo Restaurant Dining Atmosphere"
                   style={{
                     width: '100%',
-                    height: '380px',
+                    height: 'clamp(240px, 40vw, 380px)',
                     objectFit: 'cover',
                     borderRadius: '20px',
                     border: '1px solid var(--border)',
@@ -579,7 +582,8 @@ export default function HomePage() {
                 <p style={{ color: 'var(--text-secondary)', fontSize: '15px', lineHeight: '1.7', marginBottom: '28px' }}>
                   Whether savoring our signature slow-braised goat, freshly prepared flatbreads, or indulging in coastal seafood, every dish is an invitation to taste home at its finest.
                 </p>
-                <div style={{ display: 'flex', gap: '24px' }}>
+                {/* Stats row */}
+                <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
                   <div>
                     <span style={{ fontSize: '28px', fontWeight: '800', color: 'var(--accent)', display: 'block' }}>100%</span>
                     <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Fresh Ingredients</span>
@@ -750,19 +754,19 @@ export default function HomePage() {
         {/* ============================================
             TABLE RESERVATION CTA
             ============================================ */}
-        <section style={{ padding: '60px 0 90px' }}>
+        <section style={{ padding: 'clamp(40px, 8vw, 60px) 0 clamp(50px, 10vw, 90px)' }}>
           <div className="container">
             <div
               style={{
                 backgroundColor: 'var(--bg-surface)',
                 border: '1px solid rgba(212, 165, 116, 0.25)',
                 borderRadius: '24px',
-                padding: '50px 40px',
+                padding: 'clamp(28px, 5vw, 50px) clamp(20px, 4vw, 40px)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 flexWrap: 'wrap',
-                gap: '30px',
+                gap: '24px',
                 boxShadow: '0 12px 40px rgba(0, 0, 0, 0.5)',
               }}
             >
@@ -821,6 +825,18 @@ export default function HomePage() {
       </main>
 
       <Footer />
+      <style>{`
+        @keyframes marqueeScroll {
+          from { transform: translateX(0); }
+          to { transform: translateX(-50%); }
+        }
+        @media (max-width: 520px) {
+          .hero-cta-primary, .hero-cta-secondary {
+            width: 100%;
+            justify-content: center;
+          }
+        }
+      `}</style>
     </div>
   );
 }

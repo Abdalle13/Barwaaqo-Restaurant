@@ -4,6 +4,7 @@ import { ThemeProvider } from '@/context/ThemeContext';
 import { AuthProvider } from '@/context/AuthContext';
 import { CartProvider } from '@/context/CartContext';
 import { SettingsProvider } from '@/context/SettingsContext';
+import AdminPublicRedirect from '@/components/AdminPublicRedirect';
 
 export const metadata: Metadata = {
   title: 'barwaqo restaurant',
@@ -34,6 +35,7 @@ export default function RootLayout({
           <AuthProvider>
             <SettingsProvider>
               <CartProvider>
+                <AdminPublicRedirect />
                 {children}
               </CartProvider>
             </SettingsProvider>

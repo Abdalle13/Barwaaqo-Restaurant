@@ -53,7 +53,7 @@ export default function ReservationsPage() {
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--bg-deep)' }}>
       <Navbar />
 
-      <main style={{ flexGrow: 1, padding: '120px 0 90px 0' }}>
+      <main style={{ flexGrow: 1, padding: 'clamp(90px, 15vw, 120px) 0 60px' }}>
         <div className="container" style={{ maxWidth: '800px' }}>
           <div style={{ textAlign: 'center', marginBottom: '40px' }}>
             <h1
@@ -150,7 +150,7 @@ export default function ReservationsPage() {
           ) : (
             <div
               style={{
-                padding: '40px',
+                padding: 'clamp(20px, 4vw, 40px)',
                 backgroundColor: 'var(--bg-surface)',
                 borderRadius: '24px',
                 border: '1px solid var(--border)',

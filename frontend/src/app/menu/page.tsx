@@ -54,7 +54,7 @@ export default function MenuPage() {
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--bg-deep)' }}>
       <Navbar />
 
-      <main style={{ flexGrow: 1, padding: '120px 0 90px 0' }}>
+      <main style={{ flexGrow: 1, padding: 'clamp(90px, 15vw, 120px) 0 60px' }}>
         <div className="container">
           {/* Compact header */}
           <div style={{ marginBottom: '36px' }}>
@@ -89,7 +89,7 @@ export default function MenuPage() {
               style={{
                 position: 'relative',
                 flexGrow: 1,
-                minWidth: '220px',
+                minWidth: 'min(220px, 100%)',
               }}
             >
               <Search
@@ -127,10 +127,11 @@ export default function MenuPage() {
                 display: 'flex',
                 gap: '8px',
                 overflowX: 'auto',
-                paddingBottom: '2px',
+                paddingBottom: '4px',
                 scrollbarWidth: 'none',
-                flexShrink: 0,
-              }}
+                flex: '1 1 100%',
+                WebkitOverflowScrolling: 'touch',
+              } as React.CSSProperties}
             >
               <button
                 onClick={() => {
@@ -228,8 +229,8 @@ export default function MenuPage() {
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(290px, 1fr))',
-                gap: '28px',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 250px), 1fr))',
+                gap: '20px',
               }}
             >
               {foods.map((food) => (

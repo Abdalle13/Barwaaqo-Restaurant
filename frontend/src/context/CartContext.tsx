@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { CartItem, Food } from '@/types';
+import { useAuth } from './AuthContext';
 
 interface CartContextType {
   items: CartItem[];
@@ -30,24 +31,42 @@ const CartContext = createContext<CartContextType>({
 });
 
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
+  const { user } = useAuth();
   const [items, setItems] = useState<CartItem[]>([]);
   const [mounted, setMounted] = useState(false);
+  const [cartKey, setCartKey] = useState('barwaaqo_cart_guest');
+  const [hydratedKey, setHydratedKey] = useState<string | null>(null);
+
+  const getCartKey = (userId?: string) => userId ? `barwaaqo_cart_${userId}` : 'barwaaqo_cart_guest';
 
   useEffect(() => {
     setMounted(true);
-    const saved = localStorage.getItem('barwaaqo_cart');
-    if (saved) {
-      try {
-        setItems(JSON.parse(saved));
-      } catch (e) {}
-    }
+    localStorage.removeItem('barwaaqo_cart');
   }, []);
 
   useEffect(() => {
-    if (mounted) {
-      localStorage.setItem('barwaaqo_cart', JSON.stringify(items));
+    if (!mounted) return;
+
+    const nextKey = getCartKey(user?._id);
+    setCartKey(nextKey);
+    const saved = localStorage.getItem(nextKey);
+    if (saved) {
+      try {
+        setItems(JSON.parse(saved));
+      } catch {
+        setItems([]);
+      }
+    } else {
+      setItems([]);
     }
-  }, [items, mounted]);
+    setHydratedKey(nextKey);
+  }, [mounted, user?._id]);
+
+  useEffect(() => {
+    if (mounted && hydratedKey === cartKey) {
+      localStorage.setItem(cartKey, JSON.stringify(items));
+    }
+  }, [items, mounted, cartKey, hydratedKey]);
 
   const addToCart = (food: Food, quantity = 1) => {
     setItems((prev) => {
@@ -86,7 +105,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const clearCart = () => {
     setItems([]);
     if (typeof window !== 'undefined') {
-      localStorage.removeItem('barwaaqo_cart');
+      localStorage.removeItem(cartKey);
     }
   };
 

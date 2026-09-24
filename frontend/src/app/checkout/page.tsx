@@ -314,7 +314,7 @@ export default function CheckoutPage() {
               {/* Actions */}
               <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '16px' }}>
                 <Link
-                  href={`/track?orderId=${orderSuccess.orderId}`}
+                  href="/orders"
                   style={{
                     display: 'inline-flex',
                     alignItems: 'center',
@@ -329,7 +329,7 @@ export default function CheckoutPage() {
                     boxShadow: '0 4px 18px rgba(212, 165, 116, 0.35)',
                   }}
                 >
-                  <span>Track Live Delivery</span>
+                  <span>View My Orders</span>
                   <ArrowRight size={16} />
                 </Link>
                 <Link
@@ -366,7 +366,7 @@ export default function CheckoutPage() {
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--bg-deep)' }}>
       <Navbar />
 
-      <main style={{ flexGrow: 1, padding: '120px 0 90px 0' }}>
+      <main style={{ flexGrow: 1, padding: 'clamp(90px, 15vw, 120px) 0 60px' }}>
         <div className="container">
           <div style={{ marginBottom: '36px' }}>
             <span
@@ -432,8 +432,8 @@ export default function CheckoutPage() {
               <div
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-                  gap: '36px',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
+                  gap: '24px',
                   alignItems: 'flex-start',
                 }}
               >
