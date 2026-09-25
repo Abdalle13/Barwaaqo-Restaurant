@@ -50,6 +50,16 @@ const OrderSchema = new mongoose.Schema({
     enum: ['DELIVERY', 'TAKEAWAY', 'DINE_IN'],
     default: 'DELIVERY',
   },
+  table: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Table',
+    default: null,
+  },
+  transactionId: {
+    type: String,
+    default: '',
+    trim: true,
+  },
   district: {
     type: String,
     default: 'Hodan',

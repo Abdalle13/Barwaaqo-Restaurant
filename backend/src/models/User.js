@@ -33,6 +33,16 @@ const UserSchema = new mongoose.Schema({
     default: '',
     trim: true,
   },
+  district: {
+    type: String,
+    default: '',
+    trim: true,
+  },
+  landmark: {
+    type: String,
+    default: '',
+    trim: true,
+  },
   status: { 
     type: String, 
     enum: ['active', 'blocked'], 

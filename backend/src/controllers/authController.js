@@ -122,6 +122,8 @@ exports.login = async (req, res) => {
         email: user.email,
         phone: user.phone,
         address: user.address,
+        district: user.district || '',
+        landmark: user.landmark || '',
         role: user.role ? user.role.name : 'CUSTOMER',
         permissions: user.role && user.role.permissions
           ? user.role.permissions.map((p) => p.name)
@@ -156,6 +158,8 @@ exports.getMe = async (req, res) => {
         email: user.email,
         phone: user.phone,
         address: user.address,
+        district: user.district || '',
+        landmark: user.landmark || '',
         role: user.role ? user.role.name : 'CUSTOMER',
         permissions: user.role && user.role.permissions
           ? user.role.permissions.map((p) => p.name)
@@ -180,6 +184,8 @@ exports.updateProfile = async (req, res) => {
     user.name = req.body.name || user.name;
     user.phone = req.body.phone || user.phone;
     user.address = req.body.address !== undefined ? req.body.address : user.address;
+    user.district = req.body.district !== undefined ? req.body.district : user.district;
+    user.landmark = req.body.landmark !== undefined ? req.body.landmark : user.landmark;
 
     const updatedUser = await user.save();
 
@@ -192,6 +198,8 @@ exports.updateProfile = async (req, res) => {
         email: updatedUser.email,
         phone: updatedUser.phone,
         address: updatedUser.address,
+        district: updatedUser.district,
+        landmark: updatedUser.landmark,
       },
     });
   } catch (error) {

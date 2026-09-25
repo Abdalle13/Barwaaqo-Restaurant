@@ -1,5 +1,6 @@
 const Order = require('../models/Order');
 const User = require('../models/User');
+const Table = require('../models/Table');
 const sendEmail = require('../utils/sendEmail');
 
 // @desc    CREATE New Order
@@ -17,6 +18,9 @@ exports.createOrder = async (req, res) => {
       district,
       landmark,
       alternativePhone,
+      transactionId,
+      table,
+      paymentStatus: requestedPaymentStatus,
     } = req.body;
     const orderType = ['DELIVERY', 'TAKEAWAY', 'DINE_IN'].includes(req.body.orderType)
       ? req.body.orderType
@@ -41,12 +45,26 @@ exports.createOrder = async (req, res) => {
     const totalAmount = Math.round((subtotal + deliveryFee + serviceTax) * 100) / 100;
 
     let orderUserId = req.user._id;
-    if (customerId && ['ADMIN', 'RECEPTIONIST'].includes(req.user.role?.name)) {
+    const isStaff = ['ADMIN', 'RECEPTIONIST'].includes(req.user.role?.name);
+    if (customerId && isStaff) {
       const selectedCustomer = await User.findOne({ _id: customerId }).populate('role', 'name');
       if (!selectedCustomer || selectedCustomer.role?.name !== 'CUSTOMER') {
         return res.status(400).json({ success: false, message: 'Please select a valid customer' });
       }
       orderUserId = selectedCustomer._id;
+    }
+
+    const validPaymentMethods = ['evc_plus', 'edahab', 'pay_on_delivery', 'cash_on_delivery'];
+    const resolvedPaymentMethod = validPaymentMethods.includes(paymentMethod)
+      ? paymentMethod
+      : 'evc_plus';
+
+    // Payment status: if staff explicitly provides it (e.g. POS), use it; otherwise auto-set Paid for mobile money or Pending
+    let resolvedPaymentStatus = 'Pending';
+    if (requestedPaymentStatus && isStaff) {
+      resolvedPaymentStatus = requestedPaymentStatus;
+    } else if (resolvedPaymentMethod === 'evc_plus' || resolvedPaymentMethod === 'edahab') {
+      resolvedPaymentStatus = 'Paid';
     }
 
     const order = new Order({
@@ -57,20 +75,29 @@ exports.createOrder = async (req, res) => {
       serviceTax,
       totalAmount,
       orderType,
+      table: orderType === 'DINE_IN' && table ? table : null,
+      transactionId: transactionId ? String(transactionId).trim() : '',
       district: district || 'Hodan',
       landmark: landmark || '',
       shippingAddress,
-      paymentMethod: paymentMethod === 'cash_on_delivery' ? 'cash_on_delivery' : 'evc_plus',
+      paymentMethod: resolvedPaymentMethod,
       paymentPhone,
       alternativePhone: alternativePhone || '',
-      paymentStatus: paymentMethod === 'evc_plus' ? 'Paid' : 'Pending', // EVC simulated as immediate payment
+      paymentStatus: resolvedPaymentStatus,
       status: 'Pending',
       notes: notes || '',
     });
 
     const createdOrder = await order.save();
+
+    // If dine-in and a table was selected, mark table as Occupied
+    if (orderType === 'DINE_IN' && table) {
+      await Table.findByIdAndUpdate(table, { status: 'Occupied' }).catch(() => {});
+    }
+
     const populated = await Order.findById(createdOrder._id)
       .populate('user', 'name email phone')
+      .populate('table', 'tableNumber location capacity status')
       .populate('assignedDeliveryBoy', 'name phone email status')
       .populate('items.food', 'name image price');
 
@@ -115,6 +142,7 @@ exports.getAllOrders = async (req, res) => {
 
     const orders = await Order.find(filter)
       .populate('user', 'name email phone')
+      .populate('table', 'tableNumber location capacity status')
       .populate('assignedDeliveryBoy', 'name phone email status')
       .populate('items.food', 'name image price')
       .sort({ createdAt: -1 })
@@ -165,6 +193,7 @@ exports.getOrderById = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id)
       .populate('user', 'name email phone')
+      .populate('table', 'tableNumber location capacity status')
       .populate('assignedDeliveryBoy', 'name phone email status')
       .populate('items.food', 'name image price');
 
@@ -309,6 +338,7 @@ exports.updateOrderStatus = async (req, res) => {
     const updatedOrder = await order.save();
     const populated = await Order.findById(updatedOrder._id)
       .populate('user', 'name email phone')
+      .populate('table', 'tableNumber location capacity status')
       .populate('assignedDeliveryBoy', 'name phone email status')
       .populate('items.food', 'name image price');
 
