@@ -4,6 +4,8 @@ export interface User {
   email: string;
   phone: string;
   address?: string;
+  district?: string;
+  landmark?: string;
   role: string;
   permissions?: string[];
   status?: string;
@@ -36,6 +38,9 @@ export interface CartItem {
   food: Food;
   quantity: number;
   price: number;
+  selectedProtein?: string;
+  selectedAddons?: string[];
+  specialInstructions?: string;
 }
 
 export interface OrderItem {
@@ -55,9 +60,15 @@ export interface Order {
   serviceTax: number;
   totalAmount: number;
   orderType?: 'DELIVERY' | 'TAKEAWAY' | 'DINE_IN';
+  table?: Table | { _id: string; tableNumber: string; location?: string; capacity?: number };
+  transactionId?: string;
+  district?: string;
+  landmark?: string;
   shippingAddress: string;
   paymentMethod: 'evc_plus' | 'edahab' | 'pay_on_delivery' | 'cash_on_delivery';
   paymentPhone: string;
+  alternativePhone?: string;
+  assignedDeliveryBoy?: any;
   paymentStatus: 'Pending' | 'Paid' | 'Failed';
   status: 'Pending' | 'Processing' | 'Out for Delivery' | 'Completed' | 'Cancelled';
   notes?: string;

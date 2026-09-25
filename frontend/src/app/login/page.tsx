@@ -34,6 +34,10 @@ export default function LoginPage() {
 
         if (userData.role === 'ADMIN') {
           router.push('/admin');
+        } else if (userData.role === 'RECEPTIONIST') {
+          router.push('/receptionist');
+        } else if (userData.role === 'DELIVERY') {
+          router.push('/delivery');
         } else {
           router.push('/menu');
         }

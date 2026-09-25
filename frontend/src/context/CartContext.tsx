@@ -6,7 +6,11 @@ import { useAuth } from './AuthContext';
 
 interface CartContextType {
   items: CartItem[];
-  addToCart: (food: Food, quantity?: number) => void;
+  addToCart: (
+    food: Food,
+    quantity?: number,
+    options?: { selectedProtein?: string; selectedAddons?: string[]; specialInstructions?: string }
+  ) => void;
   removeFromCart: (foodId: string) => void;
   updateQuantity: (foodId: string, quantity: number) => void;
   clearCart: () => void;
@@ -68,21 +72,41 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [items, mounted, cartKey, hydratedKey]);
 
-  const addToCart = (food: Food, quantity = 1) => {
+  const addToCart = (
+    food: Food,
+    quantity = 1,
+    options?: { selectedProtein?: string; selectedAddons?: string[]; specialInstructions?: string }
+  ) => {
     setItems((prev) => {
-      const existing = prev.find((item) => item.food._id === food._id);
+      const matchOptions = (item: CartItem) =>
+        item.food._id === food._id &&
+        item.selectedProtein === options?.selectedProtein &&
+        JSON.stringify(item.selectedAddons || []) === JSON.stringify(options?.selectedAddons || []) &&
+        item.specialInstructions === options?.specialInstructions;
+
+      const existing = prev.find(matchOptions);
       const effectivePrice = food.discount && food.discount > 0
         ? Math.round(food.price * (1 - food.discount / 100) * 100) / 100
         : food.price;
 
       if (existing) {
         return prev.map((item) =>
-          item.food._id === food._id
+          matchOptions(item)
             ? { ...item, quantity: item.quantity + quantity }
             : item
         );
       }
-      return [...prev, { food, quantity, price: effectivePrice }];
+      return [
+        ...prev,
+        {
+          food,
+          quantity,
+          price: effectivePrice,
+          selectedProtein: options?.selectedProtein,
+          selectedAddons: options?.selectedAddons,
+          specialInstructions: options?.specialInstructions,
+        },
+      ];
     });
   };
 

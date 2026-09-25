@@ -13,6 +13,8 @@ interface AuthContextType {
   updateUser: (updatedUser: Partial<User>) => void;
   isAdmin: boolean;
   isStaff: boolean;
+  isDelivery: boolean;
+  isReceptionist: boolean;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -24,6 +26,8 @@ const AuthContext = createContext<AuthContextType>({
   updateUser: () => {},
   isAdmin: false,
   isStaff: false,
+  isDelivery: false,
+  isReceptionist: false,
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
@@ -82,10 +86,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const isAdmin = user?.role === 'ADMIN';
-  const isStaff = user?.role === 'ADMIN' || user?.role === 'RECEPTIONIST';
+  const isStaff = user?.role === 'ADMIN'; // RECEPTIONIST now has its own portal
+  const isDelivery = user?.role === 'DELIVERY';
+  const isReceptionist = user?.role === 'RECEPTIONIST';
 
   return (
-    <AuthContext.Provider value={{ user, token, isLoading, login, logout, updateUser, isAdmin, isStaff }}>
+    <AuthContext.Provider value={{ user, token, isLoading, login, logout, updateUser, isAdmin, isStaff, isDelivery, isReceptionist }}>
       {children}
     </AuthContext.Provider>
   );

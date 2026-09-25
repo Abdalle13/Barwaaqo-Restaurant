@@ -194,6 +194,21 @@ export default function CartPage() {
                           <div style={{ fontSize: '13px', color: 'var(--accent)', fontWeight: '600', marginTop: '2px' }}>
                             ${item.price.toFixed(2)} each
                           </div>
+                          {item.selectedProtein && (
+                            <span style={{ fontSize: '11px', display: 'inline-block', padding: '2px 6px', borderRadius: '4px', backgroundColor: 'rgba(212, 165, 116, 0.15)', color: 'var(--accent)', fontWeight: '700', marginTop: '4px', marginRight: '4px' }}>
+                              {item.selectedProtein}
+                            </span>
+                          )}
+                          {item.selectedAddons && item.selectedAddons.length > 0 && (
+                            <span style={{ fontSize: '11px', display: 'inline-block', padding: '2px 6px', borderRadius: '4px', backgroundColor: 'rgba(74, 222, 128, 0.1)', color: '#4ADE80', fontWeight: '600', marginTop: '4px', marginRight: '4px' }}>
+                              + {item.selectedAddons.join(', ')}
+                            </span>
+                          )}
+                          {item.specialInstructions && (
+                            <div style={{ fontSize: '11px', fontStyle: 'italic', color: 'var(--text-secondary)', marginTop: '3px' }}>
+                              Note: "{item.specialInstructions}"
+                            </div>
+                          )}
                         </div>
 
                         <button

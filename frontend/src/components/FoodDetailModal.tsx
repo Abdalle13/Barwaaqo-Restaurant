@@ -24,6 +24,9 @@ export default function FoodDetailModal({ food, isOpen, onClose }: FoodDetailMod
   const { items, addToCart } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [addedAnimation, setAddedAnimation] = useState(false);
+  const [selectedProtein, setSelectedProtein] = useState('');
+  const [selectedAddons, setSelectedAddons] = useState<string[]>([]);
+  const [specialInstructions, setSpecialInstructions] = useState('');
 
   // Check if item is already in cart
   const cartItem = food ? items.find((item) => item.food._id === food._id) : null;
@@ -33,6 +36,9 @@ export default function FoodDetailModal({ food, isOpen, onClose }: FoodDetailMod
   useEffect(() => {
     if (isOpen && food) {
       setQuantity(1);
+      setSelectedProtein('');
+      setSelectedAddons([]);
+      setSpecialInstructions('');
       setAddedAnimation(false);
     }
   }, [isOpen, food]);
@@ -55,9 +61,15 @@ export default function FoodDetailModal({ food, isOpen, onClose }: FoodDetailMod
   if (!isOpen || !food) return null;
 
   const hasDiscount = Boolean(food.discount && food.discount > 0);
-  const effectivePrice = hasDiscount
+  const baseEffectivePrice = hasDiscount
     ? Math.round(food.price * (1 - (food.discount || 0) / 100) * 100) / 100
     : food.price;
+
+  // Additional price from add-ons
+  const addonsExtraPrice = (selectedAddons.includes('Moos (Fresh Banana)') ? 0.5 : 0) +
+    (selectedAddons.includes('Shaah Caddeys (Somali Spiced Tea)') ? 1.0 : 0);
+
+  const effectivePrice = baseEffectivePrice + addonsExtraPrice;
   const totalPrice = (effectivePrice * quantity).toFixed(2);
 
   const categoryName =
@@ -69,9 +81,19 @@ export default function FoodDetailModal({ food, isOpen, onClose }: FoodDetailMod
 
   const isAvailable = food.status !== 'Out of Stock';
 
+  const toggleAddon = (addon: string) => {
+    setSelectedAddons((prev) =>
+      prev.includes(addon) ? prev.filter((a) => a !== addon) : [...prev, addon]
+    );
+  };
+
   const handleAddToCart = () => {
     if (!isAvailable) return;
-    addToCart(food, quantity);
+    addToCart(food, quantity, {
+      selectedProtein: selectedProtein || undefined,
+      selectedAddons: selectedAddons.length > 0 ? selectedAddons : undefined,
+      specialInstructions: specialInstructions.trim() || undefined,
+    });
     setAddedAnimation(true);
     setTimeout(() => {
       setAddedAnimation(false);
@@ -416,6 +438,176 @@ export default function FoodDetailModal({ food, isOpen, onClose }: FoodDetailMod
               {food.description ||
                 'Carefully prepared using the finest traditional ingredients, authentic aromatic spices, and fresh herbs to deliver an unforgettable dining experience.'}
             </p>
+          </div>
+
+          {/* Dish Customization: Protein Selection */}
+          <div
+            style={{
+              padding: '14px 16px',
+              backgroundColor: 'var(--bg-deep)',
+              borderRadius: '14px',
+              border: '1px solid var(--border)',
+            }}
+          >
+            <span
+              style={{
+                fontSize: '11.5px',
+                fontWeight: '700',
+                textTransform: 'uppercase',
+                letterSpacing: '0.8px',
+                color: 'var(--accent)',
+                display: 'block',
+                marginBottom: '8px',
+              }}
+            >
+              Select Protein / Nooca Hilibka
+            </span>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '8px' }}>
+              {[
+                { id: '', label: 'Default / Standard' },
+                { id: 'Hilib Ari (Goat Meat)', label: 'Hilib Ari (Goat)' },
+                { id: 'Hilib Geel (Camel Meat)', label: 'Hilib Geel (Camel)' },
+                { id: 'Digaag (Chicken)', label: 'Digaag (Chicken)' },
+                { id: 'Kalluun (Fresh Fish)', label: 'Kalluun (Fish)' },
+              ].map((p) => (
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={() => setSelectedProtein(p.id)}
+                  style={{
+                    padding: '8px 10px',
+                    borderRadius: '9px',
+                    fontSize: '12px',
+                    fontWeight: '700',
+                    border: selectedProtein === p.id ? '1.5px solid var(--accent)' : '1px solid var(--border)',
+                    backgroundColor: selectedProtein === p.id ? 'rgba(212, 165, 116, 0.15)' : 'var(--bg-surface)',
+                    color: selectedProtein === p.id ? 'var(--accent)' : 'var(--text-primary)',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    transition: 'all 0.15s ease',
+                  }}
+                >
+                  {p.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Dish Customization: Somali Extras & Add-ons */}
+          <div
+            style={{
+              padding: '14px 16px',
+              backgroundColor: 'var(--bg-deep)',
+              borderRadius: '14px',
+              border: '1px solid var(--border)',
+            }}
+          >
+            <span
+              style={{
+                fontSize: '11.5px',
+                fontWeight: '700',
+                textTransform: 'uppercase',
+                letterSpacing: '0.8px',
+                color: 'var(--accent)',
+                display: 'block',
+                marginBottom: '8px',
+              }}
+            >
+              Somali Extras & Sides / Kordhin
+            </span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {[
+                { name: 'Moos (Fresh Banana)', price: '+$0.50' },
+                { name: 'Basbaas Shigni Dheeraad ah (Extra Chili)', price: 'Free' },
+                { name: 'Maraq Dheeraad ah (Extra Broth)', price: 'Free' },
+                { name: 'Shaah Caddeys (Somali Spiced Tea)', price: '+$1.00' },
+              ].map((addon) => {
+                const isSelected = selectedAddons.includes(addon.name);
+                return (
+                  <button
+                    key={addon.name}
+                    type="button"
+                    onClick={() => toggleAddon(addon.name)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '8px 12px',
+                      borderRadius: '8px',
+                      border: isSelected ? '1px solid #4ADE80' : '1px solid var(--border)',
+                      backgroundColor: isSelected ? 'rgba(74, 222, 128, 0.08)' : 'var(--bg-surface)',
+                      color: isSelected ? '#4ADE80' : 'var(--text-primary)',
+                      cursor: 'pointer',
+                      fontSize: '12.5px',
+                      fontWeight: '600',
+                    }}
+                  >
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span
+                        style={{
+                          width: '16px',
+                          height: '16px',
+                          borderRadius: '4px',
+                          border: isSelected ? '1.5px solid #4ADE80' : '1px solid var(--text-muted)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '10px',
+                          backgroundColor: isSelected ? '#4ADE80' : 'transparent',
+                          color: '#000000',
+                          fontWeight: '900',
+                        }}
+                      >
+                        {isSelected ? '✓' : ''}
+                      </span>
+                      <span>{addon.name}</span>
+                    </span>
+                    <span style={{ fontSize: '12px', fontWeight: '700', color: isSelected ? '#4ADE80' : 'var(--accent)' }}>
+                      {addon.price}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Special Cooking Instructions */}
+          <div
+            style={{
+              padding: '14px 16px',
+              backgroundColor: 'var(--bg-deep)',
+              borderRadius: '14px',
+              border: '1px solid var(--border)',
+            }}
+          >
+            <label
+              style={{
+                fontSize: '11.5px',
+                fontWeight: '700',
+                textTransform: 'uppercase',
+                letterSpacing: '0.8px',
+                color: 'var(--accent)',
+                display: 'block',
+                marginBottom: '6px',
+              }}
+            >
+              Special Cooking Instructions / Codsi Gaar ah
+            </label>
+            <input
+              value={specialInstructions}
+              onChange={(e) => setSpecialInstructions(e.target.value)}
+              placeholder="e.g. No onions, less oil, extra crispy..."
+              className="form-input"
+              style={{
+                width: '100%',
+                backgroundColor: 'var(--bg-surface)',
+                border: '1px solid var(--border)',
+                borderRadius: '8px',
+                color: 'var(--text-primary)',
+                fontSize: '12.5px',
+                padding: '8px 12px',
+              }}
+            />
           </div>
 
           {/* Current In-Cart Status Banner */}

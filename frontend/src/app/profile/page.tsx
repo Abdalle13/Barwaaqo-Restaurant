@@ -14,6 +14,8 @@ export default function ProfilePage() {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
+  const [district, setDistrict] = useState('');
+  const [landmark, setLandmark] = useState('');
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
   const [profileSuccess, setProfileSuccess] = useState('');
 
@@ -24,14 +26,22 @@ export default function ProfilePage() {
   const [passwordSuccess, setPasswordSuccess] = useState('');
   const [passwordError, setPasswordError] = useState('');
 
+  const mogadishuDistricts = [
+    'Hodan', 'Waaberi', 'Wadajir', 'Kaaraan', 'Dayniile',
+    'Shibis', 'Boondheere', 'Cabdicasis', 'Xamarweyne',
+    'Xamarjajab', 'Yaaqshiid', 'Dharkenley', 'Kaxda',
+    'Shangani', 'Howlwadaag', 'Warta Nabadda',
+  ];
+
   useEffect(() => {
     if (user) {
       setName(user.name || '');
       setPhone(user.phone || '');
       setAddress(user.address || '');
+      setDistrict(user.district || '');
+      setLandmark(user.landmark || '');
     }
   }, [user]);
-
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,10 +49,10 @@ export default function ProfilePage() {
     setProfileSuccess('');
 
     try {
-      const res = await api.put('/auth/profile', { name, phone, address });
+      const res = await api.put('/auth/profile', { name, phone, address, district, landmark });
       if (res.data.success) {
         updateUser(res.data.data);
-        setProfileSuccess('Profile updated successfully!');
+        setProfileSuccess('Profile and default delivery details updated successfully!');
         setTimeout(() => setProfileSuccess(''), 4000);
       }
     } catch (err: any) {
@@ -247,12 +257,13 @@ export default function ProfilePage() {
                   />
                 </div>
 
-                <div className="form-group" style={{ marginBottom: '22px' }}>
-                  <label className="form-label">Default Delivery Address</label>
+                <div className="form-group" style={{ marginBottom: '18px' }}>
+                  <label className="form-label">Default Delivery Address / Guri ama Xafiis</label>
                   <input
                     type="text"
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
+                    placeholder="e.g. Guriga #12, Jidka Maka Al-Mukarama"
                     className="form-input"
                     style={{
                       backgroundColor: 'var(--bg-deep)',
@@ -260,6 +271,48 @@ export default function ProfilePage() {
                       color: 'var(--text-primary)',
                     }}
                   />
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '22px' }}>
+                  <div className="form-group">
+                    <label className="form-label">Default District / Degmada</label>
+                    <select
+                      value={district}
+                      onChange={(e) => setDistrict(e.target.value)}
+                      className="form-select"
+                      style={{
+                        backgroundColor: 'var(--bg-deep)',
+                        border: '1px solid var(--border)',
+                        color: 'var(--text-primary)',
+                        borderRadius: '10px',
+                        fontSize: '13px',
+                      }}
+                    >
+                      <option value="">Select District</option>
+                      {mogadishuDistricts.map((d) => (
+                        <option key={d} value={d}>
+                          {d}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label">Nearby Landmark / Meel Caan ah</label>
+                    <input
+                      type="text"
+                      value={landmark}
+                      onChange={(e) => setLandmark(e.target.value)}
+                      placeholder="e.g. Agagaarka Digfeer Hospital"
+                      className="form-input"
+                      style={{
+                        backgroundColor: 'var(--bg-deep)',
+                        border: '1px solid var(--border)',
+                        color: 'var(--text-primary)',
+                        fontSize: '13px',
+                      }}
+                    />
+                  </div>
                 </div>
 
                 <button

@@ -13,6 +13,7 @@ import {
   MapPin,
   Receipt,
   Loader2,
+  Phone,
 } from 'lucide-react';
 
 interface TrackOrderModalProps {
@@ -394,6 +395,75 @@ export default function TrackOrderModal({
                         </div>
                       );
                     })}
+                  </div>
+                )}
+
+                {/* Assigned Driver Card (If Out for Delivery or assigned) */}
+                {order.assignedDeliveryBoy && (
+                  <div
+                    style={{
+                      backgroundColor: 'rgba(168, 85, 247, 0.08)',
+                      borderRadius: '12px',
+                      border: '1px solid rgba(168, 85, 247, 0.3)',
+                      padding: '14px 16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      gap: '12px',
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <div
+                        style={{
+                          width: '38px',
+                          height: '38px',
+                          borderRadius: '50%',
+                          backgroundColor: '#A855F7',
+                          color: '#ffffff',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          flexShrink: 0,
+                        }}
+                      >
+                        <Truck size={18} />
+                      </div>
+                      <div>
+                        <span style={{ fontSize: '10.5px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: '700' }}>
+                          Assigned Delivery Driver
+                        </span>
+                        <p style={{ margin: '2px 0 0', fontWeight: '700', fontSize: '14px', color: 'var(--text-primary)' }}>
+                          {typeof order.assignedDeliveryBoy === 'object' ? order.assignedDeliveryBoy.name : 'Delivery Partner'}
+                        </p>
+                        {typeof order.assignedDeliveryBoy === 'object' && order.assignedDeliveryBoy.vehicleType && (
+                          <span style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>
+                            {order.assignedDeliveryBoy.vehicleType} {order.assignedDeliveryBoy.plateNumber ? `• Plate: ${order.assignedDeliveryBoy.plateNumber}` : ''}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {typeof order.assignedDeliveryBoy === 'object' && order.assignedDeliveryBoy.phone && (
+                      <a
+                        href={`tel:${order.assignedDeliveryBoy.phone}`}
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          padding: '8px 14px',
+                          borderRadius: '8px',
+                          backgroundColor: '#A855F7',
+                          color: '#ffffff',
+                          fontWeight: '700',
+                          fontSize: '12.5px',
+                          textDecoration: 'none',
+                          flexShrink: 0,
+                        }}
+                      >
+                        <Phone size={13} />
+                        <span>Call</span>
+                      </a>
+                    )}
                   </div>
                 )}
 

@@ -63,6 +63,11 @@ export default function CheckoutPage() {
   useEffect(() => {
     if (!isAuthLoading && !user) {
       router.replace('/login');
+    } else if (user) {
+      if (user.district) setDistrict((prev) => prev || user.district || '');
+      if (user.landmark) setLandmark((prev) => prev || user.landmark || '');
+      if (user.address) setShippingAddress((prev) => prev || user.address || '');
+      if (user.phone) setPaymentPhone((prev) => prev || user.phone || '');
     }
   }, [isAuthLoading, user, router]);
 
@@ -98,13 +103,21 @@ export default function CheckoutPage() {
     setIsSubmitting(true);
 
     try {
-      const itemsToOrder = items.map((item) => ({
-        food: item.food._id,
-        name: item.food.name,
-        quantity: item.quantity,
-        price: item.price,
-        image: item.food.image,
-      }));
+      const itemsToOrder = items.map((item) => {
+        const parts = [];
+        if (item.selectedProtein) parts.push(`[${item.selectedProtein}]`);
+        if (item.selectedAddons && item.selectedAddons.length > 0) parts.push(`(+ ${item.selectedAddons.join(', ')})`);
+        if (item.specialInstructions) parts.push(`[Note: "${item.specialInstructions}"]`);
+        const fullName = parts.length > 0 ? `${item.food.name} ${parts.join(' ')}` : item.food.name;
+
+        return {
+          food: item.food._id,
+          name: fullName,
+          quantity: item.quantity,
+          price: item.price,
+          image: item.food.image,
+        };
+      });
 
       const resolvedAddress = orderType === 'DELIVERY'
         ? (landmark.trim() ? `Degmada ${district} - ${landmark.trim()}` : `Degmada ${district}`)
