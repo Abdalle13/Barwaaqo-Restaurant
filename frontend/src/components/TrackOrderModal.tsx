@@ -434,7 +434,11 @@ export default function TrackOrderModal({
                   <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)' }}>
                     <span>Payment Method</span>
                     <span style={{ color: 'var(--text-primary)', fontWeight: '600' }}>
-                      {order.paymentMethod === 'evc_plus' ? 'EVC Plus' : 'Cash on Delivery'}
+                      {order.paymentMethod === 'evc_plus'
+                        ? 'EVC Plus (Hormuud)'
+                        : order.paymentMethod === 'edahab'
+                        ? 'eDahab (Dahabshiil)'
+                        : 'Pay on Delivery (Mobile Money)'}
                     </span>
                   </div>
                 </div>

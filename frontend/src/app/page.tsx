@@ -12,16 +12,17 @@ import {
   Flame,
   Award,
   Truck,
-  Shield,
-  Zap,
   ChevronDown,
   CalendarCheck,
   ChevronRight,
   Star,
-  Quote,
   Clock,
-  Heart,
   Sparkles,
+  UtensilsCrossed,
+  CreditCard,
+  CheckCircle2,
+  Users,
+  ShieldCheck,
 } from 'lucide-react';
 
 export default function HomePage() {
@@ -106,21 +107,21 @@ export default function HomePage() {
 
       <main style={{ flexGrow: 1 }}>
         {/* ============================================
-            HERO SECTION — Centered, Modern Luxury
+            1. HERO SECTION — Centered, Modern Luxury
             ============================================ */}
         <section
           style={{
             position: 'relative',
-            minHeight: '100vh',
+            minHeight: '92vh',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             overflow: 'hidden',
-            paddingTop: 'clamp(80px, 15vw, 120px)',
-            paddingBottom: 'clamp(40px, 8vw, 80px)',
+            paddingTop: 'clamp(90px, 15vw, 130px)',
+            paddingBottom: 'clamp(50px, 10vw, 90px)',
           }}
         >
-          {/* Background image with Ken Burns zoom */}
+          {/* Background image with subtle zoom */}
           <div
             style={{
               position: 'absolute',
@@ -171,17 +172,37 @@ export default function HomePage() {
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              maxWidth: '860px',
-              padding: '0 20px',
+              maxWidth: '880px',
+              padding: '0 clamp(16px, 4vw, 24px)',
             }}
           >
-            {/* Accent Badge */}
+            {/* Tagline Badge */}
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '6px 16px',
+                borderRadius: '9999px',
+                background: 'rgba(212, 165, 116, 0.12)',
+                border: '1px solid rgba(212, 165, 116, 0.3)',
+                color: 'var(--accent)',
+                fontSize: 'clamp(12px, 2.5vw, 13px)',
+                fontWeight: '700',
+                textTransform: 'uppercase',
+                letterSpacing: '1px',
+                marginBottom: '20px',
+              }}
+            >
+              <Sparkles size={14} />
+              <span>Authentic Somali Fine Dining</span>
+            </div>
 
-            {/* Main Headline */}
+            {/* Main Headline with responsive typography */}
             <h1
               style={{
                 fontFamily: 'var(--font-heading)',
-                fontSize: 'clamp(28px, 6vw, 64px)',
+                fontSize: 'clamp(32px, 6.5vw, 64px)',
                 fontWeight: '800',
                 lineHeight: '1.15',
                 marginBottom: '20px',
@@ -190,7 +211,7 @@ export default function HomePage() {
               }}
             >
               A Taste of Heritage &{' '}
-              <span style={{ color: 'var(--accent)' }}>
+              <span style={{ color: 'var(--accent)', display: 'inline-block' }}>
                 Modern Elegance
               </span>
             </h1>
@@ -198,25 +219,24 @@ export default function HomePage() {
             {/* Subtitle */}
             <p
               style={{
-                fontSize: 'clamp(15px, 2vw, 18px)',
+                fontSize: 'clamp(15px, 2.2vw, 18px)',
                 color: 'var(--text-secondary)',
                 lineHeight: '1.7',
-                marginBottom: '36px',
-                maxWidth: '640px',
+                marginBottom: '38px',
+                maxWidth: '660px',
               }}
             >
               Immerse yourself in authentic Somali flavors: slow-simmered tender cuts, aromatic cardamom basmati rice, and handcrafted spices prepared with generational passion.
             </p>
 
-            {/* Hero CTAs — Centered */}
+            {/* Hero CTAs */}
             <div
               style={{
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: '12px',
+                gap: '14px',
                 flexWrap: 'wrap',
-                marginBottom: '44px',
                 width: '100%',
               }}
             >
@@ -228,14 +248,14 @@ export default function HomePage() {
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '8px',
-                  padding: '14px 28px',
+                  padding: '14px 30px',
                   borderRadius: '12px',
                   background: 'var(--accent)',
                   color: 'var(--bg-deep)',
                   fontWeight: '700',
                   fontSize: '15px',
                   textDecoration: 'none',
-                  boxShadow: '0 4px 20px rgba(212, 165, 116, 0.35)',
+                  boxShadow: '0 4px 22px rgba(212, 165, 116, 0.38)',
                   transition: 'all 0.25s ease',
                 }}
               >
@@ -251,10 +271,10 @@ export default function HomePage() {
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '8px',
-                  padding: '14px 26px',
+                  padding: '14px 28px',
                   borderRadius: '12px',
                   background: 'rgba(255, 255, 255, 0.04)',
-                  border: '1px solid rgba(212, 165, 116, 0.3)',
+                  border: '1px solid rgba(212, 165, 116, 0.35)',
                   color: 'var(--accent)',
                   fontWeight: '600',
                   fontSize: '15px',
@@ -267,48 +287,13 @@ export default function HomePage() {
                 <span>Reserve a Table</span>
               </Link>
             </div>
-
-            {/* Trust Badges — Centered */}
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                gap: '16px',
-                flexWrap: 'wrap',
-              }}
-            >
-              {[
-                { icon: <Shield size={15} />, text: 'Award-Winning Cuisine' },
-                { icon: <Zap size={15} />, text: '30-Min Rapid Delivery' },
-                { icon: <Award size={15} />, text: 'Instant EVC Plus Checkout' },
-              ].map((badge, i) => (
-                <div
-                  key={i}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    padding: '8px 16px',
-                    background: 'rgba(212, 165, 116, 0.06)',
-                    border: '1px solid rgba(212, 165, 116, 0.15)',
-                    borderRadius: '9999px',
-                    backdropFilter: 'blur(8px)',
-                  }}
-                >
-                  <span style={{ color: 'var(--accent)', display: 'flex' }}>{badge.icon}</span>
-                  <span style={{ fontSize: '12.5px', fontWeight: '600', color: 'var(--text-secondary)' }}>
-                    {badge.text}
-                  </span>
-                </div>
-              ))}
-            </div>
           </div>
 
           {/* Scroll Down Hint */}
           <div
             style={{
               position: 'absolute',
-              bottom: '24px',
+              bottom: '20px',
               left: '50%',
               transform: 'translateX(-50%)',
               zIndex: 3,
@@ -326,87 +311,9 @@ export default function HomePage() {
         </section>
 
         {/* ============================================
-            CORE PILLARS SECTION
+            2. POPULAR DISHES SHOWCASE (EXACTLY 4 DISHES)
             ============================================ */}
-        <section style={{ padding: 'clamp(40px, 8vw, 70px) 0', borderBottom: '1px solid var(--border)' }}>
-          <div className="container">
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
-                gap: '20px',
-              }}
-            >
-              {[
-                {
-                  icon: <Flame size={22} />,
-                  title: 'Cooked Over Real Charcoal',
-                  desc: 'Every cut of meat and dish is grilled over natural coals for deep, authentic smoky aromas.',
-                },
-                {
-                  icon: <Award size={22} />,
-                  title: 'Generational Xawaash Recipes',
-                  desc: 'Crafted with Somali cinnamon, cloves, cumin, and cardamom roasted fresh every morning.',
-                },
-                {
-                  icon: <Truck size={22} />,
-                  title: 'Live Delivery Tracking',
-                  desc: 'Follow your food with real-time updates from chef preparation straight to your gate.',
-                },
-              ].map((feature, i) => (
-                <div
-                  key={i}
-                  style={{
-                    display: 'flex',
-                    gap: '16px',
-                    alignItems: 'flex-start',
-                    padding: '28px',
-                    backgroundColor: 'var(--bg-surface)',
-                    borderRadius: '16px',
-                    border: '1px solid var(--border)',
-                  }}
-                >
-                  <div
-                    style={{
-                      width: '46px',
-                      height: '46px',
-                      borderRadius: '12px',
-                      background: 'rgba(212, 165, 116, 0.1)',
-                      border: '1px solid rgba(212, 165, 116, 0.25)',
-                      color: 'var(--accent)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      flexShrink: 0,
-                    }}
-                  >
-                    {feature.icon}
-                  </div>
-                  <div>
-                    <h4
-                      style={{
-                        fontSize: '16px',
-                        fontWeight: '700',
-                        marginBottom: '6px',
-                        color: 'var(--text-primary)',
-                      }}
-                    >
-                      {feature.title}
-                    </h4>
-                    <p style={{ fontSize: '13.5px', color: 'var(--text-secondary)', lineHeight: '1.6' }}>
-                      {feature.desc}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ============================================
-            POPULAR DISHES SHOWCASE (EXACTLY 4 DISHES)
-            ============================================ */}
-        <section style={{ padding: '80px 0' }}>
+        <section style={{ padding: 'clamp(50px, 8vw, 85px) 0', borderTop: '1px solid var(--border)' }}>
           <div className="container">
             <div
               style={{
@@ -435,8 +342,8 @@ export default function HomePage() {
                 <h2
                   style={{
                     fontFamily: 'var(--font-heading)',
-                    fontSize: '32px',
-                    fontWeight: '700',
+                    fontSize: 'clamp(26px, 4vw, 36px)',
+                    fontWeight: '800',
                     color: 'var(--text-primary)',
                   }}
                 >
@@ -500,17 +407,290 @@ export default function HomePage() {
         </section>
 
         {/* ============================================
-            CULINARY STORY / HERITAGE FEATURE
+            3. THE BARWAAQO EXPERIENCE (3 CORE PILLARS)
             ============================================ */}
         <section
           style={{
-            padding: 'clamp(40px, 8vw, 80px) 0',
+            padding: 'clamp(50px, 8vw, 85px) 0',
             backgroundColor: 'var(--bg-surface)',
             borderTop: '1px solid var(--border)',
             borderBottom: '1px solid var(--border)',
           }}
         >
           <div className="container">
+            <div style={{ textAlign: 'center', maxWidth: '640px', margin: '0 auto 48px auto' }}>
+              <span
+                style={{
+                  fontSize: '12px',
+                  fontWeight: '700',
+                  color: 'var(--accent)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px',
+                  display: 'block',
+                  marginBottom: '8px',
+                }}
+              >
+                Culinary Mastery
+              </span>
+              <h2
+                style={{
+                  fontFamily: 'var(--font-heading)',
+                  fontSize: 'clamp(26px, 4vw, 36px)',
+                  fontWeight: '800',
+                  color: 'var(--text-primary)',
+                  marginBottom: '10px',
+                }}
+              >
+                The Barwaaqo Difference
+              </h2>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '15px', lineHeight: '1.6' }}>
+                From our natural charcoal grills to centuries-old Xawaash spice blends, experience true culinary distinction.
+              </p>
+            </div>
+
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
+                gap: '24px',
+              }}
+            >
+              {[
+                {
+                  icon: <Flame size={24} />,
+                  title: 'Cooked Over Real Charcoal',
+                  desc: 'Every cut of meat and dish is grilled over natural coals for deep, authentic smoky aromas and tender texture.',
+                },
+                {
+                  icon: <Award size={24} />,
+                  title: 'Generational Xawaash Recipes',
+                  desc: 'Crafted with Somali cinnamon, cloves, cumin, and cardamom roasted fresh every single morning by our head chefs.',
+                },
+                {
+                  icon: <Truck size={24} />,
+                  title: 'Live Delivery Tracking',
+                  desc: 'Follow your food with real-time updates from chef preparation straight to your gate across all Mogadishu districts.',
+                },
+              ].map((feature, i) => (
+                <div
+                  key={i}
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '16px',
+                    padding: 'clamp(22px, 4vw, 32px)',
+                    backgroundColor: 'var(--bg-deep)',
+                    borderRadius: '20px',
+                    border: '1px solid var(--border)',
+                    boxShadow: '0 8px 30px rgba(0, 0, 0, 0.3)',
+                    transition: 'transform 0.25s ease, border-color 0.25s ease',
+                  }}
+                >
+                  <div
+                    style={{
+                      width: '52px',
+                      height: '52px',
+                      borderRadius: '14px',
+                      background: 'rgba(212, 165, 116, 0.12)',
+                      border: '1px solid rgba(212, 165, 116, 0.3)',
+                      color: 'var(--accent)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                    }}
+                  >
+                    {feature.icon}
+                  </div>
+                  <div>
+                    <h3
+                      style={{
+                        fontSize: '18px',
+                        fontWeight: '700',
+                        marginBottom: '8px',
+                        color: 'var(--text-primary)',
+                      }}
+                    >
+                      {feature.title}
+                    </h3>
+                    <p style={{ fontSize: '14px', color: 'var(--text-secondary)', lineHeight: '1.6', margin: 0 }}>
+                      {feature.desc}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ============================================
+            4. HOW IT WORKS (3 SIMPLE STEPS)
+            ============================================ */}
+        <section style={{ padding: 'clamp(50px, 8vw, 85px) 0' }}>
+          <div className="container">
+            <div style={{ textAlign: 'center', maxWidth: '620px', margin: '0 auto 48px auto' }}>
+              <span
+                style={{
+                  fontSize: '12px',
+                  fontWeight: '700',
+                  color: 'var(--accent)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px',
+                  display: 'block',
+                  marginBottom: '8px',
+                }}
+              >
+                Seamless Dining
+              </span>
+              <h2
+                style={{
+                  fontFamily: 'var(--font-heading)',
+                  fontSize: 'clamp(26px, 4vw, 36px)',
+                  fontWeight: '800',
+                  color: 'var(--text-primary)',
+                  marginBottom: '10px',
+                }}
+              >
+                How It Works
+              </h2>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '15px', lineHeight: '1.6' }}>
+                Enjoying Barwaaqo's culinary delights is effortless — whether dining in our restaurant or ordering straight to your home.
+              </p>
+            </div>
+
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
+                gap: '24px',
+              }}
+            >
+              {[
+                {
+                  step: '01',
+                  icon: <UtensilsCrossed size={24} />,
+                  title: 'Browse & Select Dishes',
+                  desc: 'Explore our rich menu featuring slow-braised meats, aromatic rice platters, fresh juices, and traditional Somali appetizers.',
+                },
+                {
+                  step: '02',
+                  icon: <CreditCard size={24} />,
+                  title: 'Instant EVC Plus or Cash',
+                  desc: 'Complete your order in seconds with secure EVC Plus mobile pin verification or choose cash on delivery upon arrival.',
+                },
+                {
+                  step: '03',
+                  icon: <Truck size={24} />,
+                  title: 'Swift Delivery or VIP Table',
+                  desc: 'Receive your meal piping hot with our dedicated delivery team or arrive to your reserved table set to perfection.',
+                },
+              ].map((item, i) => (
+                <div
+                  key={i}
+                  style={{
+                    position: 'relative',
+                    padding: 'clamp(24px, 4vw, 32px)',
+                    backgroundColor: 'var(--bg-surface)',
+                    borderRadius: '20px',
+                    border: '1px solid var(--border)',
+                    boxShadow: '0 8px 30px rgba(0, 0, 0, 0.3)',
+                    overflow: 'hidden',
+                  }}
+                >
+                  <span
+                    style={{
+                      position: 'absolute',
+                      top: '16px',
+                      right: '20px',
+                      fontSize: '38px',
+                      fontWeight: '900',
+                      color: 'rgba(212, 165, 116, 0.1)',
+                      fontFamily: 'var(--font-heading)',
+                      userSelect: 'none',
+                    }}
+                  >
+                    {item.step}
+                  </span>
+
+                  <div
+                    style={{
+                      width: '50px',
+                      height: '50px',
+                      borderRadius: '12px',
+                      backgroundColor: 'rgba(212, 165, 116, 0.12)',
+                      border: '1px solid rgba(212, 165, 116, 0.25)',
+                      color: 'var(--accent)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      marginBottom: '20px',
+                    }}
+                  >
+                    {item.icon}
+                  </div>
+
+                  <h3
+                    style={{
+                      fontSize: '18px',
+                      fontWeight: '700',
+                      color: 'var(--text-primary)',
+                      marginBottom: '8px',
+                    }}
+                  >
+                    {item.title}
+                  </h3>
+                  <p style={{ fontSize: '14px', color: 'var(--text-secondary)', lineHeight: '1.6', margin: 0 }}>
+                    {item.desc}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ============================================
+            5. OUR PHILOSOPHY SECTION (UPGRADED HEADER)
+            ============================================ */}
+        <section
+          style={{
+            padding: 'clamp(50px, 8vw, 85px) 0',
+            backgroundColor: 'var(--bg-surface)',
+            borderTop: '1px solid var(--border)',
+            borderBottom: '1px solid var(--border)',
+          }}
+        >
+          <div className="container">
+            {/* Prominent Section Header */}
+            <div style={{ textAlign: 'center', maxWidth: '640px', margin: '0 auto 48px auto' }}>
+              <span
+                style={{
+                  fontSize: '12px',
+                  fontWeight: '700',
+                  color: 'var(--accent)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px',
+                  display: 'block',
+                  marginBottom: '8px',
+                }}
+              >
+                Our Heritage & Vision
+              </span>
+              <h2
+                style={{
+                  fontFamily: 'var(--font-heading)',
+                  fontSize: 'clamp(26px, 4vw, 36px)',
+                  fontWeight: '800',
+                  color: 'var(--text-primary)',
+                  marginBottom: '10px',
+                }}
+              >
+                Our Philosophy
+              </h2>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '15px', lineHeight: '1.6' }}>
+                Where generational Somali warmth harmonizes with culinary perfection and modern hospitality.
+              </p>
+            </div>
+
             <div
               style={{
                 display: 'grid',
@@ -526,7 +706,7 @@ export default function HomePage() {
                   alt="Barwaaqo Restaurant Dining Atmosphere"
                   style={{
                     width: '100%',
-                    height: 'clamp(240px, 40vw, 380px)',
+                    height: 'clamp(260px, 40vw, 400px)',
                     objectFit: 'cover',
                     borderRadius: '20px',
                     border: '1px solid var(--border)',
@@ -535,48 +715,35 @@ export default function HomePage() {
                 <div
                   style={{
                     position: 'absolute',
-                    bottom: '-20px',
-                    right: '20px',
+                    bottom: '-16px',
+                    right: '16px',
                     backgroundColor: 'var(--bg-deep)',
                     border: '1px solid var(--border)',
                     borderRadius: '14px',
-                    padding: '16px 20px',
+                    padding: '14px 18px',
                     boxShadow: '0 8px 24px rgba(0, 0, 0, 0.5)',
                   }}
                 >
-                  <p style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Mogadishu, Somalia</p>
-                  <p style={{ fontSize: '15px', fontWeight: '700', color: 'var(--accent)' }}>Maka Al-Mukarama Road</p>
+                  <p style={{ fontSize: '11.5px', color: 'var(--text-secondary)', margin: 0 }}>Mogadishu, Somalia</p>
+                  <p style={{ fontSize: '14.5px', fontWeight: '700', color: 'var(--accent)', margin: '2px 0 0 0' }}>Maka Al-Mukarama Road</p>
                 </div>
               </div>
 
               {/* Right Story Content */}
               <div>
-                <span
-                  style={{
-                    fontSize: '12px',
-                    fontWeight: '700',
-                    color: 'var(--accent)',
-                    textTransform: 'uppercase',
-                    letterSpacing: '1px',
-                    display: 'block',
-                    marginBottom: '8px',
-                  }}
-                >
-                  Our Philosophy
-                </span>
-                <h2
+                <h3
                   style={{
                     fontFamily: 'var(--font-heading)',
-                    fontSize: 'clamp(26px, 3.5vw, 36px)',
+                    fontSize: 'clamp(22px, 3.5vw, 30px)',
                     fontWeight: '800',
                     color: 'var(--text-primary)',
-                    marginBottom: '18px',
+                    marginBottom: '16px',
                     lineHeight: 1.25,
                   }}
                 >
-                  Where Somali Hospitality Meets Culinary Perfection
-                </h2>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '15px', lineHeight: '1.7', marginBottom: '18px' }}>
+                  Generational Passion in Every Single Plate
+                </h3>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '15px', lineHeight: '1.7', marginBottom: '16px' }}>
                   At Barwaaqo Restaurant, dining is an art of hospitality. We celebrate the richness of the Horn of Africa, blending historic trade-route spices with modern techniques.
                 </p>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '15px', lineHeight: '1.7', marginBottom: '28px' }}>
@@ -604,10 +771,136 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* GUEST STORIES - Auto-scrolling marquee */}
-        <section style={{ padding: '80px 0', overflow: 'hidden' }}>
+        {/* ============================================
+            6. PRIVATE DINING & CATERING EVENTS
+            ============================================ */}
+        <section style={{ padding: 'clamp(50px, 8vw, 85px) 0' }}>
           <div className="container">
-            <div style={{ textAlign: 'center', marginBottom: '48px' }}>
+            <div
+              style={{
+                backgroundColor: 'var(--bg-surface)',
+                border: '1px solid rgba(212, 165, 116, 0.25)',
+                borderRadius: '24px',
+                padding: 'clamp(32px, 6vw, 60px) clamp(20px, 5vw, 50px)',
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))',
+                gap: '36px',
+                alignItems: 'center',
+                boxShadow: '0 16px 50px rgba(0, 0, 0, 0.4)',
+              }}
+            >
+              <div>
+                <span
+                  style={{
+                    fontSize: '12px',
+                    fontWeight: '700',
+                    color: 'var(--accent)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '1px',
+                    display: 'block',
+                    marginBottom: '8px',
+                  }}
+                >
+                  Exclusive Experiences
+                </span>
+                <h2
+                  style={{
+                    fontFamily: 'var(--font-heading)',
+                    fontSize: 'clamp(24px, 3.5vw, 34px)',
+                    fontWeight: '800',
+                    color: 'var(--text-primary)',
+                    marginBottom: '14px',
+                    lineHeight: 1.25,
+                  }}
+                >
+                  Private VIP Dining & Bespoke Catering
+                </h2>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '15px', lineHeight: '1.7', marginBottom: '24px' }}>
+                  From diplomatic gatherings and executive business luncheons to grand family celebrations and weddings, Barwaaqo provides private air-conditioned suites with dedicated silver-service staff.
+                </p>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '28px' }}>
+                  {[
+                    'Private VIP Suites with ambient luxury lighting',
+                    'Customizable multi-course banquet menus',
+                    'Dedicated private waitstaff and executive chef service',
+                    'Corporate event catering delivered across Mogadishu',
+                  ].map((perk, i) => (
+                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14px', color: 'var(--text-primary)' }}>
+                      <CheckCircle2 size={18} color="var(--accent)" style={{ flexShrink: 0 }} />
+                      <span>{perk}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                  <Link
+                    href="/reservations"
+                    prefetch={true}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      padding: '12px 24px',
+                      borderRadius: '12px',
+                      backgroundColor: 'var(--accent)',
+                      color: 'var(--bg-deep)',
+                      fontWeight: '700',
+                      fontSize: '14px',
+                      textDecoration: 'none',
+                      boxShadow: '0 4px 16px rgba(212, 165, 116, 0.35)',
+                    }}
+                  >
+                    <Users size={16} />
+                    <span>Reserve VIP Room</span>
+                  </Link>
+
+                  <Link
+                    href="/contact"
+                    prefetch={true}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      padding: '12px 22px',
+                      borderRadius: '12px',
+                      backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                      border: '1px solid var(--border)',
+                      color: 'var(--text-primary)',
+                      fontWeight: '600',
+                      fontSize: '14px',
+                      textDecoration: 'none',
+                    }}
+                  >
+                    <span>Contact Catering</span>
+                  </Link>
+                </div>
+              </div>
+
+              {/* Event Image */}
+              <div style={{ position: 'relative' }}>
+                <img
+                  src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&auto=format&fit=crop&q=80"
+                  alt="Barwaaqo Private Dining Event"
+                  style={{
+                    width: '100%',
+                    height: 'clamp(240px, 35vw, 360px)',
+                    objectFit: 'cover',
+                    borderRadius: '18px',
+                    border: '1px solid var(--border)',
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ============================================
+            7. GUEST STORIES (TESTIMONIAL MARQUEE)
+            ============================================ */}
+        <section style={{ padding: 'clamp(50px, 8vw, 85px) 0', overflow: 'hidden', borderTop: '1px solid var(--border)' }}>
+          <div className="container">
+            <div style={{ textAlign: 'center', marginBottom: '44px' }}>
               <span
                 style={{
                   fontSize: '12px',
@@ -624,15 +917,15 @@ export default function HomePage() {
               <h2
                 style={{
                   fontFamily: 'var(--font-heading)',
-                  fontSize: '32px',
-                  fontWeight: '700',
+                  fontSize: 'clamp(26px, 4vw, 36px)',
+                  fontWeight: '800',
                   color: 'var(--text-primary)',
                   marginBottom: '10px',
                 }}
               >
                 What Our Diners Say
               </h2>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '15px', maxWidth: '500px', margin: '0 auto' }}>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '15px', maxWidth: '520px', margin: '0 auto' }}>
                 Honest feedback from our valued customers across Mogadishu and worldwide visitors.
               </p>
             </div>
@@ -648,7 +941,6 @@ export default function HomePage() {
                 width: 'max-content',
               }}
             >
-              {/* Duplicate the array so the scroll loops seamlessly */}
               {[...testimonials, ...testimonials].map((t, idx) => {
                 const initials = t.name
                   .split(' ')
@@ -713,7 +1005,6 @@ export default function HomePage() {
                         paddingTop: '16px',
                       }}
                     >
-                      {/* Initials Avatar */}
                       <div
                         style={{
                           width: '42px',
@@ -740,85 +1031,6 @@ export default function HomePage() {
                   </div>
                 );
               })}
-            </div>
-          </div>
-
-          <style>{`
-            @keyframes marqueeScroll {
-              from { transform: translateX(0); }
-              to { transform: translateX(-50%); }
-            }
-          `}</style>
-        </section>
-
-        {/* ============================================
-            TABLE RESERVATION CTA
-            ============================================ */}
-        <section style={{ padding: 'clamp(40px, 8vw, 60px) 0 clamp(50px, 10vw, 90px)' }}>
-          <div className="container">
-            <div
-              style={{
-                backgroundColor: 'var(--bg-surface)',
-                border: '1px solid rgba(212, 165, 116, 0.25)',
-                borderRadius: '24px',
-                padding: 'clamp(28px, 5vw, 50px) clamp(20px, 4vw, 40px)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                flexWrap: 'wrap',
-                gap: '24px',
-                boxShadow: '0 12px 40px rgba(0, 0, 0, 0.5)',
-              }}
-            >
-              <div style={{ maxWidth: '540px' }}>
-                <span
-                  style={{
-                    fontSize: '12px',
-                    fontWeight: '700',
-                    color: 'var(--accent)',
-                    textTransform: 'uppercase',
-                    letterSpacing: '1px',
-                  }}
-                >
-                  Table Reservations
-                </span>
-                <h2
-                  style={{
-                    fontFamily: 'var(--font-heading)',
-                    fontSize: '28px',
-                    fontWeight: '800',
-                    color: 'var(--text-primary)',
-                    marginTop: '6px',
-                    marginBottom: '10px',
-                  }}
-                >
-                  Plan Your Dining Experience
-                </h2>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '14.5px', lineHeight: '1.6' }}>
-                  Secure your preferred booth or terrace seating for celebrations, family dinners, or meetings.
-                </p>
-              </div>
-
-              <Link
-                href="/reservations"
-                prefetch={true}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '14px 32px',
-                  borderRadius: '12px',
-                  backgroundColor: 'var(--accent)',
-                  color: 'var(--bg-deep)',
-                  fontWeight: '700',
-                  fontSize: '15px',
-                  textDecoration: 'none',
-                  boxShadow: '0 4px 18px rgba(212, 165, 116, 0.35)',
-                }}
-              >
-                <span>Book a Table Now</span>
-                <ArrowRight size={18} />
-              </Link>
             </div>
           </div>
         </section>

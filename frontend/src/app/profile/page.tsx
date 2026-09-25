@@ -5,9 +5,8 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useAuth } from '@/context/AuthContext';
 import api from '@/lib/api';
-import { User, Phone, MapPin, Lock, CheckCircle, ShoppingBag, Clock, ArrowRight, ExternalLink, Receipt } from 'lucide-react';
+import { User, Lock } from 'lucide-react';
 import Link from 'next/link';
-import { Order } from '@/types';
 
 export default function ProfilePage() {
   const { user, updateUser } = useAuth();
@@ -17,10 +16,6 @@ export default function ProfilePage() {
   const [address, setAddress] = useState('');
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
   const [profileSuccess, setProfileSuccess] = useState('');
-
-  // Orders state
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loadingOrders, setLoadingOrders] = useState(false);
 
   // Password state
   const [currentPassword, setCurrentPassword] = useState('');
@@ -34,16 +29,6 @@ export default function ProfilePage() {
       setName(user.name || '');
       setPhone(user.phone || '');
       setAddress(user.address || '');
-
-      setLoadingOrders(true);
-      api.get('/orders/my-orders')
-        .then((res) => {
-          if (res.data.success) {
-            setOrders(res.data.data || []);
-          }
-        })
-        .catch((err) => console.error('Error fetching profile orders:', err))
-        .finally(() => setLoadingOrders(false));
     }
   }, [user]);
 
@@ -411,230 +396,6 @@ export default function ProfilePage() {
                 </button>
               </form>
             </div>
-          </div>
-
-          {/* Bottom: Recent Orders History Section */}
-          <div
-            style={{
-              marginTop: '40px',
-              backgroundColor: 'var(--bg-surface)',
-              borderRadius: '20px',
-              border: '1px solid var(--border)',
-              padding: '30px',
-            }}
-          >
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                flexWrap: 'wrap',
-                gap: '12px',
-                marginBottom: '20px',
-                borderBottom: '1px solid var(--border)',
-                paddingBottom: '16px',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <ShoppingBag size={20} color="var(--accent)" />
-                <h3
-                  style={{
-                    fontFamily: 'var(--font-display)',
-                    fontSize: '20px',
-                    fontWeight: '700',
-                    color: 'var(--text-primary)',
-                  }}
-                >
-                  My Orders (Dalabyadayda)
-                </h3>
-                <span
-                  style={{
-                    padding: '2px 8px',
-                    borderRadius: '8px',
-                    backgroundColor: 'var(--bg-deep)',
-                    border: '1px solid var(--border)',
-                    fontSize: '12px',
-                    fontWeight: '700',
-                    color: 'var(--accent)',
-                  }}
-                >
-                  {orders.length}
-                </span>
-              </div>
-
-              <Link
-                href="/orders"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  fontSize: '13.5px',
-                  fontWeight: '700',
-                  color: 'var(--accent)',
-                  textDecoration: 'none',
-                }}
-              >
-                <span>View All Orders ({orders.length})</span>
-                <ArrowRight size={15} />
-              </Link>
-            </div>
-
-            {loadingOrders ? (
-              <div style={{ padding: '24px', textAlign: 'center', color: 'var(--text-secondary)' }}>
-                Loading your orders...
-              </div>
-            ) : orders.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '36px 20px', color: 'var(--text-secondary)' }}>
-                <p style={{ fontSize: '15px', color: 'var(--text-primary)', fontWeight: '600', marginBottom: '6px' }}>
-                  Ma haysatid wax dalab ah hadda (No orders yet)
-                </p>
-                <p style={{ fontSize: '13.5px', marginBottom: '20px' }}>
-                  You have not placed any orders yet. Check out our fresh Somali menu!
-                </p>
-                <Link
-                  href="/menu"
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    padding: '10px 22px',
-                    borderRadius: '12px',
-                    backgroundColor: 'var(--accent)',
-                    color: 'var(--bg-deep)',
-                    fontWeight: '700',
-                    fontSize: '13px',
-                    textDecoration: 'none',
-                  }}
-                >
-                  Order Food Now
-                </Link>
-              </div>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                {orders.slice(0, 4).map((ord) => {
-                  const formattedDate = new Date(ord.createdAt).toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                    year: 'numeric',
-                  });
-
-                  return (
-                    <div
-                      key={ord._id}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        flexWrap: 'wrap',
-                        gap: '14px',
-                        padding: '14px 18px',
-                        borderRadius: '14px',
-                        backgroundColor: 'var(--bg-deep)',
-                        border: '1px solid var(--border)',
-                      }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <div
-                          style={{
-                            padding: '6px 10px',
-                            borderRadius: '8px',
-                            backgroundColor: 'var(--bg-surface)',
-                            border: '1px solid var(--border)',
-                            fontWeight: '700',
-                            fontSize: '13px',
-                            color: 'var(--accent)',
-                          }}
-                        >
-                          {ord.orderId}
-                        </div>
-
-                        <div>
-                          <p style={{ fontWeight: '600', fontSize: '13.5px', color: 'var(--text-primary)' }}>
-                            {ord.items.map((it) => (typeof it.food === 'object' && it.food?.name) || it.name || 'Item').join(', ')}
-                          </p>
-                          <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
-                            {formattedDate} • {ord.orderType || 'Delivery'}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                        <span
-                          style={{
-                            padding: '4px 10px',
-                            borderRadius: '9999px',
-                            fontSize: '11.5px',
-                            fontWeight: '700',
-                            textTransform: 'uppercase',
-                            backgroundColor:
-                              ord.status === 'Completed'
-                                ? 'rgba(74, 222, 128, 0.12)'
-                                : ord.status === 'Cancelled'
-                                ? 'rgba(248, 113, 113, 0.12)'
-                                : 'rgba(251, 191, 36, 0.12)',
-                            color:
-                              ord.status === 'Completed'
-                                ? '#4ADE80'
-                                : ord.status === 'Cancelled'
-                                ? '#F87171'
-                                : '#FBBF24',
-                            border: `1px solid ${
-                              ord.status === 'Completed'
-                                ? 'rgba(74, 222, 128, 0.3)'
-                                : ord.status === 'Cancelled'
-                                ? 'rgba(248, 113, 113, 0.3)'
-                                : 'rgba(251, 191, 36, 0.3)'
-                            }`,
-                          }}
-                        >
-                          {ord.status}
-                        </span>
-
-                        <span style={{ fontWeight: '800', fontSize: '15px', color: 'var(--accent)' }}>
-                          ${Number(ord.totalAmount).toFixed(2)}
-                        </span>
-
-                        <Link
-                          href="/orders"
-                          style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '5px',
-                            padding: '7px 14px',
-                            borderRadius: '8px',
-                            backgroundColor: 'var(--bg-surface)',
-                            border: '1px solid var(--border)',
-                            color: 'var(--text-primary)',
-                            fontSize: '12px',
-                            fontWeight: '600',
-                            textDecoration: 'none',
-                          }}
-                        >
-                          <span>View Orders</span>
-                          <ExternalLink size={12} />
-                        </Link>
-                      </div>
-                    </div>
-                  );
-                })}
-
-                {orders.length > 4 && (
-                  <div style={{ textAlign: 'center', marginTop: '10px' }}>
-                    <Link
-                      href="/orders"
-                      style={{
-                        fontSize: '13px',
-                        fontWeight: '700',
-                        color: 'var(--accent)',
-                        textDecoration: 'none',
-                      }}
-                    >
-                      Daawo dhammaan {orders.length} dalab (View all {orders.length} orders) →
-                    </Link>
-                  </div>
-                )}
-              </div>
-            )}
           </div>
 
         </div>

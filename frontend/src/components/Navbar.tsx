@@ -92,19 +92,67 @@ export default function Navbar() {
           <Link
             href="/"
             prefetch={true}
-            style={{ textDecoration: 'none', flexShrink: 0 }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              textDecoration: 'none',
+              flexShrink: 0,
+            }}
           >
-            <span
+            <div
               style={{
-                fontFamily: 'var(--font-heading)',
-                fontSize: 'clamp(15px, 3.5vw, 20px)',
-                fontWeight: '700',
-                letterSpacing: '0.3px',
-                color: 'var(--accent)',
+                width: '38px',
+                height: '38px',
+                borderRadius: '10px',
+                background: 'linear-gradient(135deg, var(--accent) 0%, #D47151 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 3px 12px var(--accent-glow)',
+                border: '1px solid rgba(255, 255, 255, 0.25)',
+                flexShrink: 0,
               }}
             >
-              {settings.restaurantName}
-            </span>
+              <span
+                style={{
+                  fontFamily: 'var(--font-brand)',
+                  fontSize: '22px',
+                  fontWeight: '800',
+                  color: '#FFFFFF',
+                  lineHeight: 1,
+                }}
+              >
+                B
+              </span>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+              <span
+                style={{
+                  fontFamily: 'var(--font-brand)',
+                  fontSize: 'clamp(17px, 3.8vw, 21px)',
+                  fontWeight: '700',
+                  letterSpacing: '0.8px',
+                  color: 'var(--text-primary)',
+                  lineHeight: 1.1,
+                }}
+              >
+                Barwaaqo
+              </span>
+              <span
+                style={{
+                  fontSize: '9px',
+                  fontWeight: '700',
+                  letterSpacing: '2.6px',
+                  color: 'var(--accent)',
+                  textTransform: 'uppercase',
+                  lineHeight: 1.1,
+                  marginTop: '1px',
+                }}
+              >
+                Restaurant
+              </span>
+            </div>
           </Link>
 
           {/* Desktop Navigation Links */}
@@ -376,20 +424,64 @@ export default function Navbar() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            padding: '18px 20px',
+            padding: '16px 18px',
             borderBottom: '1px solid var(--border)',
           }}
         >
-          <span
-            style={{
-              fontFamily: 'var(--font-heading)',
-              fontSize: '17px',
-              fontWeight: '700',
-              color: 'var(--accent)',
-            }}
-          >
-            {settings.restaurantName}
-          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div
+              style={{
+                width: '34px',
+                height: '34px',
+                borderRadius: '9px',
+                background: 'linear-gradient(135deg, var(--accent) 0%, #D47151 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 3px 10px var(--accent-glow)',
+                flexShrink: 0,
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: 'var(--font-brand)',
+                  fontSize: '19px',
+                  fontWeight: '800',
+                  color: '#FFFFFF',
+                  lineHeight: 1,
+                }}
+              >
+                B
+              </span>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <span
+                style={{
+                  fontFamily: 'var(--font-brand)',
+                  fontSize: '18px',
+                  fontWeight: '700',
+                  letterSpacing: '0.6px',
+                  color: 'var(--text-primary)',
+                  lineHeight: 1.1,
+                }}
+              >
+                Barwaaqo
+              </span>
+              <span
+                style={{
+                  fontSize: '8.5px',
+                  fontWeight: '700',
+                  letterSpacing: '2.4px',
+                  color: 'var(--accent)',
+                  textTransform: 'uppercase',
+                  lineHeight: 1.1,
+                  marginTop: '1px',
+                }}
+              >
+                Restaurant
+              </span>
+            </div>
+          </div>
           <button
             onClick={() => setMobileMenuOpen(false)}
             aria-label="Close menu"

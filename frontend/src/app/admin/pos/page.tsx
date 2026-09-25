@@ -35,7 +35,7 @@ export default function AdminPosPage() {
   const [customers, setCustomers] = useState<PosCustomer[]>([]);
   const [selectedCustomerId, setSelectedCustomerId] = useState('');
   const [paymentPhone, setPaymentPhone] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState<'cash_on_delivery' | 'evc_plus'>('cash_on_delivery');
+  const [paymentMethod, setPaymentMethod] = useState<'evc_plus' | 'edahab' | 'pay_on_delivery'>('evc_plus');
   const [notes, setNotes] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -263,9 +263,10 @@ export default function AdminPosPage() {
               </select>
               <input value={location} onChange={(event) => setLocation(event.target.value)} placeholder="e.g. Table 4 or Counter" required className="form-input" style={{ backgroundColor: 'var(--bg-deep)', border: '1px solid var(--border)', borderRadius: '9px' }} />
               <input value={paymentPhone} onChange={(event) => setPaymentPhone(event.target.value)} placeholder="e.g. +252 61 555 0190" required className="form-input" style={{ backgroundColor: 'var(--bg-deep)', border: '1px solid var(--border)', borderRadius: '9px' }} />
-              <select value={paymentMethod} onChange={(event) => setPaymentMethod(event.target.value as 'cash_on_delivery' | 'evc_plus')} className="form-select" style={{ backgroundColor: 'var(--bg-deep)', border: '1px solid var(--border)', borderRadius: '9px' }}>
-                <option value="cash_on_delivery">Cash</option>
-                <option value="evc_plus">EVC Plus</option>
+              <select value={paymentMethod} onChange={(event) => setPaymentMethod(event.target.value as 'evc_plus' | 'edahab' | 'pay_on_delivery')} className="form-select" style={{ backgroundColor: 'var(--bg-deep)', border: '1px solid var(--border)', borderRadius: '9px' }}>
+                <option value="evc_plus">EVC Plus (Hormuud)</option>
+                <option value="edahab">eDahab (Dahabshiil)</option>
+                <option value="pay_on_delivery">Pay on Delivery (Mobile Money)</option>
               </select>
               <textarea value={notes} onChange={(event) => setNotes(event.target.value)} placeholder="Order notes (optional)" rows={2} className="form-input" style={{ resize: 'vertical', backgroundColor: 'var(--bg-deep)', border: '1px solid var(--border)', borderRadius: '9px' }} />
             </div>

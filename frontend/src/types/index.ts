@@ -56,7 +56,7 @@ export interface Order {
   totalAmount: number;
   orderType?: 'DELIVERY' | 'TAKEAWAY' | 'DINE_IN';
   shippingAddress: string;
-  paymentMethod: 'evc_plus' | 'cash_on_delivery';
+  paymentMethod: 'evc_plus' | 'edahab' | 'pay_on_delivery' | 'cash_on_delivery';
   paymentPhone: string;
   paymentStatus: 'Pending' | 'Paid' | 'Failed';
   status: 'Pending' | 'Processing' | 'Out for Delivery' | 'Completed' | 'Cancelled';

@@ -7,7 +7,7 @@ import { SettingsProvider } from '@/context/SettingsContext';
 import AdminPublicRedirect from '@/components/AdminPublicRedirect';
 
 export const metadata: Metadata = {
-  title: 'barwaqo restaurant',
+  title: 'Barwaaqo Restaurant | Authentic Dining & Delivery',
   description:
     'Experience premier dining, fresh Somali delicacies, online food ordering, and table reservations at Barwaaqo Restaurant.',
   keywords: ['restaurant', 'Somali food', 'online ordering', 'Barwaaqo', 'Mogadishu dining', 'halal food'],

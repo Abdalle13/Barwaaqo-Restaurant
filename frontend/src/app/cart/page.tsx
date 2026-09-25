@@ -156,8 +156,8 @@ export default function CartPage() {
                     style={{
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '16px',
-                      padding: '18px',
+                      gap: '14px',
+                      padding: '16px',
                       backgroundColor: 'var(--bg-surface)',
                       borderRadius: '16px',
                       border: '1px solid var(--border)',
@@ -168,8 +168,8 @@ export default function CartPage() {
                       src={item.food.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400'}
                       alt={item.food.name}
                       style={{
-                        width: 'clamp(60px, 10vw, 84px)',
-                        height: 'clamp(60px, 10vw, 84px)',
+                        width: '68px',
+                        height: '68px',
                         borderRadius: '12px',
                         objectFit: 'cover',
                         flexShrink: 0,
@@ -177,99 +177,107 @@ export default function CartPage() {
                       }}
                     />
 
-                    <div style={{ flexGrow: 1, minWidth: 0 }}>
-                      <h4
-                        style={{
-                          fontSize: '15px',
-                          fontWeight: '700',
-                          marginBottom: '4px',
-                          color: 'var(--text-primary)',
-                          overflowWrap: 'break-word',
-                          wordBreak: 'break-word',
-                        }}
-                      >
-                        {item.food.name}
-                      </h4>
-                      <div style={{ fontSize: '13px', color: 'var(--accent)', fontWeight: '600' }}>
-                        ${item.price.toFixed(2)} each
+                    <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px' }}>
+                        <div style={{ minWidth: 0 }}>
+                          <h4
+                            style={{
+                              fontSize: '15px',
+                              fontWeight: '700',
+                              color: 'var(--text-primary)',
+                              margin: 0,
+                              lineHeight: 1.3,
+                            }}
+                          >
+                            {item.food.name}
+                          </h4>
+                          <div style={{ fontSize: '13px', color: 'var(--accent)', fontWeight: '600', marginTop: '2px' }}>
+                            ${item.price.toFixed(2)} each
+                          </div>
+                        </div>
+
+                        <button
+                          onClick={() => removeFromCart(item.food._id)}
+                          aria-label="Remove item"
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            color: 'var(--text-muted)',
+                            cursor: 'pointer',
+                            padding: '4px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            borderRadius: '6px',
+                            flexShrink: 0,
+                          }}
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
+                        {/* Quantity Controller */}
+                        <div
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            background: 'var(--bg-deep)',
+                            borderRadius: '10px',
+                            padding: '4px 8px',
+                            border: '1px solid var(--border)',
+                          }}
+                        >
+                          <button
+                            onClick={() => updateQuantity(item.food._id, item.quantity - 1)}
+                            aria-label="Decrease"
+                            style={{
+                              width: '26px',
+                              height: '26px',
+                              borderRadius: '6px',
+                              border: 'none',
+                              background: 'var(--bg-surface)',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              color: 'var(--text-primary)',
+                            }}
+                          >
+                            <Minus size={12} />
+                          </button>
+
+                          <span style={{ fontWeight: '700', fontSize: '13px', minWidth: '18px', textAlign: 'center', color: 'var(--text-primary)' }}>
+                            {item.quantity}
+                          </span>
+
+                          <button
+                            onClick={() => updateQuantity(item.food._id, item.quantity + 1)}
+                            aria-label="Increase"
+                            style={{
+                              width: '26px',
+                              height: '26px',
+                              borderRadius: '6px',
+                              border: 'none',
+                              background: 'var(--accent)',
+                              color: 'var(--bg-deep)',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                            }}
+                          >
+                            <Plus size={12} />
+                          </button>
+                        </div>
+
+                        {/* Item Total Price */}
+                        <div style={{ fontWeight: '800', fontSize: '15px', color: 'var(--text-primary)' }}>
+                          ${(item.price * item.quantity).toFixed(2)}
+                        </div>
                       </div>
                     </div>
-
-                    {/* Quantity Controller */}
-                    <div
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        background: 'var(--bg-deep)',
-                        borderRadius: '10px',
-                        padding: '4px 8px',
-                        border: '1px solid var(--border)',
-                      }}
-                    >
-                      <button
-                        onClick={() => updateQuantity(item.food._id, item.quantity - 1)}
-                        aria-label="Decrease"
-                        style={{
-                          width: '26px',
-                          height: '26px',
-                          borderRadius: '6px',
-                          border: 'none',
-                          background: 'var(--bg-surface)',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          color: 'var(--text-primary)',
-                        }}
-                      >
-                        <Minus size={12} />
-                      </button>
-
-                      <span style={{ fontWeight: '700', fontSize: '13px', minWidth: '18px', textAlign: 'center', color: 'var(--text-primary)' }}>
-                        {item.quantity}
-                      </span>
-
-                      <button
-                        onClick={() => updateQuantity(item.food._id, item.quantity + 1)}
-                        aria-label="Increase"
-                        style={{
-                          width: '26px',
-                          height: '26px',
-                          borderRadius: '6px',
-                          border: 'none',
-                          background: 'var(--accent)',
-                          color: 'var(--bg-deep)',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}
-                      >
-                        <Plus size={12} />
-                      </button>
-                    </div>
-
-                    {/* Item Total Price */}
-                    <div style={{ fontWeight: '800', fontSize: '15px', minWidth: '64px', textAlign: 'right', color: 'var(--text-primary)' }}>
-                      ${(item.price * item.quantity).toFixed(2)}
-                    </div>
-
-                    {/* Delete Item */}
-                    <button
-                      onClick={() => removeFromCart(item.food._id)}
-                      aria-label="Remove item"
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        color: 'var(--text-muted)',
-                        cursor: 'pointer',
-                        padding: '6px',
-                        transition: 'color 0.2s',
-                      }}
-                    >
-                      <Trash2 size={16} />
-                    </button>
                   </div>
                 ))}
               </div>

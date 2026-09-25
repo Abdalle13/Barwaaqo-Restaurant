@@ -712,7 +712,11 @@ export default function MyOrdersPage() {
                           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                             <span style={{ color: 'var(--text-muted)' }}>Payment:</span>
                             <span style={{ color: 'var(--text-primary)', fontWeight: '600' }}>
-                              {order.paymentMethod === 'evc_plus' ? 'EVC Plus' : 'Cash on Delivery'}
+                              {order.paymentMethod === 'evc_plus'
+                                ? 'EVC Plus (Hormuud)'
+                                : order.paymentMethod === 'edahab'
+                                ? 'eDahab (Dahabshiil)'
+                                : 'Pay on Delivery (Mobile Money)'}
                             </span>
                           </div>
                         </div>

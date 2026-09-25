@@ -137,23 +137,49 @@ export default function AdminSidebar({ onCloseMobile }: AdminSidebarProps) {
       <div>
         {/* Brand Header */}
         <div style={{ padding: '0 8px 20px 8px', borderBottom: '1px solid var(--border)', marginBottom: '16px' }}>
-          <div style={{ textDecoration: 'none' }}>
-            <span
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div
               style={{
-                fontFamily: 'var(--font-heading)',
-                fontSize: '16px',
-                fontWeight: '700',
-                display: 'block',
-                letterSpacing: '0.3px',
-                color: 'var(--accent)',
-                lineHeight: 1.3,
+                width: '34px',
+                height: '34px',
+                borderRadius: '9px',
+                background: 'linear-gradient(135deg, var(--accent) 0%, #D47151 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 3px 10px var(--accent-glow)',
+                flexShrink: 0,
               }}
             >
-              {settings.restaurantName}
-            </span>
-            <span style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text-muted)', letterSpacing: '1.5px', textTransform: 'uppercase', marginTop: '2px', display: 'block' }}>
-              Admin Portal
-            </span>
+              <span
+                style={{
+                  fontFamily: 'var(--font-brand)',
+                  fontSize: '19px',
+                  fontWeight: '800',
+                  color: '#FFFFFF',
+                  lineHeight: 1,
+                }}
+              >
+                B
+              </span>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <span
+                style={{
+                  fontFamily: 'var(--font-brand)',
+                  fontSize: '17px',
+                  fontWeight: '700',
+                  letterSpacing: '0.6px',
+                  color: 'var(--text-primary)',
+                  lineHeight: 1.1,
+                }}
+              >
+                Barwaaqo
+              </span>
+              <span style={{ fontSize: '9px', fontWeight: '700', color: 'var(--accent)', letterSpacing: '1.8px', textTransform: 'uppercase', marginTop: '1px', display: 'block' }}>
+                Admin Portal
+              </span>
+            </div>
           </div>
         </div>
 

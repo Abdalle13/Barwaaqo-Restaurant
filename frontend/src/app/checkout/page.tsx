@@ -26,9 +26,12 @@ export default function CheckoutPage() {
   const { user, isLoading: isAuthLoading } = useAuth();
 
   const [shippingAddress, setShippingAddress] = useState(user?.address || '');
-  const [orderType, setOrderType] = useState<'DELIVERY' | 'TAKEAWAY' | 'DINE_IN'>('DELIVERY');
+  const [district, setDistrict] = useState('');
+  const [landmark, setLandmark] = useState('');
+  const [orderType, setOrderType] = useState<'' | 'DELIVERY' | 'TAKEAWAY' | 'DINE_IN'>('DELIVERY');
   const [paymentPhone, setPaymentPhone] = useState(user?.phone || '');
-  const [paymentMethod, setPaymentMethod] = useState<'evc_plus' | 'cash_on_delivery'>('evc_plus');
+  const [alternativePhone, setAlternativePhone] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState<'evc_plus' | 'edahab' | 'pay_on_delivery'>('evc_plus');
   const [notes, setNotes] = useState('');
   const [evcPin, setEvcPin] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -37,6 +40,25 @@ export default function CheckoutPage() {
   const [confirmedItems, setConfirmedItems] = useState<ConfirmedOrderItem[]>([]);
   const orderDeliveryFee = orderType === 'DELIVERY' ? deliveryFee : 0;
   const orderTotal = subtotal + orderDeliveryFee + tax;
+
+  const mogadishuDistricts = [
+    'Hodan',
+    'Waaberi',
+    'Wadajir',
+    'Kaaraan',
+    'Dayniile',
+    'Shibis',
+    'Boondheere',
+    'Cabdicasis',
+    'Xamarweyne',
+    'Xamarjajab',
+    'Yaaqshiid',
+    'Dharkenley',
+    'Kaxda',
+    'Shangani',
+    'Howlwadaag',
+    'Warta Nabadda',
+  ];
 
   useEffect(() => {
     if (!isAuthLoading && !user) {
@@ -53,8 +75,13 @@ export default function CheckoutPage() {
       return;
     }
 
-    if (!shippingAddress.trim()) {
-      setError(orderType === 'DELIVERY' ? 'Please provide a specific delivery address' : 'Please provide a pickup or table location');
+    if (!orderType) {
+      setError('Please choose an Order Type / Fadlan dooro nooca dalabka');
+      return;
+    }
+
+    if (orderType === 'DELIVERY' && !district) {
+      setError('Please select your District / Fadlan dooro degmadaada');
       return;
     }
 
@@ -63,8 +90,8 @@ export default function CheckoutPage() {
       return;
     }
 
-    if (paymentMethod === 'evc_plus' && evcPin !== '1234') {
-      setError('Demo EVC Plus Pin is 1234. Please enter 1234 to simulate payment confirmation.');
+    if ((paymentMethod === 'evc_plus' || paymentMethod === 'edahab') && evcPin !== '1234') {
+      setError(`Demo ${paymentMethod === 'evc_plus' ? 'EVC Plus' : 'eDahab'} PIN is 1234. Please enter 1234 to simulate payment confirmation.`);
       return;
     }
 
@@ -79,6 +106,12 @@ export default function CheckoutPage() {
         image: item.food.image,
       }));
 
+      const resolvedAddress = orderType === 'DELIVERY'
+        ? (landmark.trim() ? `Degmada ${district} - ${landmark.trim()}` : `Degmada ${district}`)
+        : orderType === 'DINE_IN'
+        ? (landmark.trim() ? `Dine-in: ${landmark.trim()}` : 'Dine-in at Restaurant')
+        : 'Takeaway Counter';
+
       const orderPayload = {
         items: itemsToOrder.map((it) => ({
           food: it.food,
@@ -86,8 +119,11 @@ export default function CheckoutPage() {
           quantity: it.quantity,
           price: it.price,
         })),
-        shippingAddress,
+        district: orderType === 'DELIVERY' ? district : undefined,
+        landmark: landmark.trim() || undefined,
+        shippingAddress: resolvedAddress,
         paymentPhone,
+        alternativePhone: alternativePhone.trim() || undefined,
         paymentMethod,
         notes,
         orderType,
@@ -275,8 +311,12 @@ export default function CheckoutPage() {
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span>Payment Mode</span>
-                    <span style={{ color: 'var(--text-primary)', fontWeight: '600', textTransform: 'capitalize' }}>
-                      {orderSuccess.paymentMethod.replace('_', ' ')}
+                    <span style={{ color: 'var(--text-primary)', fontWeight: '600' }}>
+                      {orderSuccess.paymentMethod === 'evc_plus'
+                        ? 'EVC Plus (Hormuud)'
+                        : orderSuccess.paymentMethod === 'edahab'
+                        ? 'eDahab (Dahabshiil)'
+                        : 'Pay on Delivery (Mobile Money)'}
                     </span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -481,57 +521,132 @@ export default function CheckoutPage() {
                     </h3>
 
                     <div className="form-group" style={{ marginBottom: '18px' }}>
-                      <label className="form-label">How will the customer receive the order? *</label>
+                      <label className="form-label">Order Type / Nooca Dalabka *</label>
                       <select
                         value={orderType}
                         onChange={(e) => {
-                          const nextType = e.target.value as 'DELIVERY' | 'TAKEAWAY' | 'DINE_IN';
+                          const nextType = e.target.value as '' | 'DELIVERY' | 'TAKEAWAY' | 'DINE_IN';
                           setOrderType(nextType);
-                          if (nextType === 'TAKEAWAY') setShippingAddress('Takeaway counter');
-                          if (nextType === 'DINE_IN') setShippingAddress('Restaurant dining table');
-                          if (nextType === 'DELIVERY' && shippingAddress !== user?.address) setShippingAddress(user?.address || '');
                         }}
+                        required
                         className="form-select"
                         style={{ backgroundColor: 'var(--bg-deep)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
                       >
-                        <option value="DELIVERY">Delivery to customer</option>
-                        <option value="TAKEAWAY">Takeaway from restaurant</option>
-                        <option value="DINE_IN">Dine-in at restaurant</option>
+                        <option value="" disabled>-- Choose Order Type / Dooro Nooca Dalabka --</option>
+                        <option value="DELIVERY">Delivery to Home / Office (Geynsi)</option>
+                        <option value="TAKEAWAY">Takeaway from Restaurant (Qaadasho)</option>
+                        <option value="DINE_IN">Dine-in at Restaurant (Gudaha Maqaayadda)</option>
                       </select>
                     </div>
 
-                    <div className="form-group" style={{ marginBottom: '18px' }}>
-                      <label className="form-label">{orderType === 'DELIVERY' ? 'Full Street Address & Landmark *' : 'Pickup or Table Location *'}</label>
-                      <input
-                        type="text"
-                        placeholder={orderType === 'DELIVERY' ? 'Maka Al-Mukarama Road, Near Sahafi Hotel, KM4' : orderType === 'TAKEAWAY' ? 'Takeaway counter' : 'Table number or dining area'}
-                        value={shippingAddress}
-                        onChange={(e) => setShippingAddress(e.target.value)}
-                        required
-                        className="form-input"
-                        style={{
-                          backgroundColor: 'var(--bg-deep)',
-                          border: '1px solid var(--border)',
-                          color: 'var(--text-primary)',
-                        }}
-                      />
-                    </div>
+                    {orderType === 'DELIVERY' ? (
+                      <>
+                        <div className="form-group" style={{ marginBottom: '18px' }}>
+                          <label className="form-label">Mogadishu District / Degmada *</label>
+                          <select
+                            value={district}
+                            onChange={(e) => setDistrict(e.target.value)}
+                            required
+                            className="form-select"
+                            style={{ backgroundColor: 'var(--bg-deep)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
+                          >
+                            <option value="" disabled>-- Select your District / Dooro Degmadaada --</option>
+                            {mogadishuDistricts.map((d) => (
+                              <option key={d} value={d} style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)' }}>
+                                Degmada {d}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
 
-                    <div className="form-group" style={{ marginBottom: '18px' }}>
-                      <label className="form-label">Contact Phone Number *</label>
-                      <input
-                        type="text"
-                        placeholder="e.g. +252 61 5555555"
-                        value={paymentPhone}
-                        onChange={(e) => setPaymentPhone(e.target.value)}
-                        required
-                        className="form-input"
+                        <div className="form-group" style={{ marginBottom: '18px' }}>
+                          <label className="form-label">Specific Location / Street or Landmark (Optional)</label>
+                          <input
+                            type="text"
+                            placeholder="e.g. KM4, Maka Al-Mukarama Road, Sahafi Hotel agtiisa, ama Guri #12"
+                            value={landmark}
+                            onChange={(e) => setLandmark(e.target.value)}
+                            className="form-input"
+                            style={{
+                              backgroundColor: 'var(--bg-deep)',
+                              border: '1px solid var(--border)',
+                              color: 'var(--text-primary)',
+                            }}
+                          />
+                        </div>
+                      </>
+                    ) : orderType === 'DINE_IN' ? (
+                      <div className="form-group" style={{ marginBottom: '18px' }}>
+                        <label className="form-label">Table Number / Dining Area (Optional)</label>
+                        <input
+                          type="text"
+                          placeholder="e.g. Table 4, Window Side, Terrace"
+                          value={landmark}
+                          onChange={(e) => setLandmark(e.target.value)}
+                          className="form-input"
+                          style={{
+                            backgroundColor: 'var(--bg-deep)',
+                            border: '1px solid var(--border)',
+                            color: 'var(--text-primary)',
+                          }}
+                        />
+                      </div>
+                    ) : (
+                      <div
                         style={{
+                          padding: '12px 16px',
                           backgroundColor: 'var(--bg-deep)',
+                          borderRadius: '12px',
                           border: '1px solid var(--border)',
-                          color: 'var(--text-primary)',
+                          fontSize: '13.5px',
+                          color: 'var(--text-secondary)',
+                          marginBottom: '18px',
                         }}
-                      />
+                      >
+                        📍 Dalabkaaga waxaa lagu diyaarin doonaa miiska qaadashada (Takeaway counter).
+                      </div>
+                    )}
+
+                    <div
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))',
+                        gap: '16px',
+                        marginBottom: '18px',
+                      }}
+                    >
+                      <div className="form-group" style={{ marginBottom: 0 }}>
+                        <label className="form-label">Primary Phone *</label>
+                        <input
+                          type="tel"
+                          placeholder="e.g. +252 61 5555555"
+                          value={paymentPhone}
+                          onChange={(e) => setPaymentPhone(e.target.value)}
+                          required
+                          className="form-input"
+                          style={{
+                            backgroundColor: 'var(--bg-deep)',
+                            border: '1px solid var(--border)',
+                            color: 'var(--text-primary)',
+                          }}
+                        />
+                      </div>
+
+                      <div className="form-group" style={{ marginBottom: 0 }}>
+                        <label className="form-label">Alternative Phone (Optional)</label>
+                        <input
+                          type="tel"
+                          placeholder="e.g. +252 61 0000000"
+                          value={alternativePhone}
+                          onChange={(e) => setAlternativePhone(e.target.value)}
+                          className="form-input"
+                          style={{
+                            backgroundColor: 'var(--bg-deep)',
+                            border: '1px solid var(--border)',
+                            color: 'var(--text-primary)',
+                          }}
+                        />
+                      </div>
                     </div>
 
                     <div className="form-group" style={{ marginBottom: 0 }}>
@@ -576,7 +691,7 @@ export default function CheckoutPage() {
                       <span>Payment Method</span>
                     </h3>
 
-                    <div className="responsive-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '20px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 160px), 1fr))', gap: '12px', marginBottom: '20px' }}>
                       {/* EVC Plus Option */}
                       <div
                         onClick={() => setPaymentMethod('evc_plus')}
@@ -584,48 +699,71 @@ export default function CheckoutPage() {
                           border: '2px solid',
                           borderColor: paymentMethod === 'evc_plus' ? 'var(--accent)' : 'var(--border)',
                           borderRadius: '14px',
-                          padding: '18px',
+                          padding: '16px',
                           cursor: 'pointer',
-                          backgroundColor: paymentMethod === 'evc_plus' ? 'rgba(212, 165, 116, 0.08)' : 'var(--bg-deep)',
-                          boxShadow: paymentMethod === 'evc_plus' ? '0 4px 16px rgba(212, 165, 116, 0.15)' : 'none',
+                          backgroundColor: paymentMethod === 'evc_plus' ? 'rgba(212, 165, 116, 0.1)' : 'var(--bg-deep)',
+                          boxShadow: paymentMethod === 'evc_plus' ? '0 4px 16px var(--accent-glow)' : 'none',
                           transition: 'all 0.25s ease',
                         }}
                       >
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
                           <Phone size={18} color="var(--accent)" />
-                          <span style={{ fontWeight: '700', fontSize: '15px', color: 'var(--text-primary)' }}>EVC Plus</span>
+                          <span style={{ fontWeight: '700', fontSize: '14.5px', color: 'var(--text-primary)' }}>EVC Plus</span>
                         </div>
-                        <p style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                        <p style={{ fontSize: '12px', color: 'var(--text-secondary)', margin: 0 }}>
                           Hormuud Mobile Money (Instant PIN)
                         </p>
                       </div>
 
-                      {/* Cash on Delivery */}
+                      {/* eDahab Option */}
                       <div
-                        onClick={() => setPaymentMethod('cash_on_delivery')}
+                        onClick={() => setPaymentMethod('edahab')}
                         style={{
                           border: '2px solid',
-                          borderColor: paymentMethod === 'cash_on_delivery' ? 'var(--accent)' : 'var(--border)',
+                          borderColor: paymentMethod === 'edahab' ? '#EAB308' : 'var(--border)',
                           borderRadius: '14px',
-                          padding: '18px',
+                          padding: '16px',
                           cursor: 'pointer',
-                          backgroundColor: paymentMethod === 'cash_on_delivery' ? 'rgba(212, 165, 116, 0.08)' : 'var(--bg-deep)',
-                          boxShadow: paymentMethod === 'cash_on_delivery' ? '0 4px 16px rgba(212, 165, 116, 0.15)' : 'none',
+                          backgroundColor: paymentMethod === 'edahab' ? 'rgba(234, 179, 8, 0.1)' : 'var(--bg-deep)',
+                          boxShadow: paymentMethod === 'edahab' ? '0 4px 16px rgba(234, 179, 8, 0.2)' : 'none',
                           transition: 'all 0.25s ease',
                         }}
                       >
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-                          <DollarSign size={18} color="#4ADE80" />
-                          <span style={{ fontWeight: '700', fontSize: '15px', color: 'var(--text-primary)' }}>Cash On Delivery</span>
+                          <Phone size={18} color="#EAB308" />
+                          <span style={{ fontWeight: '700', fontSize: '14.5px', color: 'var(--text-primary)' }}>eDahab</span>
                         </div>
-                        <p style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
-                          Pay with cash upon handoff
+                        <p style={{ fontSize: '12px', color: 'var(--text-secondary)', margin: 0 }}>
+                          Dahabshiil Wallet (Instant PIN)
+                        </p>
+                      </div>
+
+                      {/* Pay on Delivery via Mobile Money */}
+                      <div
+                        onClick={() => setPaymentMethod('pay_on_delivery')}
+                        style={{
+                          border: '2px solid',
+                          borderColor: paymentMethod === 'pay_on_delivery' ? '#4ADE80' : 'var(--border)',
+                          borderRadius: '14px',
+                          padding: '16px',
+                          cursor: 'pointer',
+                          backgroundColor: paymentMethod === 'pay_on_delivery' ? 'rgba(74, 222, 128, 0.1)' : 'var(--bg-deep)',
+                          boxShadow: paymentMethod === 'pay_on_delivery' ? '0 4px 16px rgba(74, 222, 128, 0.2)' : 'none',
+                          transition: 'all 0.25s ease',
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                          <CheckCircle size={18} color="#4ADE80" />
+                          <span style={{ fontWeight: '700', fontSize: '14.5px', color: 'var(--text-primary)' }}>Pay on Delivery</span>
+                        </div>
+                        <p style={{ fontSize: '12px', color: 'var(--text-secondary)', margin: 0 }}>
+                          Bixi markuu darawalku yimaado (EVC / eDahab)
                         </p>
                       </div>
                     </div>
 
-                    {/* EVC Plus Simulated Pin Input */}
-                    {paymentMethod === 'evc_plus' && (
+                    {/* Instant PIN Input for EVC Plus / eDahab */}
+                    {(paymentMethod === 'evc_plus' || paymentMethod === 'edahab') && (
                       <div
                         style={{
                           padding: '18px',
@@ -636,9 +774,9 @@ export default function CheckoutPage() {
                       >
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                           <label className="form-label" style={{ marginBottom: 0 }}>
-                            Enter EVC Demo PIN (Demo: 1234)
+                            Enter {paymentMethod === 'evc_plus' ? 'EVC Plus' : 'eDahab'} Demo PIN (Demo: 1234)
                           </label>
-                          <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--accent)' }}>
+                          <span style={{ fontSize: '11px', fontWeight: '700', color: paymentMethod === 'evc_plus' ? 'var(--accent)' : '#EAB308' }}>
                             PIN: 1234
                           </span>
                         </div>
@@ -656,9 +794,31 @@ export default function CheckoutPage() {
                             fontWeight: '800',
                             backgroundColor: 'var(--bg-surface)',
                             border: '1px solid var(--border)',
-                            color: 'var(--accent)',
+                            color: paymentMethod === 'evc_plus' ? 'var(--accent)' : '#EAB308',
                           }}
                         />
+                      </div>
+                    )}
+
+                    {/* Pay on Delivery Note */}
+                    {paymentMethod === 'pay_on_delivery' && (
+                      <div
+                        style={{
+                          padding: '14px 16px',
+                          borderRadius: '12px',
+                          backgroundColor: 'rgba(74, 222, 128, 0.08)',
+                          border: '1px solid rgba(74, 222, 128, 0.25)',
+                          fontSize: '13px',
+                          color: 'var(--text-primary)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '10px',
+                        }}
+                      >
+                        <span style={{ fontSize: '18px' }}>🛵</span>
+                        <span>
+                          <strong>Mobile Money on Arrival:</strong> Marka uu darawalku cuntada kuu keeno, waxaad toos ugu wareejinaysaa EVC Plus ama eDahab.
+                        </span>
                       </div>
                     )}
                   </div>

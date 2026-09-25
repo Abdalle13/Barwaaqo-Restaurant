@@ -12,7 +12,7 @@ export default function AdminSettingsPage() {
   const { showToast, ToastComponent } = useToast();
 
   const [settings, setSettings] = useState<SettingsType>({
-    restaurantName: 'Barwaqo Restaurant',
+    restaurantName: 'Barwaaqo Restaurant',
     tagline: 'Modern Dining & Authentic Flavors',
     currency: 'USD',
     currencySymbol: '$',

@@ -29,17 +29,61 @@ export default function Footer() {
         >
           {/* Col 1: Brand Info */}
           <div>
-            <span
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
+              <div
                 style={{
-                  fontFamily: 'var(--font-heading)',
-                  fontSize: '20px',
-                  fontWeight: '700',
-                  letterSpacing: '0.5px',
-                  color: 'var(--accent)',
+                  width: '38px',
+                  height: '38px',
+                  borderRadius: '10px',
+                  background: 'linear-gradient(135deg, var(--accent) 0%, #D47151 100%)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 3px 12px var(--accent-glow)',
+                  border: '1px solid rgba(255, 255, 255, 0.25)',
+                  flexShrink: 0,
                 }}
               >
-                {settings.restaurantName}
-              </span>
+                <span
+                  style={{
+                    fontFamily: 'var(--font-brand)',
+                    fontSize: '22px',
+                    fontWeight: '800',
+                    color: '#FFFFFF',
+                    lineHeight: 1,
+                  }}
+                >
+                  B
+                </span>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <span
+                  style={{
+                    fontFamily: 'var(--font-brand)',
+                    fontSize: '22px',
+                    fontWeight: '700',
+                    letterSpacing: '0.8px',
+                    color: 'var(--text-primary)',
+                    lineHeight: 1.1,
+                  }}
+                >
+                  Barwaaqo
+                </span>
+                <span
+                  style={{
+                    fontSize: '9px',
+                    fontWeight: '700',
+                    letterSpacing: '2.8px',
+                    color: 'var(--accent)',
+                    textTransform: 'uppercase',
+                    lineHeight: 1.1,
+                    marginTop: '2px',
+                  }}
+                >
+                  Restaurant
+                </span>
+              </div>
+            </div>
             <p
               style={{
                 color: 'var(--text-muted)',

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,600;1,700&display=swap');
 
 /* ============================================
   BARWAAQO — Warm Restaurant Design System
@@ -45,7 +45,8 @@
   --shadow-glow: 0 8px 24px -10px rgba(182, 83, 58, 0.25);
 
   /* Typography */
-  --font-display: 'Fraunces', Georgia, serif;
+  --font-brand: 'Playfair Display', 'Fraunces', Georgia, serif;
+  --font-display: 'Fraunces', 'Playfair Display', Georgia, serif;
   --font-heading: 'DM Sans', sans-serif;
   --font-body: 'DM Sans', sans-serif;
 

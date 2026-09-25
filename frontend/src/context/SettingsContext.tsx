@@ -19,7 +19,7 @@ export interface RestaurantSettings {
 }
 
 const defaultSettings: RestaurantSettings = {
-  restaurantName: 'Barwaqo Restaurant',
+  restaurantName: 'Barwaaqo Restaurant',
   tagline: 'Modern Dining & Authentic Flavors',
   currency: 'USD',
   currencySymbol: '$',
