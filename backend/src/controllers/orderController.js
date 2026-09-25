@@ -7,7 +7,17 @@ const sendEmail = require('../utils/sendEmail');
 // @access  Private (Customer/User)
 exports.createOrder = async (req, res) => {
   try {
-    const { items, shippingAddress, paymentPhone, paymentMethod, notes, customerId } = req.body;
+    const {
+      items,
+      shippingAddress,
+      paymentPhone,
+      paymentMethod,
+      notes,
+      customerId,
+      district,
+      landmark,
+      alternativePhone,
+    } = req.body;
     const orderType = ['DELIVERY', 'TAKEAWAY', 'DINE_IN'].includes(req.body.orderType)
       ? req.body.orderType
       : 'DELIVERY';
@@ -47,9 +57,12 @@ exports.createOrder = async (req, res) => {
       serviceTax,
       totalAmount,
       orderType,
+      district: district || 'Hodan',
+      landmark: landmark || '',
       shippingAddress,
       paymentMethod: paymentMethod === 'cash_on_delivery' ? 'cash_on_delivery' : 'evc_plus',
       paymentPhone,
+      alternativePhone: alternativePhone || '',
       paymentStatus: paymentMethod === 'evc_plus' ? 'Paid' : 'Pending', // EVC simulated as immediate payment
       status: 'Pending',
       notes: notes || '',
@@ -58,6 +71,7 @@ exports.createOrder = async (req, res) => {
     const createdOrder = await order.save();
     const populated = await Order.findById(createdOrder._id)
       .populate('user', 'name email phone')
+      .populate('assignedDeliveryBoy', 'name phone email status')
       .populate('items.food', 'name image price');
 
     // Attempt to send customer email notification in background
@@ -101,6 +115,7 @@ exports.getAllOrders = async (req, res) => {
 
     const orders = await Order.find(filter)
       .populate('user', 'name email phone')
+      .populate('assignedDeliveryBoy', 'name phone email status')
       .populate('items.food', 'name image price')
       .sort({ createdAt: -1 })
       .skip(skip)
@@ -129,6 +144,7 @@ exports.getMyOrders = async (req, res) => {
   try {
     const orders = await Order.find({ user: req.user._id })
       .populate('user', 'name email phone')
+      .populate('assignedDeliveryBoy', 'name phone email status')
       .populate('items.food', 'name image price')
       .sort({ createdAt: -1 });
 
@@ -149,6 +165,7 @@ exports.getOrderById = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id)
       .populate('user', 'name email phone')
+      .populate('assignedDeliveryBoy', 'name phone email status')
       .populate('items.food', 'name image price');
 
     if (!order) {
@@ -190,15 +207,17 @@ exports.trackOrderByCode = async (req, res) => {
 
       order = await Order.findOne({ user: req.user._id, status: { $ne: 'Cancelled' } })
         .sort({ createdAt: -1 })
-        .select('orderId orderType status items totalAmount createdAt shippingAddress paymentPhone paymentMethod isDelivered deliveredAt user')
+        .select('orderId orderType district landmark alternativePhone status items totalAmount createdAt shippingAddress paymentPhone paymentMethod isDelivered deliveredAt user assignedDeliveryBoy')
         .populate('user', 'name phone email')
+        .populate('assignedDeliveryBoy', 'name phone email status')
         .populate('items.food', 'name image price');
 
       if (!order) {
         order = await Order.findOne({ user: req.user._id })
           .sort({ createdAt: -1 })
-          .select('orderId orderType status items totalAmount createdAt shippingAddress paymentPhone paymentMethod isDelivered deliveredAt user')
+          .select('orderId orderType district landmark alternativePhone status items totalAmount createdAt shippingAddress paymentPhone paymentMethod isDelivered deliveredAt user assignedDeliveryBoy')
           .populate('user', 'name phone email')
+          .populate('assignedDeliveryBoy', 'name phone email status')
           .populate('items.food', 'name image price');
       }
 
@@ -224,8 +243,9 @@ exports.trackOrderByCode = async (req, res) => {
       ],
     })
       .sort({ createdAt: -1 })
-      .select('orderId orderType status items totalAmount createdAt shippingAddress paymentPhone paymentMethod isDelivered deliveredAt user')
+      .select('orderId orderType district landmark alternativePhone status items totalAmount createdAt shippingAddress paymentPhone paymentMethod isDelivered deliveredAt user assignedDeliveryBoy')
       .populate('user', 'name phone email')
+      .populate('assignedDeliveryBoy', 'name phone email status')
       .populate('items.food', 'name image price');
 
     // 4. Fallback search by customer name
@@ -234,8 +254,9 @@ exports.trackOrderByCode = async (req, res) => {
       if (matchedUsers.length > 0) {
         order = await Order.findOne({ user: { $in: matchedUsers.map((u) => u._id) } })
           .sort({ createdAt: -1 })
-          .select('orderId orderType status items totalAmount createdAt shippingAddress paymentPhone paymentMethod isDelivered deliveredAt user')
+          .select('orderId orderType district landmark alternativePhone status items totalAmount createdAt shippingAddress paymentPhone paymentMethod isDelivered deliveredAt user assignedDeliveryBoy')
           .populate('user', 'name phone email')
+          .populate('assignedDeliveryBoy', 'name phone email status')
           .populate('items.food', 'name image price');
       }
     }
@@ -253,7 +274,7 @@ exports.trackOrderByCode = async (req, res) => {
   }
 };
 
-// @desc    UPDATE Order Status
+// @desc    UPDATE Order Status & Assign Driver
 // @route   PUT /api/orders/:id/status
 // @access  Private (Admin)
 exports.updateOrderStatus = async (req, res) => {
@@ -264,7 +285,7 @@ exports.updateOrderStatus = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Order not found' });
     }
 
-    const { status, paymentStatus } = req.body;
+    const { status, paymentStatus, assignedDeliveryBoy } = req.body;
 
     if (status) {
       order.status = status;
@@ -278,9 +299,17 @@ exports.updateOrderStatus = async (req, res) => {
       order.paymentStatus = paymentStatus;
     }
 
+    if (assignedDeliveryBoy !== undefined) {
+      order.assignedDeliveryBoy = assignedDeliveryBoy || null;
+      if (assignedDeliveryBoy && order.status === 'Pending') {
+        order.status = 'Out for Delivery';
+      }
+    }
+
     const updatedOrder = await order.save();
     const populated = await Order.findById(updatedOrder._id)
       .populate('user', 'name email phone')
+      .populate('assignedDeliveryBoy', 'name phone email status')
       .populate('items.food', 'name image price');
 
     res.json({

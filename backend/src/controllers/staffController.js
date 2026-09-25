@@ -31,7 +31,19 @@ const getAllStaff = async (req, res) => {
 // @access  Private/Admin
 const createStaff = async (req, res) => {
   try {
-    const { name, email, password, roleName, phone, address } = req.body;
+    const {
+      name,
+      email,
+      password,
+      roleName,
+      phone,
+      address,
+      status,
+      vehicleType,
+      plateNumber,
+      emergencyContactName,
+      emergencyContactPhone,
+    } = req.body;
 
     const role = await Role.findOne({ name: roleName || 'DELIVERY' });
     if (!role) {
@@ -50,6 +62,11 @@ const createStaff = async (req, res) => {
       role: role._id,
       phone,
       address: address || '',
+      status: status || 'active',
+      vehicleType: vehicleType || 'None',
+      plateNumber: plateNumber || '',
+      emergencyContactName: emergencyContactName || '',
+      emergencyContactPhone: emergencyContactPhone || '',
     });
 
     const userResponse = await User.findById(user._id).select('-password').populate('role', 'name');
@@ -72,7 +89,19 @@ const createStaff = async (req, res) => {
 // @access  Private/Admin
 const updateStaff = async (req, res) => {
   try {
-    const { name, email, password, roleName, phone, address, status } = req.body;
+    const {
+      name,
+      email,
+      password,
+      roleName,
+      phone,
+      address,
+      status,
+      vehicleType,
+      plateNumber,
+      emergencyContactName,
+      emergencyContactPhone,
+    } = req.body;
 
     const user = await User.findById(req.params.id);
     if (!user) {
@@ -85,6 +114,10 @@ const updateStaff = async (req, res) => {
     if (phone) user.phone = phone;
     if (address !== undefined) user.address = address;
     if (status) user.status = status;
+    if (vehicleType !== undefined) user.vehicleType = vehicleType;
+    if (plateNumber !== undefined) user.plateNumber = plateNumber;
+    if (emergencyContactName !== undefined) user.emergencyContactName = emergencyContactName;
+    if (emergencyContactPhone !== undefined) user.emergencyContactPhone = emergencyContactPhone;
 
     if (roleName) {
       const role = await Role.findOne({ name: roleName });

@@ -38,6 +38,26 @@ const UserSchema = new mongoose.Schema({
     enum: ['active', 'blocked'], 
     default: 'active' 
   },
+  vehicleType: {
+    type: String,
+    enum: ['Motorbike', 'Bicycle', 'Car', 'Bajaj', 'None'],
+    default: 'None',
+  },
+  plateNumber: {
+    type: String,
+    default: '',
+    trim: true,
+  },
+  emergencyContactName: {
+    type: String,
+    default: '',
+    trim: true,
+  },
+  emergencyContactPhone: {
+    type: String,
+    default: '',
+    trim: true,
+  },
   role: { 
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'Role', 

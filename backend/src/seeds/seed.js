@@ -91,7 +91,7 @@ const seedData = async () => {
     const demoCustomer = {
       name: 'Hassan Ali',
       email: 'customer@gmail.com', // Updated to gmail
-      password: 'customer123456',
+      password: '',
       role: customerRole._id,
       phone: '+252615555555',
       address: 'Waberi District, Mogadishu',

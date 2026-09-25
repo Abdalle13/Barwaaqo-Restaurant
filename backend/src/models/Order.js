@@ -50,18 +50,38 @@ const OrderSchema = new mongoose.Schema({
     enum: ['DELIVERY', 'TAKEAWAY', 'DINE_IN'],
     default: 'DELIVERY',
   },
+  district: {
+    type: String,
+    default: 'Hodan',
+    trim: true,
+  },
+  landmark: {
+    type: String,
+    default: '',
+    trim: true,
+  },
   shippingAddress: {
     type: String,
     required: [true, 'Please provide delivery address'],
   },
   paymentMethod: {
     type: String,
-    enum: ['evc_plus', 'cash_on_delivery'],
+    enum: ['evc_plus', 'edahab', 'pay_on_delivery', 'cash_on_delivery'],
     default: 'evc_plus',
   },
   paymentPhone: {
     type: String,
     required: [true, 'Please provide payment/contact phone number'],
+  },
+  alternativePhone: {
+    type: String,
+    default: '',
+    trim: true,
+  },
+  assignedDeliveryBoy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null,
   },
   paymentStatus: {
     type: String,

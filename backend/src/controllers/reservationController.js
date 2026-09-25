@@ -6,7 +6,17 @@ const sendEmail = require('../utils/sendEmail');
 // @access  Public / Authenticated
 exports.createReservation = async (req, res) => {
   try {
-    const { customerName, customerEmail, customerPhone, guests, reservationDate, reservationTime, specialRequests } = req.body;
+    const {
+      customerName,
+      customerEmail,
+      customerPhone,
+      guests,
+      reservationDate,
+      reservationTime,
+      specialRequests,
+      seatingPreference,
+      occasion,
+    } = req.body;
 
     if (!customerName || !customerEmail || !customerPhone || !guests || !reservationDate || !reservationTime) {
       return res.status(400).json({
@@ -24,6 +34,8 @@ exports.createReservation = async (req, res) => {
       reservationDate,
       reservationTime,
       specialRequests: specialRequests || '',
+      seatingPreference: seatingPreference || 'Indoor (AC)',
+      occasion: occasion || 'Regular / Casual',
       status: 'Pending',
     });
 

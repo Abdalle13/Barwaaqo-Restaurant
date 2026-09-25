@@ -43,6 +43,16 @@ const ReservationSchema = new mongoose.Schema({
     type: String,
     trim: true,
   },
+  seatingPreference: {
+    type: String,
+    enum: ['Indoor (AC)', 'Outdoor Garden', 'VIP Private Room'],
+    default: 'Indoor (AC)',
+  },
+  occasion: {
+    type: String,
+    enum: ['Regular / Casual', 'Birthday Celebration', 'Anniversary / Romantic', 'Business Dinner', 'Family Gathering'],
+    default: 'Regular / Casual',
+  },
   status: {
     type: String,
     enum: ['Pending', 'Confirmed', 'Cancelled', 'Completed'],
