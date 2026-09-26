@@ -554,7 +554,7 @@ export default function HomePage() {
                 How It Works
               </h2>
               <p style={{ color: 'var(--text-secondary)', fontSize: '15px', lineHeight: '1.6' }}>
-                Enjoying Barwaaqo's culinary delights is effortless — whether dining in our restaurant or ordering straight to your home.
+                Ordering your favorite meal or booking a table at Barwaaqo is quick and simple.
               </p>
             </div>
 
@@ -569,20 +569,20 @@ export default function HomePage() {
                 {
                   step: '01',
                   icon: <UtensilsCrossed size={24} />,
-                  title: 'Browse & Select Dishes',
-                  desc: 'Explore our rich menu featuring slow-braised meats, aromatic rice platters, fresh juices, and traditional Somali appetizers.',
+                  title: 'Choose Your Favorites',
+                  desc: 'Pick from our freshly prepared Somali dishes, wood-fired meats, aromatic spiced rice, and freshly made fruit juices.',
                 },
                 {
                   step: '02',
                   icon: <CreditCard size={24} />,
-                  title: 'Instant EVC Plus or Cash',
-                  desc: 'Complete your order in seconds with secure EVC Plus mobile pin verification or choose cash on delivery upon arrival.',
+                  title: 'Pay with EVC Plus or eDahab',
+                  desc: 'Confirm your order with quick mobile money payment using Hormuud EVC Plus or Dahabshiil eDahab right from your phone.',
                 },
                 {
                   step: '03',
                   icon: <Truck size={24} />,
-                  title: 'Swift Delivery or VIP Table',
-                  desc: 'Receive your meal piping hot with our dedicated delivery team or arrive to your reserved table set to perfection.',
+                  title: 'Fast Delivery or Reserved Table',
+                  desc: 'Have your meal delivered hot to your doorstep anywhere in Mogadishu, or walk into the restaurant with your table ready.',
                 },
               ].map((item, i) => (
                 <div
@@ -813,18 +813,18 @@ export default function HomePage() {
                     lineHeight: 1.25,
                   }}
                 >
-                  Private VIP Dining & Bespoke Catering
+                  Private Dining & Event Catering
                 </h2>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '15px', lineHeight: '1.7', marginBottom: '24px' }}>
-                  From diplomatic gatherings and executive business luncheons to grand family celebrations and weddings, Barwaaqo provides private air-conditioned suites with dedicated silver-service staff.
+                  Planning a family get-together, business lunch, or special celebration? We arrange comfortable reserved tables and personalized group catering tailored to your event.
                 </p>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '28px' }}>
                   {[
-                    'Private VIP Suites with ambient luxury lighting',
-                    'Customizable multi-course banquet menus',
-                    'Dedicated private waitstaff and executive chef service',
-                    'Corporate event catering delivered across Mogadishu',
+                    'Comfortable reserved tables for families and groups',
+                    'Custom platter menus for gatherings and celebrations',
+                    'Attentive table service from our hospitality staff',
+                    'Reliable event catering delivered across Mogadishu',
                   ].map((perk, i) => (
                     <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14px', color: 'var(--text-primary)' }}>
                       <CheckCircle2 size={18} color="var(--accent)" style={{ flexShrink: 0 }} />
@@ -852,7 +852,7 @@ export default function HomePage() {
                     }}
                   >
                     <Users size={16} />
-                    <span>Reserve VIP Room</span>
+                    <span>Reserve a Table</span>
                   </Link>
 
                   <Link

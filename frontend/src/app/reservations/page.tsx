@@ -34,9 +34,9 @@ export default function ReservationsPage() {
   ];
 
   const seatingOptions = [
-    'Indoor (AC)',
-    'Outdoor Garden',
-    'VIP Private Room',
+    'Indoor Dining Table',
+    'Outdoor Garden Table',
+    'Family Dining Table',
   ];
 
   const handleSubmit = async (e: React.FormEvent) => {
