@@ -59,7 +59,7 @@ export default function ReceptionistTablesPage() {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
         <div>
-          <span style={{ fontSize: '11px', fontWeight: '800', color: '#8B5CF6', textTransform: 'uppercase', letterSpacing: '1.2px' }}>
+          <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '1.2px' }}>
             🪑 Table Management
           </span>
           <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '28px', fontWeight: '700', color: 'var(--text-primary)', marginTop: '4px' }}>
@@ -78,7 +78,7 @@ export default function ReceptionistTablesPage() {
           { label: 'Available', value: availableCount, color: '#4ADE80', icon: <CheckCircle2 size={18} /> },
           { label: 'Occupied', value: occupiedCount, color: '#F87171', icon: <AlertCircle size={18} /> },
           { label: 'Reserved', value: reservedCount, color: '#FBBF24', icon: <Clock size={18} /> },
-          { label: 'Total', value: tables.length, color: '#8B5CF6', icon: <TableProperties size={18} /> },
+          { label: 'Total', value: tables.length, color: 'var(--accent)', icon: <TableProperties size={18} /> },
         ].map(s => (
           <div key={s.label} style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '14px', padding: '16px 18px', display: 'flex', alignItems: 'center', gap: '12px' }}>
             <div style={{ color: s.color, flexShrink: 0 }}>{s.icon}</div>
@@ -97,9 +97,9 @@ export default function ReceptionistTablesPage() {
             key={f}
             onClick={() => setStatusFilter(f)}
             style={{
-              padding: '7px 16px', borderRadius: '8px', border: `1px solid ${statusFilter === f ? '#8B5CF6' : 'var(--border)'}`,
-              backgroundColor: statusFilter === f ? 'rgba(139, 92, 246, 0.12)' : 'var(--bg-surface)',
-              color: statusFilter === f ? '#8B5CF6' : 'var(--text-secondary)',
+              padding: '7px 16px', borderRadius: '8px', border: `1px solid ${statusFilter === f ? 'var(--accent)' : 'var(--border)'}`,
+              backgroundColor: statusFilter === f ? 'var(--accent-glow)' : 'var(--bg-surface)',
+              color: statusFilter === f ? 'var(--accent)' : 'var(--text-secondary)',
               fontSize: '13px', fontWeight: '600', cursor: 'pointer',
             }}
           >
@@ -111,7 +111,7 @@ export default function ReceptionistTablesPage() {
       {/* Tables Grid */}
       {isLoading ? (
         <div style={{ textAlign: 'center', padding: '60px', color: 'var(--text-muted)' }}>
-          <div style={{ width: '36px', height: '36px', border: '3px solid var(--border)', borderTopColor: '#8B5CF6', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 12px' }} />
+          <div style={{ width: '36px', height: '36px', border: '3px solid var(--border)', borderTopColor: 'var(--accent)', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 12px' }} />
           Loading tables...
         </div>
       ) : (

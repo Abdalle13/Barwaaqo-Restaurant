@@ -143,7 +143,7 @@ export default function AdminSidebar({ onCloseMobile }: AdminSidebarProps) {
                 width: '34px',
                 height: '34px',
                 borderRadius: '9px',
-                background: 'linear-gradient(135deg, var(--accent) 0%, #D47151 100%)',
+                backgroundColor: 'var(--accent)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',

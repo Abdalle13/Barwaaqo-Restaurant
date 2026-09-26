@@ -146,8 +146,9 @@ export default function DeliveryPage() {
           {/* Order Icon */}
           <div style={{
             width: '44px', height: '44px', borderRadius: '12px', flexShrink: 0,
-            background: isActive ? 'linear-gradient(135deg, #3B82F6, #1D4ED8)' : 'var(--bg-elevated)',
+            background: isActive ? 'linear-gradient(135deg, var(--accent) 0%, #D47151 100%)' : 'var(--bg-elevated)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
+            boxShadow: isActive ? '0 3px 12px var(--accent-glow)' : 'none',
           }}>
             {isActive ? <Bike size={20} color="white" /> : <CheckCircle2 size={20} color="#4ADE80" />}
           </div>
@@ -191,12 +192,74 @@ export default function DeliveryPage() {
           </div>
         </div>
 
+        {/* Quick Action Buttons — always visible on active cards */}
+        {isActive && (
+          <div
+            style={{ padding: '0 16px 14px 16px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {(order.status === 'Pending' || order.status === 'Processing') && (
+              <button
+                onClick={() => handleMarkOutForDelivery(order._id)}
+                disabled={isUpdating}
+                style={{
+                  flex: 1, minWidth: '140px',
+                  padding: '9px 14px', borderRadius: '9px',
+                  border: 'none', cursor: isUpdating ? 'not-allowed' : 'pointer',
+                  background: 'linear-gradient(135deg, var(--accent) 0%, #D47151 100%)',
+                  color: '#FFFFFF',
+                  fontWeight: '700', fontSize: '13px',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                  boxShadow: '0 3px 12px var(--accent-glow)',
+                  transition: 'opacity 0.15s',
+                  opacity: isUpdating ? 0.6 : 1,
+                }}
+              >
+                <Bike size={15} /> {isUpdating ? 'Updating...' : 'Start Delivery'}
+              </button>
+            )}
+            {(order.status === 'Out for Delivery' || order.status === 'Processing' || order.status === 'Pending') && (
+              <button
+                onClick={() => handleMarkDelivered(order._id)}
+                disabled={isUpdating}
+                style={{
+                  flex: 1, minWidth: '140px',
+                  padding: '9px 14px', borderRadius: '9px',
+                  border: 'none', cursor: isUpdating ? 'not-allowed' : 'pointer',
+                  background: 'linear-gradient(135deg, #4ADE80, #16A34A)',
+                  color: '#000',
+                  fontWeight: '700', fontSize: '13px',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                  boxShadow: '0 4px 14px rgba(74, 222, 128, 0.25)',
+                  opacity: isUpdating ? 0.6 : 1,
+                }}
+              >
+                <CheckCircle2 size={15} /> {isUpdating ? 'Updating...' : 'Mark Delivered'}
+              </button>
+            )}
+            {customer?.phone && (
+              <a
+                href={`tel:${customer.phone}`}
+                style={{
+                  padding: '9px 14px', borderRadius: '9px',
+                  border: '1px solid var(--border)',
+                  color: 'var(--text-secondary)', fontWeight: '600', fontSize: '13px',
+                  display: 'flex', alignItems: 'center', gap: '6px',
+                  textDecoration: 'none', backgroundColor: 'var(--bg-elevated)',
+                }}
+              >
+                <Phone size={14} /> Call
+              </a>
+            )}
+          </div>
+        )}
+
         {/* Expanded Details */}
         {isExpanded && (
           <div style={{ borderTop: '1px solid var(--border)', padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {/* Address Section */}
             <div style={{ backgroundColor: 'var(--bg-elevated)', borderRadius: '12px', padding: '14px 16px', display: 'flex', gap: '10px' }}>
-              <MapPin size={18} color="#3B82F6" style={{ flexShrink: 0, marginTop: '2px' }} />
+              <MapPin size={18} color="var(--accent)" style={{ flexShrink: 0, marginTop: '2px' }} />
               <div>
                 <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '2px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Delivery Address</p>
                 <p style={{ fontSize: '14px', color: 'var(--text-primary)', fontWeight: '600' }}>{order.shippingAddress}</p>
@@ -270,62 +333,6 @@ export default function DeliveryPage() {
                 <p style={{ fontSize: '13px', color: '#FBBF24' }}>{order.notes}</p>
               </div>
             )}
-
-            {/* Action Buttons */}
-            {isActive && (
-              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                {order.status === 'Processing' && (
-                  <button
-                    onClick={() => handleMarkOutForDelivery(order._id)}
-                    disabled={isUpdating}
-                    style={{
-                      flex: 1, minWidth: '160px',
-                      padding: '11px 16px', borderRadius: '10px',
-                      border: 'none', cursor: isUpdating ? 'not-allowed' : 'pointer',
-                      backgroundColor: 'rgba(59, 130, 246, 0.15)',
-                      color: '#3B82F6',
-                      fontWeight: '700', fontSize: '13px',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
-                      transition: 'all 0.15s',
-                    }}
-                  >
-                    <Bike size={15} /> {isUpdating ? 'Updating...' : 'Start Delivery'}
-                  </button>
-                )}
-                {(order.status === 'Out for Delivery' || order.status === 'Processing') && (
-                  <button
-                    onClick={() => handleMarkDelivered(order._id)}
-                    disabled={isUpdating}
-                    style={{
-                      flex: 1, minWidth: '160px',
-                      padding: '11px 16px', borderRadius: '10px',
-                      border: 'none', cursor: isUpdating ? 'not-allowed' : 'pointer',
-                      background: 'linear-gradient(135deg, #4ADE80, #16A34A)',
-                      color: '#000',
-                      fontWeight: '700', fontSize: '13px',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
-                      boxShadow: '0 4px 14px rgba(74, 222, 128, 0.25)',
-                    }}
-                  >
-                    <CheckCircle2 size={15} /> {isUpdating ? 'Updating...' : 'Mark Delivered'}
-                  </button>
-                )}
-                {customer?.phone && (
-                  <a
-                    href={`tel:${customer.phone}`}
-                    style={{
-                      padding: '11px 16px', borderRadius: '10px',
-                      border: '1px solid var(--border)',
-                      color: 'var(--text-secondary)', fontWeight: '600', fontSize: '13px',
-                      display: 'flex', alignItems: 'center', gap: '6px',
-                      textDecoration: 'none', backgroundColor: 'var(--bg-elevated)',
-                    }}
-                  >
-                    <Phone size={14} /> Call Customer
-                  </a>
-                )}
-              </div>
-            )}
           </div>
         )}
       </div>
@@ -339,7 +346,7 @@ export default function DeliveryPage() {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
         <div>
-          <span style={{ fontSize: '11px', fontWeight: '800', color: '#3B82F6', textTransform: 'uppercase', letterSpacing: '1.2px' }}>
+          <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '1.2px' }}>
             🛵 Delivery Portal
           </span>
           <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '28px', fontWeight: '700', color: 'var(--text-primary)', marginTop: '4px' }}>
@@ -360,9 +367,9 @@ export default function DeliveryPage() {
       {/* Stats Row */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '14px' }}>
         {[
-          { label: 'Active Orders', value: stats.active, icon: <Bike size={20} />, color: '#3B82F6', bg: 'rgba(59,130,246,0.1)' },
+          { label: 'Active Orders', value: stats.active, icon: <Bike size={20} />, color: 'var(--accent)', bg: 'var(--accent-glow)' },
           { label: 'Delivered Today', value: stats.completed, icon: <CheckCircle2 size={20} />, color: '#4ADE80', bg: 'rgba(74,222,128,0.1)' },
-          { label: 'Total Today', value: stats.totalToday, icon: <Package size={20} />, color: 'var(--accent)', bg: 'rgba(212,165,116,0.1)' },
+          { label: 'Total Today', value: stats.totalToday, icon: <Package size={20} />, color: 'var(--accent)', bg: 'var(--accent-glow)' },
         ].map((stat) => (
           <div key={stat.label} style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '18px 20px', display: 'flex', alignItems: 'center', gap: '14px' }}>
             <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: stat.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', color: stat.color, flexShrink: 0 }}>
@@ -379,12 +386,12 @@ export default function DeliveryPage() {
       {/* Active Orders */}
       <section>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
-          <Navigation size={18} color="#3B82F6" />
+          <Navigation size={18} color="var(--accent)" />
           <h2 style={{ fontSize: '17px', fontWeight: '700', color: 'var(--text-primary)' }}>
             Active Orders ({activeOrders.length})
           </h2>
           {activeOrders.length > 0 && (
-            <span style={{ padding: '2px 9px', borderRadius: '20px', fontSize: '11px', fontWeight: '700', backgroundColor: 'rgba(59,130,246,0.1)', color: '#3B82F6', border: '1px solid rgba(59,130,246,0.25)' }}>
+            <span style={{ padding: '2px 9px', borderRadius: '20px', fontSize: '11px', fontWeight: '700', backgroundColor: 'var(--accent-glow)', color: 'var(--accent)', border: '1px solid var(--border)' }}>
               LIVE
             </span>
           )}
@@ -393,7 +400,7 @@ export default function DeliveryPage() {
         {isLoading ? (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '60px', color: 'var(--text-muted)' }}>
             <div style={{ textAlign: 'center' }}>
-              <div style={{ width: '36px', height: '36px', border: '3px solid var(--border)', borderTopColor: '#3B82F6', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 12px' }} />
+              <div style={{ width: '36px', height: '36px', border: '3px solid var(--border)', borderTopColor: 'var(--accent)', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 12px' }} />
               <p>Loading your deliveries...</p>
             </div>
           </div>

@@ -35,7 +35,7 @@ export default function Footer() {
                   width: '38px',
                   height: '38px',
                   borderRadius: '10px',
-                  background: 'linear-gradient(135deg, var(--accent) 0%, #D47151 100%)',
+                  backgroundColor: 'var(--accent)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',

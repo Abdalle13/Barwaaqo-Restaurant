@@ -61,7 +61,7 @@ export default function ReceptionistOrdersPage() {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
         <div>
-          <span style={{ fontSize: '11px', fontWeight: '800', color: '#8B5CF6', textTransform: 'uppercase', letterSpacing: '1.2px' }}>
+          <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '1.2px' }}>
             🛍️ Order Monitoring
           </span>
           <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '28px', fontWeight: '700', color: 'var(--text-primary)', marginTop: '4px' }}>
@@ -77,7 +77,7 @@ export default function ReceptionistOrdersPage() {
       {/* Stats */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '12px' }}>
         {[
-          { label: 'Total Today', value: todayOrders.length, color: '#8B5CF6' },
+          { label: 'Total Today', value: todayOrders.length, color: 'var(--accent)' },
           { label: 'Dine-In Today', value: dineInToday, color: '#60A5FA' },
           { label: 'Takeaway', value: takeawayToday, color: 'var(--accent)' },
           { label: 'Pending', value: orders.filter(o => o.status === 'Pending').length, color: '#FBBF24' },
@@ -119,7 +119,7 @@ export default function ReceptionistOrdersPage() {
       {/* Orders Table */}
       {isLoading ? (
         <div style={{ textAlign: 'center', padding: '60px', color: 'var(--text-muted)' }}>
-          <div style={{ width: '36px', height: '36px', border: '3px solid var(--border)', borderTopColor: '#8B5CF6', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 12px' }} />
+          <div style={{ width: '36px', height: '36px', border: '3px solid var(--border)', borderTopColor: 'var(--accent)', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 12px' }} />
           Loading orders...
         </div>
       ) : filtered.length === 0 ? (
@@ -147,7 +147,7 @@ export default function ReceptionistOrdersPage() {
                   <div style={{ minWidth: 0 }}>
                     <div style={{ fontWeight: '700', fontSize: '14px', color: 'var(--text-primary)' }}>
                       {order.orderId}
-                      <span style={{ marginLeft: '8px', padding: '1px 7px', borderRadius: '6px', fontSize: '10px', fontWeight: '700', backgroundColor: 'rgba(139,92,246,0.1)', color: '#8B5CF6', border: '1px solid rgba(139,92,246,0.2)' }}>
+                      <span style={{ marginLeft: '8px', padding: '1px 7px', borderRadius: '6px', fontSize: '10px', fontWeight: '700', backgroundColor: 'var(--accent-glow)', color: 'var(--accent)', border: '1px solid var(--border)' }}>
                         {order.orderType || 'DELIVERY'}
                       </span>
                     </div>
@@ -195,7 +195,7 @@ export default function ReceptionistOrdersPage() {
                 <div style={{ flex: 1, minWidth: '160px', backgroundColor: 'var(--bg-elevated)', borderRadius: '10px', padding: '12px 14px' }}>
                   <p style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase', marginBottom: '4px' }}>Location</p>
                   <p style={{ fontWeight: '600', color: 'var(--text-primary)', fontSize: '13px', display: 'flex', gap: '4px' }}>
-                    <MapPin size={13} style={{ flexShrink: 0, marginTop: '2px', color: '#8B5CF6' }} /> {selectedOrder.shippingAddress}
+                    <MapPin size={13} style={{ flexShrink: 0, marginTop: '2px', color: 'var(--accent)' }} /> {selectedOrder.shippingAddress}
                   </p>
                 </div>
               )}

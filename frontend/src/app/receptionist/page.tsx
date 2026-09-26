@@ -120,8 +120,8 @@ export default function ReceptionistDashboard() {
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-            <ConciergeBell size={16} color="#8B5CF6" />
-            <span style={{ fontSize: '11px', fontWeight: '800', color: '#8B5CF6', textTransform: 'uppercase', letterSpacing: '1.2px' }}>
+            <ConciergeBell size={16} color="var(--accent)" />
+            <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '1.2px' }}>
               Receptionist Portal
             </span>
           </div>
@@ -175,11 +175,11 @@ export default function ReceptionistDashboard() {
       {/* Quick Actions */}
       <section>
         <h2 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Sparkles size={16} color="#8B5CF6" /> Quick Actions
+          <Sparkles size={16} color="var(--accent)" /> Quick Actions
         </h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px' }}>
           {[
-            { label: 'Manage Reservations', desc: 'View, confirm, or cancel bookings', href: '/receptionist/reservations', color: '#8B5CF6', icon: <CalendarCheck size={20} /> },
+            { label: 'Manage Reservations', desc: 'View, confirm, or cancel bookings', href: '/receptionist/reservations', color: 'var(--accent)', icon: <CalendarCheck size={20} /> },
             { label: 'Table Status', desc: 'Update table availability & seating', href: '/receptionist/tables', color: '#60A5FA', icon: <TableProperties size={20} /> },
             { label: 'View Orders', desc: 'Monitor today\'s dine-in orders', href: '/receptionist/orders', color: '#4ADE80', icon: <ShoppingBag size={20} /> },
           ].map(action => (
@@ -190,7 +190,7 @@ export default function ReceptionistDashboard() {
                 display: 'flex', alignItems: 'center', gap: '14px',
                 cursor: 'pointer', transition: 'transform 0.15s',
               }}>
-                <div style={{ width: '42px', height: '42px', borderRadius: '11px', background: `${action.color}20`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: action.color, flexShrink: 0 }}>
+                <div style={{ width: '42px', height: '42px', borderRadius: '11px', background: 'var(--accent-glow)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: action.color, flexShrink: 0 }}>
                   {action.icon}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
@@ -208,16 +208,16 @@ export default function ReceptionistDashboard() {
       <section>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
           <h2 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <CalendarCheck size={16} color="#8B5CF6" /> Upcoming Reservations
+            <CalendarCheck size={16} color="var(--accent)" /> Upcoming Reservations
           </h2>
-          <Link href="/receptionist/reservations" style={{ fontSize: '13px', color: '#8B5CF6', fontWeight: '600', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <Link href="/receptionist/reservations" style={{ fontSize: '13px', color: 'var(--accent)', fontWeight: '600', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
             View All <ArrowRight size={13} />
           </Link>
         </div>
 
         {isLoading ? (
           <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
-            <div style={{ width: '30px', height: '30px', border: '3px solid var(--border)', borderTopColor: '#8B5CF6', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 10px' }} />
+            <div style={{ width: '30px', height: '30px', border: '3px solid var(--border)', borderTopColor: 'var(--accent)', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 10px' }} />
             Loading...
           </div>
         ) : recentReservations.length === 0 ? (
@@ -234,8 +234,8 @@ export default function ReceptionistDashboard() {
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap',
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: 'rgba(139, 92, 246, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <Users size={16} color="#8B5CF6" />
+                  <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: 'var(--accent-glow)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Users size={16} color="var(--accent)" />
                   </div>
                   <div>
                     <div style={{ fontWeight: '700', fontSize: '14px', color: 'var(--text-primary)' }}>{res.customerName}</div>

@@ -63,7 +63,7 @@ export default function ReceptionistReservationsPage() {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
         <div>
-          <span style={{ fontSize: '11px', fontWeight: '800', color: '#8B5CF6', textTransform: 'uppercase', letterSpacing: '1.2px' }}>
+          <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '1.2px' }}>
             📅 Table Reservations
           </span>
           <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '28px', fontWeight: '700', color: 'var(--text-primary)', marginTop: '4px' }}>
@@ -103,7 +103,7 @@ export default function ReceptionistReservationsPage() {
       {/* Reservations List */}
       {isLoading ? (
         <div style={{ textAlign: 'center', padding: '60px', color: 'var(--text-muted)' }}>
-          <div style={{ width: '36px', height: '36px', border: '3px solid var(--border)', borderTopColor: '#8B5CF6', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 12px' }} />
+          <div style={{ width: '36px', height: '36px', border: '3px solid var(--border)', borderTopColor: 'var(--accent)', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 12px' }} />
           Loading reservations...
         </div>
       ) : filtered.length === 0 ? (
@@ -182,7 +182,7 @@ export default function ReceptionistReservationsPage() {
                         <button
                           onClick={() => handleUpdateStatus(res._id, 'Completed')}
                           disabled={isUpdating}
-                          style={{ padding: '7px 14px', borderRadius: '8px', border: 'none', cursor: isUpdating ? 'not-allowed' : 'pointer', background: 'linear-gradient(135deg, #8B5CF6, #6D28D9)', color: 'white', fontWeight: '700', fontSize: '13px' }}
+                          style={{ padding: '7px 14px', borderRadius: '8px', border: 'none', cursor: isUpdating ? 'not-allowed' : 'pointer', background: 'linear-gradient(135deg, var(--accent) 0%, #D47151 100%)', color: 'white', fontWeight: '700', fontSize: '13px', boxShadow: '0 3px 10px var(--accent-glow)' }}
                         >
                           Mark Seated ✓
                         </button>

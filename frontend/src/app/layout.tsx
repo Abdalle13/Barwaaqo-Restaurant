@@ -13,9 +13,12 @@ export const metadata: Metadata = {
   keywords: ['restaurant', 'Somali food', 'online ordering', 'Barwaaqo', 'Mogadishu dining', 'halal food'],
   icons: {
     icon: [
-      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.ico', sizes: '32x32' },
+      { url: '/icon.svg', type: 'image/svg+xml' },
+      { url: '/favicon-512.png', sizes: '512x512', type: 'image/png' },
     ],
-    shortcut: '/favicon.svg',
+    shortcut: '/favicon.ico',
+    apple: '/favicon-512.png',
   },
 };
 
