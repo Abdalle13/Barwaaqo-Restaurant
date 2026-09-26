@@ -1,583 +1,974 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
 import api from '@/lib/api';
-import { useAuth } from '@/context/AuthContext';
-import { Food, Category, Table } from '@/types';
+import { Food, CartItem, Table, Order } from '@/types';
 import {
-  Search,
-  Plus,
+  ArrowRight,
+  Check,
   Minus,
-  Trash2,
+  Plus,
+  Search,
   ShoppingBag,
-  UtensilsCrossed,
-  Coffee,
-  Users,
-  Smartphone,
-  CheckCircle2,
-  X,
-  Receipt,
-  ChevronDown,
-  Sparkles,
-  AlertCircle,
+  Trash2,
+  Utensils,
+  Printer,
+  RotateCcw,
 } from 'lucide-react';
 import { useToast } from '@/components/ui/Toast';
+import ReceiptModal from '@/components/admin/ReceiptModal';
 
-interface POSCartItem {
-  food: Food;
-  quantity: number;
-  price: number;
+const formatCurrency = (value: number) => `$${value.toFixed(2)}`;
+
+interface PosCustomer {
+  _id: string;
+  name: string;
+  phone?: string;
+  role?: { name: string };
 }
 
-export default function ReceptionistPOSPage() {
-  const { user } = useAuth();
+export default function ReceptionistPosPage() {
+  const [foods, setFoods] = useState<Food[]>([]);
+  const [tables, setTables] = useState<Table[]>([]);
+  const [recentOrders, setRecentOrders] = useState<Order[]>([]);
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [search, setSearch] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [orderType, setOrderType] = useState<'TAKEAWAY' | 'DINE_IN' | 'DELIVERY'>('TAKEAWAY');
+  const [selectedTableId, setSelectedTableId] = useState('');
+  const [location, setLocation] = useState('Counter / Walk-in');
+  const [customers, setCustomers] = useState<PosCustomer[]>([]);
+  const [selectedCustomerId, setSelectedCustomerId] = useState('');
+  const [paymentPhone, setPaymentPhone] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState<'evc_plus' | 'edahab' | 'pay_on_delivery'>('evc_plus');
+  const [paymentStatus, setPaymentStatus] = useState<'Paid' | 'Pending'>('Paid');
+  const [notes, setNotes] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Receipt Modal State
+  const [receiptOrder, setReceiptOrder] = useState<Order | null>(null);
+  const [isReceiptOpen, setIsReceiptOpen] = useState(false);
+  const [restaurantSettings, setRestaurantSettings] = useState<{
+    restaurantName?: string;
+    contactPhone?: string;
+    address?: string;
+    currencySymbol?: string;
+  }>({});
+
   const { showToast, ToastComponent } = useToast();
 
-  // Data
-  const [foods, setFoods] = useState<Food[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [tables, setTables] = useState<Table[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  // POS state
-  const [cart, setCart] = useState<POSCartItem[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('ALL');
-  const [orderType, setOrderType] = useState<'DINE_IN' | 'TAKEAWAY'>('DINE_IN');
-  const [selectedTable, setSelectedTable] = useState('');
-  const [customerName, setCustomerName] = useState('');
-  const [customerPhone, setCustomerPhone] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState('evc_plus');
-  const [notes, setNotes] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [lastOrderId, setLastOrderId] = useState('');
-
-  // Fetch data
-  const fetchData = useCallback(async () => {
+  const loadData = async () => {
     setIsLoading(true);
     try {
-      const [foodRes, catRes, tableRes] = await Promise.allSettled([
-        api.get('/foods'),
-        api.get('/categories'),
-        api.get('/tables'),
-      ]);
-      if (foodRes.status === 'fulfilled' && foodRes.value.data.success) {
-        setFoods((foodRes.value.data.data || []).filter((f: Food) => f.status === 'Available' && !f.isDeleted));
+      const [foodResponse, customerResponse, tableResponse, orderResponse, settingsResponse] =
+        await Promise.allSettled([
+          api.get('/foods?limit=100&status=Available'),
+          api.get('/users'),
+          api.get('/tables'),
+          api.get('/orders?limit=6'),
+          api.get('/settings'),
+        ]);
+
+      if (foodResponse.status === 'fulfilled' && foodResponse.value.data.success) {
+        setFoods(foodResponse.value.data.data);
       }
-      if (catRes.status === 'fulfilled' && catRes.value.data.success) {
-        setCategories(catRes.value.data.data || []);
+      if (customerResponse.status === 'fulfilled' && customerResponse.value.data.success) {
+        setCustomers(
+          (customerResponse.value.data.data || []).filter(
+            (c: PosCustomer) => c.role?.name === 'CUSTOMER'
+          )
+        );
       }
-      if (tableRes.status === 'fulfilled' && tableRes.value.data.success) {
-        setTables(tableRes.value.data.data || []);
+      if (tableResponse.status === 'fulfilled' && tableResponse.value.data.success) {
+        setTables(tableResponse.value.data.data);
       }
-    } catch (err) {
-      showToast('Failed to load menu', 'error');
+      if (orderResponse.status === 'fulfilled' && orderResponse.value.data.success) {
+        setRecentOrders(orderResponse.value.data.data || []);
+      }
+      if (settingsResponse.status === 'fulfilled' && settingsResponse.value.data.success) {
+        setRestaurantSettings(settingsResponse.value.data.data || {});
+      }
+    } catch (error) {
+      showToast('Could not load menu items or tables', 'error');
     } finally {
       setIsLoading(false);
     }
-  }, [showToast]);
+  };
 
-  useEffect(() => { fetchData(); }, [fetchData]);
+  useEffect(() => {
+    loadData();
+  }, []);
 
-  // Filtered foods
+  const categories = useMemo(() => {
+    const names = foods
+      .map((food) => (typeof food.category === 'object' && food.category ? food.category.name : ''))
+      .filter(Boolean);
+    return Array.from(new Set(names));
+  }, [foods]);
+
   const filteredFoods = useMemo(() => {
-    return foods.filter(f => {
-      const q = searchQuery.toLowerCase();
-      const matchesSearch = !q || f.name.toLowerCase().includes(q);
-      const catId = typeof f.category === 'object' ? f.category._id : f.category;
-      const matchesCat = selectedCategory === 'ALL' || catId === selectedCategory;
-      return matchesSearch && matchesCat;
+    return foods.filter((food) => {
+      const categoryName =
+        typeof food.category === 'object' && food.category ? food.category.name : '';
+      const matchesCategory = selectedCategory === 'all' || categoryName === selectedCategory;
+      const query = search.trim().toLowerCase();
+      return matchesCategory && (!query || food.name.toLowerCase().includes(query));
     });
-  }, [foods, searchQuery, selectedCategory]);
+  }, [foods, search, selectedCategory]);
 
-  // Cart helpers
+  const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const deliveryFee = orderType === 'DELIVERY' && cart.length > 0 ? 2 : 0;
+  const serviceTax = Math.round(subtotal * 0.05 * 100) / 100;
+  const total = subtotal + deliveryFee + serviceTax;
+
   const addToCart = (food: Food) => {
-    setCart(prev => {
-      const existing = prev.find(c => c.food._id === food._id);
+    setCart((currentCart) => {
+      const existing = currentCart.find((item) => item.food._id === food._id);
       if (existing) {
-        return prev.map(c => c.food._id === food._id
-          ? { ...c, quantity: c.quantity + 1, price: food.price }
-          : c
+        return currentCart.map((item) =>
+          item.food._id === food._id ? { ...item, quantity: item.quantity + 1 } : item
         );
       }
-      return [...prev, { food, quantity: 1, price: food.price }];
+      return [...currentCart, { food, quantity: 1, price: food.price }];
     });
   };
 
-  const updateQty = (foodId: string, delta: number) => {
-    setCart(prev => prev.map(c => {
-      if (c.food._id === foodId) {
-        const newQty = c.quantity + delta;
-        return newQty <= 0 ? c : { ...c, quantity: newQty };
-      }
-      return c;
-    }).filter(c => c.quantity > 0));
+  const updateQuantity = (foodId: string, change: number) => {
+    setCart((currentCart) =>
+      currentCart
+        .map((item) =>
+          item.food._id === foodId ? { ...item, quantity: item.quantity + change } : item
+        )
+        .filter((item) => item.quantity > 0)
+    );
   };
 
   const removeFromCart = (foodId: string) => {
-    setCart(prev => prev.filter(c => c.food._id !== foodId));
+    setCart((currentCart) => currentCart.filter((item) => item.food._id !== foodId));
   };
 
   const clearCart = () => {
     setCart([]);
-    setCustomerName('');
-    setCustomerPhone('');
-    setSelectedTable('');
     setNotes('');
-    setPaymentMethod('evc_plus');
   };
 
-  // Totals
-  const subtotal = cart.reduce((sum, c) => sum + (c.price * c.quantity), 0);
-  const tax = Math.round(subtotal * 0.05 * 100) / 100;
-  const total = Math.round((subtotal + tax) * 100) / 100;
+  const handleOrderTypeChange = (type: 'TAKEAWAY' | 'DINE_IN' | 'DELIVERY') => {
+    setOrderType(type);
+    if (type === 'DINE_IN') {
+      const firstAvailable = tables.find((t) => t.status === 'Available');
+      if (firstAvailable) {
+        setSelectedTableId(firstAvailable._id);
+        setLocation(`Table ${firstAvailable.tableNumber} (${firstAvailable.location})`);
+      } else {
+        setLocation('Dine-In Table');
+      }
+    } else if (type === 'TAKEAWAY') {
+      setLocation('Counter Pickup');
+      setSelectedTableId('');
+    } else {
+      setLocation('Delivery Address');
+      setSelectedTableId('');
+    }
+  };
 
-  // Submit order
-  const handleSubmitOrder = async () => {
-    if (cart.length === 0) return showToast('Cart is empty', 'error');
-    if (!customerPhone) return showToast('Please enter customer phone', 'error');
-    if (orderType === 'DINE_IN' && !selectedTable) return showToast('Please select a table for dine-in', 'error');
+  const handleTableChange = (tableId: string) => {
+    setSelectedTableId(tableId);
+    const table = tables.find((t) => t._id === tableId);
+    if (table) {
+      setLocation(`Table ${table.tableNumber} (${table.location})`);
+    }
+  };
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (cart.length === 0) {
+      showToast('Add at least one menu item first', 'error');
+      return;
+    }
+
+    const resolvedPhone = paymentPhone.trim() || '+252 61 0000000';
 
     setIsSubmitting(true);
     try {
-      const payload = {
-        items: cart.map(c => ({
-          food: c.food._id,
-          name: c.food.name,
-          quantity: c.quantity,
-          price: c.price,
+      const orderPayload = {
+        items: cart.map((item) => ({
+          food: item.food._id,
+          name: item.food.name,
+          quantity: item.quantity,
+          price: item.price,
         })),
-        orderType,
-        shippingAddress: orderType === 'DINE_IN'
-          ? `Dine-In - Table ${tables.find(t => t._id === selectedTable)?.tableNumber || ''}`
-          : `Takeaway - ${customerName || 'Walk-in'}`,
-        paymentPhone: customerPhone,
+        shippingAddress: location.trim() || 'Counter Order',
+        paymentPhone: resolvedPhone,
         paymentMethod,
-        paymentStatus: 'Paid',
-        table: orderType === 'DINE_IN' ? selectedTable : undefined,
-        notes: notes || `POS Order by ${user?.name || 'Receptionist'}${customerName ? ` for ${customerName}` : ''}`,
+        orderType,
+        table: orderType === 'DINE_IN' && selectedTableId ? selectedTableId : undefined,
+        paymentStatus,
+        ...(selectedCustomerId ? { customerId: selectedCustomerId } : {}),
+        notes: notes.trim(),
       };
 
-      const res = await api.post('/orders', payload);
-      if (res.data.success) {
-        setLastOrderId(res.data.data?.orderId || 'N/A');
-        setShowSuccess(true);
-        clearCart();
-        showToast('✅ Order placed successfully!', 'success');
-        // Auto-hide success after 4s
-        setTimeout(() => setShowSuccess(false), 4000);
-        // Refresh tables
-        fetchData();
+      const response = await api.post('/orders', orderPayload);
+
+      if (response.data.success) {
+        const newOrder = response.data.data;
+        showToast(`Order ${newOrder.orderId} created successfully!`, 'success');
+        
+        // Open receipt modal right away
+        setReceiptOrder(newOrder);
+        setIsReceiptOpen(true);
+
+        // Reset cart and fields
+        setCart([]);
+        setPaymentPhone('');
+        setSelectedCustomerId('');
+        setNotes('');
+        if (orderType === 'TAKEAWAY') setLocation('Counter / Walk-in');
+
+        // Refresh recent orders and tables
+        loadData();
       }
-    } catch (err: any) {
-      showToast(err.response?.data?.message || 'Failed to place order', 'error');
+    } catch (error: any) {
+      showToast(error.response?.data?.message || 'Could not create order', 'error');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const availableTables = tables.filter(t => t.status === 'Available');
-
-  const API_BASE = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5000';
-
   return (
-    <div style={{
-      display: 'flex',
-      gap: '0',
-      minHeight: 'calc(100vh - 80px)',
-      maxHeight: 'calc(100vh - 80px)',
-      backgroundColor: 'var(--bg-surface)',
-      border: '1px solid var(--border)',
-      borderRadius: '16px',
-      overflow: 'hidden',
-      position: 'relative',
-    }}>
-      {ToastComponent}
-
-      {/* ========== LEFT: MENU PANEL ========== */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minWidth: 0 }}>
-        {/* Search + Filters */}
-        <div style={{ padding: '16px 20px 12px', borderBottom: '1px solid var(--border)', flexShrink: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-            <div style={{ position: 'relative', flex: 1 }}>
-              <Search size={15} color="var(--text-muted)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
-              <input
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                placeholder="Search menu items..."
-                style={{ width: '100%', padding: '10px 14px 10px 36px', borderRadius: '10px', border: '1px solid var(--border)', backgroundColor: 'var(--bg-surface)', color: 'var(--text-primary)', fontSize: '13px', outline: 'none', boxSizing: 'border-box' }}
-              />
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '10px', padding: '2px' }}>
-              <button
-                onClick={() => setOrderType('DINE_IN')}
-                style={{
-                  padding: '7px 14px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: '700',
-                  backgroundColor: orderType === 'DINE_IN' ? 'var(--accent)' : 'transparent',
-                  color: orderType === 'DINE_IN' ? '#FFF' : 'var(--text-secondary)',
-                  display: 'flex', alignItems: 'center', gap: '5px', transition: 'all 0.15s',
-                }}
-              >
-                <UtensilsCrossed size={13} /> Dine-In
-              </button>
-              <button
-                onClick={() => setOrderType('TAKEAWAY')}
-                style={{
-                  padding: '7px 14px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: '700',
-                  backgroundColor: orderType === 'TAKEAWAY' ? 'var(--accent)' : 'transparent',
-                  color: orderType === 'TAKEAWAY' ? '#FFF' : 'var(--text-secondary)',
-                  display: 'flex', alignItems: 'center', gap: '5px', transition: 'all 0.15s',
-                }}
-              >
-                <Coffee size={13} /> Takeaway
-              </button>
-            </div>
-          </div>
-
-          {/* Category Pills */}
-          <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', scrollbarWidth: 'none', paddingBottom: '2px' }}>
-            <button
-              onClick={() => setSelectedCategory('ALL')}
-              style={{
-                padding: '5px 14px', borderRadius: '20px', border: `1px solid ${selectedCategory === 'ALL' ? 'var(--accent)' : 'var(--border)'}`,
-                backgroundColor: selectedCategory === 'ALL' ? 'var(--accent)' : 'var(--bg-surface)',
-                color: selectedCategory === 'ALL' ? '#FFF' : 'var(--text-secondary)',
-                fontSize: '12px', fontWeight: '600', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0,
-              }}
-            >
-              All Items
-            </button>
-            {categories.map(cat => (
-              <button
-                key={cat._id}
-                onClick={() => setSelectedCategory(cat._id)}
-                style={{
-                  padding: '5px 14px', borderRadius: '20px', border: `1px solid ${selectedCategory === cat._id ? 'var(--accent)' : 'var(--border)'}`,
-                  backgroundColor: selectedCategory === cat._id ? 'var(--accent)' : 'var(--bg-surface)',
-                  color: selectedCategory === cat._id ? '#FFF' : 'var(--text-secondary)',
-                  fontSize: '12px', fontWeight: '600', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0,
-                }}
-              >
-                {cat.name}
-              </button>
-            ))}
-          </div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      {/* Top Header */}
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
+        <div>
+          <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '1.2px' }}>
+            Somalia Counter & Dine-in POS
+          </span>
+          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '30px', fontWeight: '700', color: 'var(--text-primary)', marginTop: '4px' }}>
+            Point of Sale
+          </h1>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
+            Quick counter orders, EVC Plus / eDahab verification, and instant thermal receipt printing.
+          </p>
         </div>
-
-        {/* Food Grid */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px', scrollbarWidth: 'thin' }}>
-          {isLoading ? (
-            <div style={{ textAlign: 'center', padding: '60px', color: 'var(--text-muted)' }}>
-              <div style={{ width: '32px', height: '32px', border: '3px solid var(--border)', borderTopColor: 'var(--accent)', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 12px' }} />
-              Loading menu...
-            </div>
-          ) : filteredFoods.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '60px', color: 'var(--text-muted)' }}>
-              <Search size={32} style={{ margin: '0 auto 10px', opacity: 0.4 }} />
-              <p>No items found</p>
-            </div>
-          ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '10px' }}>
-              {filteredFoods.map(food => {
-                const cartItem = cart.find(c => c.food._id === food._id);
-                const imgSrc = food.image
-                  ? (food.image.startsWith('http') ? food.image : `${API_BASE}${food.image.startsWith('/') ? '' : '/'}${food.image}`)
-                  : null;
-                return (
-                  <div
-                    key={food._id}
-                    onClick={() => addToCart(food)}
-                    style={{
-                      backgroundColor: 'var(--bg-surface)', border: `1.5px solid ${cartItem ? 'var(--accent)' : 'var(--border)'}`,
-                      borderRadius: '12px', cursor: 'pointer', overflow: 'hidden',
-                      transition: 'all 0.15s', position: 'relative',
-                    }}
-                  >
-                    {/* Food Image */}
-                    <div style={{ width: '100%', height: '90px', backgroundColor: 'var(--bg-elevated)', overflow: 'hidden' }}>
-                      {imgSrc ? (
-                        <img src={imgSrc} alt={food.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                      ) : (
-                        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          <UtensilsCrossed size={24} color="var(--text-muted)" style={{ opacity: 0.3 }} />
-                        </div>
-                      )}
-                    </div>
-                    {/* Food Info */}
-                    <div style={{ padding: '8px 10px' }}>
-                      <p style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        {food.name}
-                      </p>
-                      <p style={{ fontSize: '13px', fontWeight: '800', color: 'var(--accent)', marginTop: '2px' }}>
-                        ${food.price.toFixed(2)}
-                      </p>
-                    </div>
-                    {/* Cart badge */}
-                    {cartItem && (
-                      <div style={{
-                        position: 'absolute', top: '6px', right: '6px',
-                        width: '24px', height: '24px', borderRadius: '50%',
-                        background: 'linear-gradient(135deg, var(--accent), #D47151)',
-                        color: '#FFF', fontSize: '11px', fontWeight: '800',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        boxShadow: '0 2px 8px var(--accent-glow)',
-                      }}>
-                        {cartItem.quantity}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          )}
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button
+            onClick={() => {
+              if (recentOrders.length > 0) {
+                setReceiptOrder(recentOrders[0]);
+                setIsReceiptOpen(true);
+              } else {
+                showToast('No recent orders to print', 'info');
+              }
+            }}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '7px',
+              padding: '10px 14px',
+              borderRadius: '10px',
+              border: '1px solid var(--border)',
+              color: 'var(--text-primary)',
+              fontSize: '13px',
+              fontWeight: '600',
+              backgroundColor: 'var(--bg-surface)',
+              cursor: 'pointer',
+            }}
+          >
+            <Printer size={15} color="var(--accent)" />
+            <span>Reprint Last Order</span>
+          </button>
+          <Link
+            href="/receptionist/orders"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '7px',
+              padding: '10px 14px',
+              borderRadius: '10px',
+              border: '1px solid var(--border)',
+              color: 'var(--text-secondary)',
+              fontSize: '13px',
+              fontWeight: '600',
+              textDecoration: 'none',
+              backgroundColor: 'var(--bg-surface)',
+            }}
+          >
+            Live Orders <ArrowRight size={15} />
+          </Link>
         </div>
       </div>
 
-      {/* ========== RIGHT: ORDER PANEL ========== */}
-      <div style={{
-        width: '340px', flexShrink: 0, display: 'flex', flexDirection: 'column',
-        backgroundColor: 'var(--bg-surface)', borderLeft: '1px solid var(--border)', overflow: 'hidden',
-      }}>
-        {/* Panel Header */}
-        <div style={{ padding: '16px 18px 12px', borderBottom: '1px solid var(--border)', flexShrink: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <h3 style={{ fontFamily: 'var(--font-display)', fontWeight: '700', fontSize: '16px', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Receipt size={18} color="var(--accent)" /> Current Order
-            </h3>
-            {cart.length > 0 && (
-              <button onClick={clearCart} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '12px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <Trash2 size={12} /> Clear
-              </button>
-            )}
-          </div>
-          <p style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>
-            {orderType === 'DINE_IN' ? '🍽️ Dine-In' : '☕ Takeaway'} · {cart.length} item{cart.length !== 1 ? 's' : ''}
-          </p>
-        </div>
-
-        {/* Cart Items */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '12px 16px', scrollbarWidth: 'thin' }}>
-          {cart.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '40px 10px', color: 'var(--text-muted)' }}>
-              <ShoppingBag size={36} style={{ margin: '0 auto 12px', opacity: 0.3 }} />
-              <p style={{ fontSize: '13px' }}>Tap items to add to order</p>
+      {/* POS Layout */}
+      <div className="pos-layout">
+        {/* Left Side: Available Menu & Search */}
+        <section style={{ minWidth: 0, display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          {/* Search & Category Filter Toolbar */}
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            <div style={{ position: 'relative', flex: '1 1 240px' }}>
+              <Search
+                size={16}
+                color="var(--text-muted)"
+                style={{ position: 'absolute', left: '13px', top: '50%', transform: 'translateY(-50%)' }}
+              />
+              <input
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder="Search dish (e.g. Bariis, Baasto, Suqaar, Goat)..."
+                className="form-input"
+                style={{
+                  width: '100%',
+                  paddingLeft: '38px',
+                  backgroundColor: 'var(--bg-surface)',
+                  border: '1px solid var(--border)',
+                  borderRadius: '10px',
+                  color: 'var(--text-primary)',
+                }}
+              />
             </div>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {cart.map(item => (
-                <div key={item.food._id} style={{
-                  display: 'flex', alignItems: 'center', gap: '10px',
-                  padding: '10px 12px', backgroundColor: 'var(--bg-elevated)', borderRadius: '10px',
-                }}>
+            <select
+              value={selectedCategory}
+              onChange={(event) => setSelectedCategory(event.target.value)}
+              className="form-select"
+              style={{
+                width: '190px',
+                backgroundColor: 'var(--bg-surface)',
+                border: '1px solid var(--border)',
+                borderRadius: '10px',
+                color: 'var(--text-primary)',
+              }}
+            >
+              <option value="all">All Categories</option>
+              {categories.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Menu Food Grid */}
+          <div
+            style={{
+              backgroundColor: 'var(--bg-surface)',
+              border: '1px solid var(--border)',
+              borderRadius: '16px',
+              overflow: 'hidden',
+            }}
+          >
+            <div
+              style={{
+                padding: '14px 18px',
+                borderBottom: '1px solid var(--border)',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '9px' }}>
+                <Utensils size={17} color="var(--accent)" />
+                <h2 style={{ fontSize: '15px', fontWeight: '700', margin: 0 }}>Available Dishes</h2>
+              </div>
+              <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+                {filteredFoods.length} items
+              </span>
+            </div>
+
+            <div className="pos-food-grid" style={{ padding: '16px', maxHeight: '560px', overflowY: 'auto' }}>
+              {isLoading ? (
+                <p style={{ color: 'var(--text-secondary)', padding: '30px', gridColumn: '1 / -1', textAlign: 'center' }}>
+                  Loading menu items...
+                </p>
+              ) : filteredFoods.length === 0 ? (
+                <p style={{ color: 'var(--text-secondary)', padding: '30px', gridColumn: '1 / -1', textAlign: 'center' }}>
+                  No available dishes found matching your search.
+                </p>
+              ) : (
+                filteredFoods.map((food) => {
+                  const cartItem = cart.find((item) => item.food._id === food._id);
+                  return (
+                    <button
+                      key={food._id}
+                      type="button"
+                      onClick={() => addToCart(food)}
+                      style={{
+                        position: 'relative',
+                        textAlign: 'left',
+                        padding: 0,
+                        overflow: 'hidden',
+                        borderRadius: '12px',
+                        border: cartItem ? '2px solid var(--accent)' : '1px solid var(--border)',
+                        backgroundColor: 'var(--bg-deep)',
+                        cursor: 'pointer',
+                        color: 'var(--text-primary)',
+                        transition: 'transform 0.15s, border-color 0.15s',
+                      }}
+                    >
+                      <img
+                        src={food.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400'}
+                        alt={food.name}
+                        style={{ width: '100%', height: '105px', objectFit: 'cover', display: 'block' }}
+                      />
+                      <div style={{ padding: '10px 11px' }}>
+                        <p
+                          style={{
+                            fontWeight: '700',
+                            fontSize: '13px',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            margin: 0,
+                          }}
+                        >
+                          {food.name}
+                        </p>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '4px' }}>
+                          <span style={{ color: 'var(--accent)', fontWeight: '800', fontSize: '13px' }}>
+                            {formatCurrency(food.price)}
+                          </span>
+                          {food.discount && food.discount > 0 && (
+                            <span style={{ fontSize: '10px', color: '#4ADE80', fontWeight: '700' }}>
+                              -{food.discount}%
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      {cartItem && (
+                        <span
+                          style={{
+                            position: 'absolute',
+                            top: '8px',
+                            right: '8px',
+                            width: '24px',
+                            height: '24px',
+                            borderRadius: '50%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            backgroundColor: 'var(--accent)',
+                            color: '#000000',
+                            fontSize: '12px',
+                            fontWeight: '900',
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
+                          }}
+                        >
+                          {cartItem.quantity}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })
+              )}
+            </div>
+          </div>
+
+          {/* Recent Counter Sales (Reprint Bar) */}
+          {recentOrders.length > 0 && (
+            <div
+              style={{
+                backgroundColor: 'var(--bg-surface)',
+                border: '1px solid var(--border)',
+                borderRadius: '14px',
+                padding: '14px 18px',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+                <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-secondary)' }}>
+                  Recent Counter Orders
+                </span>
+                <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Click to view / reprint receipt</span>
+              </div>
+              <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '4px' }}>
+                {recentOrders.map((ro) => (
+                  <button
+                    key={ro._id}
+                    type="button"
+                    onClick={() => {
+                      setReceiptOrder(ro);
+                      setIsReceiptOpen(true);
+                    }}
+                    style={{
+                      flex: '0 0 auto',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      padding: '8px 12px',
+                      borderRadius: '8px',
+                      border: '1px solid var(--border)',
+                      backgroundColor: 'var(--bg-deep)',
+                      color: 'var(--text-primary)',
+                      cursor: 'pointer',
+                      fontSize: '12px',
+                    }}
+                  >
+                    <Printer size={13} color="var(--accent)" />
+                    <span style={{ fontWeight: '700', color: 'var(--accent)' }}>{ro.orderId}</span>
+                    <span>${ro.totalAmount.toFixed(2)}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </section>
+
+        {/* Right Side: Order Cart & Mobile Money Checkout */}
+        <form
+          onSubmit={handleSubmit}
+          style={{
+            backgroundColor: 'var(--bg-surface)',
+            border: '1px solid var(--border)',
+            borderRadius: '16px',
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
+          {/* Cart Header */}
+          <div
+            style={{
+              padding: '14px 18px',
+              borderBottom: '1px solid var(--border)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <ShoppingBag size={17} color="var(--accent)" />
+              <h2 style={{ fontSize: '15px', fontWeight: '700', margin: 0 }}>Current Order</h2>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ color: 'var(--text-muted)', fontSize: '12px' }}>{cart.length} lines</span>
+              {cart.length > 0 && (
+                <button
+                  type="button"
+                  onClick={clearCart}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: 'var(--danger)',
+                    cursor: 'pointer',
+                    fontSize: '12px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    padding: '2px 6px',
+                  }}
+                >
+                  <RotateCcw size={12} /> Clear
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Cart Items List */}
+          <div style={{ padding: '12px 18px', minHeight: '130px', maxHeight: '220px', overflowY: 'auto' }}>
+            {cart.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '24px 10px', color: 'var(--text-muted)' }}>
+                <ShoppingBag size={28} style={{ opacity: 0.35, margin: '0 auto 8px' }} />
+                <p style={{ fontSize: '13px', margin: 0 }}>Click menu dishes to start an order</p>
+              </div>
+            ) : (
+              cart.map((item) => (
+                <div
+                  key={item.food._id}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '9px',
+                    padding: '9px 0',
+                    borderBottom: '1px solid var(--border)',
+                  }}
+                >
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    <p
+                      style={{
+                        fontSize: '13px',
+                        fontWeight: '700',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        margin: 0,
+                      }}
+                    >
                       {item.food.name}
                     </p>
-                    <p style={{ fontSize: '12px', color: 'var(--accent)', fontWeight: '700' }}>
-                      ${(item.price * item.quantity).toFixed(2)}
+                    <p style={{ color: 'var(--accent)', fontSize: '12px', fontWeight: '700', margin: '2px 0 0' }}>
+                      {formatCurrency(item.price * item.quantity)}
                     </p>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
-                    <button onClick={() => updateQty(item.food._id, -1)} style={{ width: '26px', height: '26px', borderRadius: '7px', border: '1px solid var(--border)', background: 'var(--bg-surface)', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-                      <Minus size={12} />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <button
+                      type="button"
+                      aria-label="Decrease"
+                      onClick={() => updateQuantity(item.food._id, -1)}
+                      style={{
+                        width: '25px',
+                        height: '25px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderRadius: '6px',
+                        border: '1px solid var(--border)',
+                        backgroundColor: 'var(--bg-deep)',
+                        cursor: 'pointer',
+                        color: 'var(--text-primary)',
+                      }}
+                    >
+                      <Minus size={13} />
                     </button>
-                    <span style={{ fontSize: '13px', fontWeight: '800', color: 'var(--text-primary)', minWidth: '20px', textAlign: 'center' }}>
+                    <span style={{ width: '20px', textAlign: 'center', fontSize: '13px', fontWeight: '700' }}>
                       {item.quantity}
                     </span>
-                    <button onClick={() => updateQty(item.food._id, 1)} style={{ width: '26px', height: '26px', borderRadius: '7px', border: '1px solid var(--border)', background: 'var(--bg-surface)', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-                      <Plus size={12} />
+                    <button
+                      type="button"
+                      aria-label="Increase"
+                      onClick={() => updateQuantity(item.food._id, 1)}
+                      style={{
+                        width: '25px',
+                        height: '25px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderRadius: '6px',
+                        border: '1px solid var(--border)',
+                        backgroundColor: 'var(--bg-deep)',
+                        cursor: 'pointer',
+                        color: 'var(--text-primary)',
+                      }}
+                    >
+                      <Plus size={13} />
                     </button>
-                    <button onClick={() => removeFromCart(item.food._id)} style={{ width: '26px', height: '26px', borderRadius: '7px', border: 'none', background: 'rgba(248,113,113,0.1)', color: '#F87171', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', marginLeft: '4px' }}>
-                      <X size={12} />
+                    <button
+                      type="button"
+                      aria-label="Remove"
+                      onClick={() => removeFromCart(item.food._id)}
+                      style={{
+                        width: '25px',
+                        height: '25px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderRadius: '6px',
+                        border: '1px solid rgba(248,113,113,0.2)',
+                        backgroundColor: 'rgba(248,113,113,0.08)',
+                        color: 'var(--danger)',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      <Trash2 size={13} />
                     </button>
                   </div>
                 </div>
-              ))}
-            </div>
-          )}
+              ))
+            )}
+          </div>
 
-          {/* Order Details Form */}
-          {cart.length > 0 && (
-            <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <div style={{ height: '1px', backgroundColor: 'var(--border)' }} />
+          {/* POS Order Options & Somali Mobile Money Flow */}
+          <div style={{ padding: '14px 18px', borderTop: '1px solid var(--border)' }}>
+            <div style={{ display: 'grid', gap: '10px' }}>
+              {/* Order Type Toggle (Takeaway / Dine-In / Delivery) */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px' }}>
+                {(['TAKEAWAY', 'DINE_IN', 'DELIVERY'] as const).map((type) => (
+                  <button
+                    key={type}
+                    type="button"
+                    onClick={() => handleOrderTypeChange(type)}
+                    style={{
+                      padding: '7px 4px',
+                      borderRadius: '8px',
+                      fontSize: '12px',
+                      fontWeight: '700',
+                      border: orderType === type ? '1px solid var(--accent)' : '1px solid var(--border)',
+                      backgroundColor: orderType === type ? 'rgba(212, 165, 116, 0.15)' : 'var(--bg-deep)',
+                      color: orderType === type ? 'var(--accent)' : 'var(--text-secondary)',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    {type === 'TAKEAWAY' ? 'Takeaway' : type === 'DINE_IN' ? 'Dine-In' : 'Delivery'}
+                  </button>
+                ))}
+              </div>
 
-              {/* Table Selection (Dine-In only) */}
+              {/* Table Selector (If Dine-In) */}
               {orderType === 'DINE_IN' && (
                 <div>
-                  <label style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px', display: 'block' }}>
-                    Select Table *
+                  <label style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text-secondary)', display: 'block', marginBottom: '4px' }}>
+                    SELECT DINING TABLE
                   </label>
                   <select
-                    value={selectedTable}
-                    onChange={e => setSelectedTable(e.target.value)}
-                    style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', fontSize: '13px', outline: 'none', boxSizing: 'border-box' }}
+                    value={selectedTableId}
+                    onChange={(e) => handleTableChange(e.target.value)}
+                    className="form-select"
+                    style={{
+                      width: '100%',
+                      backgroundColor: 'var(--bg-deep)',
+                      border: '1px solid var(--border)',
+                      borderRadius: '9px',
+                      color: 'var(--text-primary)',
+                      fontSize: '13px',
+                    }}
                   >
-                    <option value="">Choose table...</option>
-                    {availableTables.map(t => (
+                    <option value="">— Select Table —</option>
+                    {tables.map((t) => (
                       <option key={t._id} value={t._id}>
-                        Table {t.tableNumber} — {t.location} ({t.capacity} seats)
+                        Table {t.tableNumber} - {t.location} ({t.capacity} seats) [{t.status}]
                       </option>
                     ))}
                   </select>
-                  {availableTables.length === 0 && (
-                    <p style={{ fontSize: '11px', color: '#F87171', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <AlertCircle size={11} /> No tables available
-                    </p>
-                  )}
                 </div>
               )}
 
-              {/* Customer Info */}
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <div style={{ flex: 1 }}>
-                  <label style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px', display: 'block' }}>
-                    Customer Name
-                  </label>
-                  <input
-                    value={customerName}
-                    onChange={e => setCustomerName(e.target.value)}
-                    placeholder="Walk-in"
-                    style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', fontSize: '13px', outline: 'none', boxSizing: 'border-box' }}
-                  />
-                </div>
-              </div>
-              <div>
-                <label style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px', display: 'block' }}>
-                  Phone *
-                </label>
-                <input
-                  value={customerPhone}
-                  onChange={e => setCustomerPhone(e.target.value)}
-                  placeholder="e.g. 0615..."
-                  style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', fontSize: '13px', outline: 'none', boxSizing: 'border-box' }}
-                />
-              </div>
+              {/* Location / Note */}
+              <input
+                value={location}
+                onChange={(event) => setLocation(event.target.value)}
+                placeholder="Table # or Pickup details"
+                className="form-input"
+                style={{
+                  backgroundColor: 'var(--bg-deep)',
+                  border: '1px solid var(--border)',
+                  borderRadius: '9px',
+                  color: 'var(--text-primary)',
+                  fontSize: '13px',
+                }}
+              />
 
-              {/* Payment Method */}
+              {/* Customer Selector (Optional) */}
+              <select
+                value={selectedCustomerId}
+                onChange={(event) => {
+                  const customerId = event.target.value;
+                  setSelectedCustomerId(customerId);
+                  const customer = customers.find((item) => item._id === customerId);
+                  if (customer?.phone) setPaymentPhone(customer.phone);
+                }}
+                className="form-select"
+                style={{
+                  backgroundColor: 'var(--bg-deep)',
+                  border: '1px solid var(--border)',
+                  borderRadius: '9px',
+                  color: 'var(--text-primary)',
+                  fontSize: '13px',
+                }}
+              >
+                <option value="">Walk-in Customer (Guest)</option>
+                {customers.map((c) => (
+                  <option key={c._id} value={c._id}>
+                    {c.name} {c.phone ? `(${c.phone})` : ''}
+                  </option>
+                ))}
+              </select>
+
+              {/* Somali Mobile Payment Method Selector */}
               <div>
-                <label style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px', display: 'block' }}>
-                  Payment
+                <label style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text-secondary)', display: 'block', marginBottom: '4px' }}>
+                  MOBILE MONEY PAYMENT (SOMALIA)
                 </label>
-                <div style={{ display: 'flex', gap: '6px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px' }}>
                   {[
-                    { value: 'evc_plus', label: 'EVC Plus' },
-                    { value: 'edahab', label: 'eDahab' },
-                    { value: 'pay_on_delivery', label: 'Pay Later' },
-                  ].map(pm => (
+                    { id: 'evc_plus', label: 'EVC Plus', sub: 'Hormuud' },
+                    { id: 'edahab', label: 'eDahab', sub: 'Dahabshiil' },
+                    { id: 'pay_on_delivery', label: 'On Delivery', sub: 'Later' },
+                  ].map((m) => (
                     <button
-                      key={pm.value}
-                      onClick={() => setPaymentMethod(pm.value)}
+                      key={m.id}
+                      type="button"
+                      onClick={() => setPaymentMethod(m.id as any)}
                       style={{
-                        flex: 1, padding: '7px 6px', borderRadius: '8px', cursor: 'pointer',
-                        border: `1.5px solid ${paymentMethod === pm.value ? 'var(--accent)' : 'var(--border)'}`,
-                        backgroundColor: paymentMethod === pm.value ? 'var(--accent-glow)' : 'var(--bg-elevated)',
-                        color: paymentMethod === pm.value ? 'var(--accent)' : 'var(--text-secondary)',
-                        fontSize: '11px', fontWeight: '700', transition: 'all 0.15s',
+                        padding: '6px 4px',
+                        borderRadius: '8px',
+                        textAlign: 'center',
+                        border: paymentMethod === m.id ? '1px solid #4ADE80' : '1px solid var(--border)',
+                        backgroundColor: paymentMethod === m.id ? 'rgba(74, 222, 128, 0.1)' : 'var(--bg-deep)',
+                        color: paymentMethod === m.id ? '#4ADE80' : 'var(--text-primary)',
+                        cursor: 'pointer',
                       }}
                     >
-                      {pm.label}
+                      <div style={{ fontSize: '12px', fontWeight: '800' }}>{m.label}</div>
+                      <div style={{ fontSize: '10px', opacity: 0.7 }}>{m.sub}</div>
                     </button>
                   ))}
                 </div>
               </div>
 
-              {/* Notes */}
-              <input
+              {/* Customer Phone */}
+              <div>
+                <label style={{ fontSize: '10px', color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>CUSTOMER PHONE</label>
+                <input
+                  value={paymentPhone}
+                  onChange={(event) => setPaymentPhone(event.target.value)}
+                  placeholder="061XXXXXXX"
+                  className="form-input"
+                  style={{
+                    width: '100%',
+                    backgroundColor: 'var(--bg-deep)',
+                    border: '1px solid var(--border)',
+                    borderRadius: '8px',
+                    color: 'var(--text-primary)',
+                    fontSize: '12px',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
+
+              {/* Payment Status Toggle (Paid immediately vs Pending) */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 10px', borderRadius: '8px', backgroundColor: 'var(--bg-deep)', border: '1px solid var(--border)' }}>
+                <span style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-secondary)' }}>Payment Received?</span>
+                <div style={{ display: 'flex', gap: '6px' }}>
+                  <button
+                    type="button"
+                    onClick={() => setPaymentStatus('Paid')}
+                    style={{
+                      padding: '3px 10px',
+                      borderRadius: '6px',
+                      fontSize: '11px',
+                      fontWeight: '800',
+                      border: 'none',
+                      backgroundColor: paymentStatus === 'Paid' ? '#4ADE80' : 'transparent',
+                      color: paymentStatus === 'Paid' ? '#000000' : 'var(--text-secondary)',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    PAID
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPaymentStatus('Pending')}
+                    style={{
+                      padding: '3px 10px',
+                      borderRadius: '6px',
+                      fontSize: '11px',
+                      fontWeight: '800',
+                      border: 'none',
+                      backgroundColor: paymentStatus === 'Pending' ? '#FBBF24' : 'transparent',
+                      color: paymentStatus === 'Pending' ? '#000000' : 'var(--text-secondary)',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    PENDING
+                  </button>
+                </div>
+              </div>
+
+              <textarea
                 value={notes}
-                onChange={e => setNotes(e.target.value)}
-                placeholder="Order notes (optional)"
-                style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', fontSize: '12px', outline: 'none', boxSizing: 'border-box' }}
+                onChange={(event) => setNotes(event.target.value)}
+                placeholder="Kitchen note (e.g. well-done, no spicy)..."
+                rows={1}
+                className="form-input"
+                style={{
+                  resize: 'vertical',
+                  backgroundColor: 'var(--bg-deep)',
+                  border: '1px solid var(--border)',
+                  borderRadius: '8px',
+                  color: 'var(--text-primary)',
+                  fontSize: '12px',
+                }}
               />
             </div>
-          )}
-        </div>
 
-        {/* Totals + Submit */}
-        {cart.length > 0 && (
-          <div style={{ padding: '14px 16px', borderTop: '1px solid var(--border)', flexShrink: 0 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-              <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Subtotal</span>
-              <span style={{ fontSize: '12px', color: 'var(--text-primary)', fontWeight: '600' }}>${subtotal.toFixed(2)}</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-              <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Tax (5%)</span>
-              <span style={{ fontSize: '12px', color: 'var(--text-primary)', fontWeight: '600' }}>${tax.toFixed(2)}</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '14px', paddingTop: '8px', borderTop: '1px solid var(--border)' }}>
-              <span style={{ fontSize: '16px', fontWeight: '800', color: 'var(--text-primary)' }}>Total</span>
-              <span style={{ fontSize: '16px', fontWeight: '800', color: 'var(--accent)' }}>${total.toFixed(2)}</span>
-            </div>
-            <button
-              onClick={handleSubmitOrder}
-              disabled={isSubmitting || cart.length === 0}
+            {/* Calculations Breakdown */}
+            <div
               style={{
-                width: '100%', padding: '13px', borderRadius: '12px', border: 'none',
-                background: isSubmitting ? 'var(--bg-elevated)' : 'linear-gradient(135deg, var(--accent) 0%, #D47151 100%)',
-                color: isSubmitting ? 'var(--text-muted)' : '#FFFFFF',
-                fontWeight: '800', fontSize: '14px', cursor: isSubmitting ? 'not-allowed' : 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                boxShadow: isSubmitting ? 'none' : '0 4px 16px var(--accent-glow)',
-                transition: 'all 0.2s',
+                marginTop: '14px',
+                paddingTop: '10px',
+                borderTop: '1px solid var(--border)',
+                display: 'grid',
+                gap: '6px',
+                fontSize: '12.5px',
               }}
             >
-              {isSubmitting ? (
-                <>Processing...</>
-              ) : (
-                <><CheckCircle2 size={16} /> Place Order — ${total.toFixed(2)}</>
-              )}
-            </button>
-          </div>
-        )}
-
-        {/* Success overlay */}
-        {showSuccess && (
-          <div style={{
-            position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-            background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            zIndex: 100,
-          }}>
-            <div style={{
-              backgroundColor: 'var(--bg-surface)', borderRadius: '20px', padding: '40px',
-              textAlign: 'center', maxWidth: '320px', boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
-            }}>
-              <div style={{
-                width: '64px', height: '64px', borderRadius: '50%',
-                background: 'linear-gradient(135deg, #4ADE80, #16A34A)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                margin: '0 auto 16px', boxShadow: '0 6px 20px rgba(74,222,128,0.3)',
-              }}>
-                <CheckCircle2 size={32} color="#000" />
+              <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)' }}>
+                <span>Subtotal</span>
+                <span>{formatCurrency(subtotal)}</span>
               </div>
-              <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '6px' }}>
-                Order Placed!
-              </h3>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '4px' }}>
-                Order <strong style={{ color: 'var(--accent)' }}>{lastOrderId}</strong>
-              </p>
-              <p style={{ color: 'var(--text-muted)', fontSize: '13px', marginBottom: '20px' }}>
-                The kitchen has been notified.
-              </p>
-              <button
-                onClick={() => setShowSuccess(false)}
+              <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)' }}>
+                <span>Service tax (5%)</span>
+                <span>{formatCurrency(serviceTax)}</span>
+              </div>
+              {orderType === 'DELIVERY' && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)' }}>
+                  <span>Delivery fee</span>
+                  <span>{formatCurrency(deliveryFee)}</span>
+                </div>
+              )}
+              <div
                 style={{
-                  padding: '10px 30px', borderRadius: '10px', border: 'none',
-                  background: 'linear-gradient(135deg, var(--accent), #D47151)',
-                  color: '#FFF', fontWeight: '700', fontSize: '14px', cursor: 'pointer',
-                  boxShadow: '0 3px 12px var(--accent-glow)',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  paddingTop: '6px',
+                  marginTop: '2px',
+                  borderTop: '1px solid var(--border)',
+                  fontWeight: '800',
+                  fontSize: '16px',
                 }}
               >
-                New Order
-              </button>
+                <span>Total Amount</span>
+                <span style={{ color: 'var(--accent)' }}>{formatCurrency(total)}</span>
+              </div>
             </div>
+
+            {/* Submit & Create Order Button */}
+            <button
+              type="submit"
+              disabled={isSubmitting || cart.length === 0}
+              style={{
+                width: '100%',
+                marginTop: '14px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '7px',
+                padding: '12px 14px',
+                border: 'none',
+                borderRadius: '10px',
+                backgroundColor: cart.length > 0 ? 'var(--accent)' : 'var(--bg-elevated)',
+                color: cart.length > 0 ? '#000000' : 'var(--text-muted)',
+                fontWeight: '800',
+                fontSize: '14px',
+                cursor: cart.length > 0 ? 'pointer' : 'not-allowed',
+                boxShadow: cart.length > 0 ? '0 4px 16px rgba(212, 165, 116, 0.35)' : 'none',
+              }}
+            >
+              <Check size={17} /> {isSubmitting ? 'Creating Order...' : 'Complete & Print Receipt'}
+            </button>
           </div>
-        )}
+        </form>
       </div>
 
+      {/* Printable Thermal Receipt Modal */}
+      <ReceiptModal
+        isOpen={isReceiptOpen}
+        onClose={() => setIsReceiptOpen(false)}
+        order={receiptOrder}
+        restaurantSettings={restaurantSettings}
+      />
+
       <style>{`
-        @keyframes spin { to { transform: rotate(360deg); } }
+        .pos-layout {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) minmax(320px, 380px);
+          gap: 20px;
+          align-items: start;
+        }
+        .pos-food-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+          gap: 12px;
+        }
+        @media (max-width: 960px) {
+          .pos-layout {
+            grid-template-columns: 1fr;
+          }
+        }
+        @media (max-width: 520px) {
+          .pos-food-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+        }
       `}</style>
+      {ToastComponent}
     </div>
   );
 }

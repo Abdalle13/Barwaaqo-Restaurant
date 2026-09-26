@@ -47,7 +47,6 @@ export default function AdminPosPage() {
   const [customers, setCustomers] = useState<PosCustomer[]>([]);
   const [selectedCustomerId, setSelectedCustomerId] = useState('');
   const [paymentPhone, setPaymentPhone] = useState('');
-  const [transactionId, setTransactionId] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<'evc_plus' | 'edahab' | 'pay_on_delivery'>('evc_plus');
   const [paymentStatus, setPaymentStatus] = useState<'Paid' | 'Pending'>('Paid');
   const [notes, setNotes] = useState('');
@@ -159,7 +158,6 @@ export default function AdminPosPage() {
   const clearCart = () => {
     setCart([]);
     setNotes('');
-    setTransactionId('');
   };
 
   const handleOrderTypeChange = (type: 'TAKEAWAY' | 'DINE_IN' | 'DELIVERY') => {
@@ -212,7 +210,6 @@ export default function AdminPosPage() {
         paymentMethod,
         orderType,
         table: orderType === 'DINE_IN' && selectedTableId ? selectedTableId : undefined,
-        transactionId: transactionId.trim() || undefined,
         paymentStatus,
         ...(selectedCustomerId ? { customerId: selectedCustomerId } : {}),
         notes: notes.trim(),
@@ -232,7 +229,6 @@ export default function AdminPosPage() {
         setCart([]);
         setPaymentPhone('');
         setSelectedCustomerId('');
-        setTransactionId('');
         setNotes('');
         if (orderType === 'TAKEAWAY') setLocation('Counter / Walk-in');
 
@@ -802,40 +798,24 @@ export default function AdminPosPage() {
                 </div>
               </div>
 
-              {/* Mobile Phone & Transaction Ref */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                <div>
-                  <label style={{ fontSize: '10px', color: 'var(--text-muted)' }}>CUSTOMER PHONE</label>
-                  <input
-                    value={paymentPhone}
-                    onChange={(event) => setPaymentPhone(event.target.value)}
-                    placeholder="061XXXXXXX"
-                    className="form-input"
-                    style={{
-                      backgroundColor: 'var(--bg-deep)',
-                      border: '1px solid var(--border)',
-                      borderRadius: '8px',
-                      color: 'var(--text-primary)',
-                      fontSize: '12px',
-                    }}
-                  />
-                </div>
-                <div>
-                  <label style={{ fontSize: '10px', color: 'var(--text-muted)' }}>TRX ID / SMS REF</label>
-                  <input
-                    value={transactionId}
-                    onChange={(event) => setTransactionId(event.target.value)}
-                    placeholder="e.g. 782410"
-                    className="form-input"
-                    style={{
-                      backgroundColor: 'var(--bg-deep)',
-                      border: '1px solid var(--border)',
-                      borderRadius: '8px',
-                      color: 'var(--text-primary)',
-                      fontSize: '12px',
-                    }}
-                  />
-                </div>
+              {/* Customer Phone */}
+              <div>
+                <label style={{ fontSize: '10px', color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>CUSTOMER PHONE</label>
+                <input
+                  value={paymentPhone}
+                  onChange={(event) => setPaymentPhone(event.target.value)}
+                  placeholder="061XXXXXXX"
+                  className="form-input"
+                  style={{
+                    width: '100%',
+                    backgroundColor: 'var(--bg-deep)',
+                    border: '1px solid var(--border)',
+                    borderRadius: '8px',
+                    color: 'var(--text-primary)',
+                    fontSize: '12px',
+                    boxSizing: 'border-box',
+                  }}
+                />
               </div>
 
               {/* Payment Status Toggle (Paid immediately vs Pending) */}
