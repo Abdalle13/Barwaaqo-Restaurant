@@ -118,6 +118,7 @@ export interface Settings {
 
 export interface DashboardStats {
   totalSales: number;
+  totalOrders?: number;
   activeOrders: number;
   completedOrders: number;
   newOrders: number;
