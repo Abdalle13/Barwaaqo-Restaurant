@@ -33,15 +33,22 @@ app.use('/api', limiter);
 
 // CORS configuration
 const allowedOrigins = [
-  process.env.FRONTEND_URL || 'http://localhost:3000',
+  process.env.FRONTEND_URL,
+  'http://localhost:3000',
   'http://localhost:5173',
-];
+].filter(Boolean);
+
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
+    if (
+      !origin ||
+      allowedOrigins.indexOf(origin) !== -1 ||
+      origin.endsWith('.vercel.app') ||
+      process.env.NODE_ENV !== 'production'
+    ) {
       callback(null, true);
     } else {
-      callback(null, true); // Permissive in dev/testing
+      callback(null, true); // Permissive fallback
     }
   },
   credentials: true,
