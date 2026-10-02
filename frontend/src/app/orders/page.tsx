@@ -614,23 +614,16 @@ export default function MyOrdersPage() {
                     </div>
 
                     {/* Card Body */}
-                    <div
-                      style={{
-                        padding: '20px',
-                        display: 'grid',
-                        gridTemplateColumns: '1fr auto',
-                        gap: '20px',
-                        alignItems: 'start',
-                      }}
-                    >
+                    <div className="order-card-body" style={{ padding: '20px' }}>
                       {/* Left section: items + delivery info */}
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                      <div className="order-card-left" style={{ display: 'flex', flexDirection: 'column', gap: '16px', minWidth: 0 }}>
                         {/* Items */}
                         <div
                           style={{
                             display: 'flex',
                             flexWrap: 'wrap',
                             gap: '10px',
+                            minWidth: 0,
                           }}
                         >
                           {order.items.map((item, idx) => {
@@ -649,7 +642,7 @@ export default function MyOrdersPage() {
                                   borderRadius: '12px',
                                   backgroundColor: 'var(--bg-deep)',
                                   border: '1px solid var(--border)',
-                                  flexShrink: 0,
+                                  maxWidth: '100%',
                                 }}
                               >
                                 {foodImage ? (
@@ -665,6 +658,7 @@ export default function MyOrdersPage() {
                                       height: '40px',
                                       borderRadius: '8px',
                                       objectFit: 'cover',
+                                      flexShrink: 0,
                                     }}
                                   />
                                 ) : (
@@ -684,8 +678,8 @@ export default function MyOrdersPage() {
                                     <UtensilsCrossed size={18} />
                                   </div>
                                 )}
-                                <div>
-                                  <p style={{ fontWeight: '600', fontSize: '13px', color: 'var(--text-primary)', lineHeight: 1.2 }}>
+                                <div style={{ minWidth: 0 }}>
+                                  <p style={{ fontWeight: '600', fontSize: '13px', color: 'var(--text-primary)', lineHeight: 1.2, margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                     {foodName}
                                   </p>
                                   <span style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>
@@ -698,10 +692,10 @@ export default function MyOrdersPage() {
                         </div>
 
                         {/* Delivery & payment meta */}
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', fontSize: '13px' }}>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', fontSize: '13px' }}>
                           {order.shippingAddress && (
                             <div style={{ display: 'flex', alignItems: 'flex-start', gap: '6px' }}>
-                              <MapPin size={14} color="var(--accent)" style={{ flexShrink: 0, marginTop: '1px' }} />
+                              <MapPin size={14} color="var(--accent)" style={{ flexShrink: 0, marginTop: '2px' }} />
                               <span style={{ color: 'var(--text-secondary)' }}>{order.shippingAddress}</span>
                             </div>
                           )}
@@ -716,24 +710,16 @@ export default function MyOrdersPage() {
                                 ? 'EVC Plus (Hormuud)'
                                 : order.paymentMethod === 'edahab'
                                 ? 'eDahab (Dahabshiil)'
-                                : 'Pay on Delivery (Mobile Money)'}
+                                : 'Pay on Delivery'}
                             </span>
                           </div>
                         </div>
                       </div>
 
                       {/* Right section: totals + actions */}
-                      <div
-                        style={{
-                          display: 'flex',
-                          flexDirection: 'column',
-                          gap: '12px',
-                          minWidth: '180px',
-                          alignItems: 'flex-end',
-                        }}
-                      >
+                      <div className="order-card-right">
                         {/* Total */}
-                        <div style={{ textAlign: 'right' }}>
+                        <div className="order-card-total">
                           <span style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.8px', display: 'block' }}>
                             Total
                           </span>
@@ -746,18 +732,18 @@ export default function MyOrdersPage() {
                         </div>
 
                         {/* Actions */}
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
+                        <div className="order-card-buttons">
                           <button
                             onClick={() => {
                               setSelectedTrackOrder(order);
                               setTrackModalOpen(true);
                             }}
                             style={{
-                              display: 'flex',
+                              display: 'inline-flex',
                               alignItems: 'center',
                               justifyContent: 'center',
                               gap: '6px',
-                              padding: '9px 16px',
+                              padding: '11px 16px',
                               borderRadius: '10px',
                               backgroundColor: 'var(--accent)',
                               color: 'var(--bg-deep)',
@@ -771,18 +757,18 @@ export default function MyOrdersPage() {
                               width: '100%',
                             }}
                           >
-                            <Truck size={13} />
+                            <Truck size={14} />
                             <span>Track Order</span>
                           </button>
 
                           <button
                             onClick={() => handleReorder(order)}
                             style={{
-                              display: 'flex',
+                              display: 'inline-flex',
                               alignItems: 'center',
                               justifyContent: 'center',
                               gap: '6px',
-                              padding: '8px 16px',
+                              padding: '10px 16px',
                               borderRadius: '10px',
                               backgroundColor: 'transparent',
                               border: '1px solid var(--border)',
@@ -792,14 +778,69 @@ export default function MyOrdersPage() {
                               cursor: 'pointer',
                               transition: 'all 0.2s',
                               whiteSpace: 'nowrap',
+                              width: '100%',
                             }}
                           >
                             <RotateCcw size={13} />
-                            <span>{reorderedId === order._id ? 'Added to Cart ✓' : 'Reorder'}</span>
+                            <span>{reorderedId === order._id ? 'Added ✓' : 'Reorder'}</span>
                           </button>
                         </div>
                       </div>
                     </div>
+
+                    <style jsx>{`
+                      @media (min-width: 769px) {
+                        .order-card-body {
+                          display: grid;
+                          grid-template-columns: 1fr auto;
+                          gap: 24px;
+                          align-items: start;
+                        }
+                        .order-card-right {
+                          display: flex;
+                          flex-direction: column;
+                          gap: 14px;
+                          min-width: 175px;
+                          align-items: flex-end;
+                        }
+                        .order-card-total {
+                          text-align: right;
+                        }
+                        .order-card-buttons {
+                          display: flex;
+                          flex-direction: column;
+                          gap: 8px;
+                          width: 100%;
+                        }
+                      }
+                      @media (max-width: 768px) {
+                        .order-card-body {
+                          display: flex;
+                          flex-direction: column;
+                          gap: 16px;
+                        }
+                        .order-card-right {
+                          display: flex;
+                          flex-direction: column;
+                          gap: 14px;
+                          width: 100%;
+                          border-top: 1px solid var(--border);
+                          padding-top: 14px;
+                        }
+                        .order-card-total {
+                          display: flex;
+                          align-items: baseline;
+                          justifyContent: space-between;
+                          width: 100%;
+                        }
+                        .order-card-buttons {
+                          display: grid !important;
+                          grid-template-columns: 1fr 1fr !important;
+                          gap: 10px !important;
+                          width: 100% !important;
+                        }
+                      }
+                    `}</style>
                   </div>
                 );
               })}

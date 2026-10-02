@@ -406,84 +406,70 @@ export default function AboutPage() {
             Come Hungry. Leave Happy.
             Experience Barwaqo Restaurant.
         ===================================================== */}
-        <section style={{ padding: 'clamp(50px, 8vw, 85px) 20px' }}>
+        <section style={{ padding: '80px 20px' }}>
           <div className="container">
             <div
               style={{
-                background: 'linear-gradient(135deg, rgba(212, 165, 116, 0.14) 0%, rgba(26, 21, 17, 0.95) 100%)',
-                border: '1px solid rgba(212, 165, 116, 0.3)',
+                backgroundColor: 'var(--bg-surface)',
+                border: '1px solid var(--border)',
                 borderRadius: '24px',
-                padding: 'clamp(36px, 6vw, 60px) clamp(24px, 5vw, 48px)',
+                padding: 'clamp(32px, 5vw, 48px) clamp(20px, 4vw, 36px)',
                 display: 'flex',
                 flexDirection: 'column',
-                gap: '24px',
-                boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)',
-                position: 'relative',
-                overflow: 'hidden',
+                gap: '20px',
               }}
             >
               <div>
                 <span
                   style={{
-                    fontSize: '12.5px',
+                    fontSize: '18px',
                     fontWeight: '800',
                     color: 'var(--accent)',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '7px',
-                    letterSpacing: '1.5px',
-                    textTransform: 'uppercase',
-                    marginBottom: '10px',
-                    padding: '5px 14px',
-                    borderRadius: '9999px',
-                    backgroundColor: 'rgba(212, 165, 116, 0.12)',
-                    border: '1px solid rgba(212, 165, 116, 0.25)',
+                    display: 'block',
+                    marginBottom: '8px',
                   }}
                 >
-                  <Sparkles size={13} />
                   Come Hungry. Leave Happy.
                 </span>
 
                 <h2
                   style={{
                     fontFamily: 'var(--font-heading)',
-                    fontSize: 'clamp(28px, 4.5vw, 42px)',
+                    fontSize: 'clamp(26px, 3.5vw, 36px)',
                     fontWeight: '800',
-                    color: '#F5F0EB',
-                    marginBottom: '12px',
-                    letterSpacing: '-0.5px',
-                    lineHeight: 1.2,
+                    color: 'var(--text-primary)',
+                    marginBottom: '10px',
                   }}
                 >
-                  Experience Barwaqo Restaurant
+                  Experience Barwaqo Restaurant.
                 </h2>
 
-                <p style={{ color: 'var(--text-secondary)', fontSize: '15.5px', maxWidth: '620px', lineHeight: 1.7, margin: 0 }}>
-                  Whether you are joining us for an authentic dining experience in Mogadishu or ordering fresh spiced dishes delivered directly to your doorstep, our kitchen is honored to welcome you.
+                <p style={{ color: 'var(--text-secondary)', fontSize: '15px', maxWidth: '580px', lineHeight: 1.6, margin: 0 }}>
+                  Whether you are joining us for dining in Mogadishu or ordering fresh dishes delivered to your door, our kitchen is ready to welcome you.
                 </p>
               </div>
 
-              <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', paddingTop: '4px' }}>
+              <div className="about-cta-buttons">
                 <Link
                   href="/menu"
                   prefetch={true}
                   style={{
                     display: 'inline-flex',
                     alignItems: 'center',
+                    justifyContent: 'center',
                     gap: '8px',
-                    padding: '13px 28px',
-                    borderRadius: '12px',
+                    padding: '12px 24px',
+                    borderRadius: '10px',
                     backgroundColor: 'var(--accent)',
                     color: 'var(--bg-deep)',
                     fontWeight: '700',
-                    fontSize: '14.5px',
+                    fontSize: '14px',
                     textDecoration: 'none',
-                    boxShadow: '0 4px 20px rgba(212, 165, 116, 0.35)',
                     transition: 'all 0.2s ease',
                   }}
                 >
                   <span>Explore Menu</span>
-                  <ArrowRight size={17} />
+                  <ArrowRight size={16} />
                 </Link>
 
                 <Link
@@ -492,14 +478,15 @@ export default function AboutPage() {
                   style={{
                     display: 'inline-flex',
                     alignItems: 'center',
+                    justifyContent: 'center',
                     gap: '8px',
-                    padding: '13px 26px',
-                    borderRadius: '12px',
-                    backgroundColor: 'rgba(255,255,255,0.05)',
-                    border: '1px solid rgba(212, 165, 116, 0.35)',
+                    padding: '12px 24px',
+                    borderRadius: '10px',
+                    backgroundColor: 'rgba(255,255,255,0.04)',
+                    border: '1px solid var(--border)',
                     color: 'var(--accent)',
                     fontWeight: '600',
-                    fontSize: '14.5px',
+                    fontSize: '14px',
                     textDecoration: 'none',
                     transition: 'all 0.2s ease',
                   }}
@@ -507,6 +494,30 @@ export default function AboutPage() {
                   <span>Book a Table</span>
                 </Link>
               </div>
+
+              <style jsx>{`
+                .about-cta-buttons {
+                  display: flex;
+                  gap: 14px;
+                  flex-wrap: wrap;
+                  padding-top: 6px;
+                }
+                @media (max-width: 640px) {
+                  .about-cta-buttons {
+                    display: grid !important;
+                    grid-template-columns: 1fr 1fr !important;
+                    gap: 10px !important;
+                    width: 100% !important;
+                  }
+                  .about-cta-buttons a {
+                    width: 100% !important;
+                    justify-content: center !important;
+                    text-align: center !important;
+                    padding: 12px 10px !important;
+                    font-size: 13.5px !important;
+                  }
+                }
+              `}</style>
             </div>
           </div>
         </section>

@@ -177,26 +177,19 @@ export default function HomePage() {
             }}
           >
             {/* Tagline Badge */}
-            <div
+            <span
               style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '6px 16px',
-                borderRadius: '9999px',
-                background: 'rgba(212, 165, 116, 0.12)',
-                border: '1px solid rgba(212, 165, 116, 0.3)',
                 color: 'var(--accent)',
-                fontSize: 'clamp(12px, 2.5vw, 13px)',
+                fontSize: 'clamp(12.5px, 2.5vw, 14px)',
                 fontWeight: '700',
                 textTransform: 'uppercase',
-                letterSpacing: '1px',
-                marginBottom: '20px',
+                letterSpacing: '2px',
+                display: 'block',
+                marginBottom: '14px',
               }}
             >
-              <Sparkles size={14} />
-              <span>Authentic Somali Fine Dining</span>
-            </div>
+              Authentic Somali Fine Dining
+            </span>
 
             {/* Main Headline with responsive typography */}
             <h1
@@ -325,22 +318,15 @@ export default function HomePage() {
             >
               <span
                 style={{
-                  fontSize: '12px',
+                  fontSize: '12.5px',
                   fontWeight: '700',
                   color: 'var(--accent)',
                   textTransform: 'uppercase',
                   letterSpacing: '2px',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  marginBottom: '12px',
-                  padding: '5px 14px',
-                  borderRadius: '9999px',
-                  backgroundColor: 'rgba(212, 165, 116, 0.1)',
-                  border: '1px solid rgba(212, 165, 116, 0.25)',
+                  display: 'block',
+                  marginBottom: '8px',
                 }}
               >
-                <Sparkles size={12} />
                 Chef Selections
               </span>
 
