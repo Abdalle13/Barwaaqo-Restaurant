@@ -102,8 +102,8 @@ exports.getPopularFoods = async (req, res) => {
       });
     }
 
-    // Limit to 5 signature dishes
-    result = result.slice(0, 5);
+    // Limit to 4 signature dishes
+    result = result.slice(0, 4);
 
     res.status(200).json({
       success: true,
