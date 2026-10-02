@@ -37,7 +37,7 @@ export default function RegisterPage() {
       if (res.data.success) {
         const { token, ...userData } = res.data.data;
         login(token, userData);
-        router.push('/menu');
+        router.push('/');
       }
     } catch (err: any) {
       setError(err.response?.data?.message || 'Registration failed. Please verify details.');

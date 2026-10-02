@@ -39,7 +39,7 @@ export default function LoginPage() {
         } else if (userData.role === 'DELIVERY') {
           router.push('/delivery');
         } else {
-          router.push('/menu');
+          router.push('/');
         }
       }
     } catch (err: any) {

@@ -66,8 +66,11 @@ export default function FoodDetailModal({ food, isOpen, onClose }: FoodDetailMod
     : food.price;
 
   // Additional price from add-ons
-  const addonsExtraPrice = (selectedAddons.includes('Moos (Fresh Banana)') ? 0.5 : 0) +
-    (selectedAddons.includes('Shaah Caddeys (Somali Spiced Tea)') ? 1.0 : 0);
+  const addonsExtraPrice =
+    (selectedAddons.includes('Moos (Fresh Banana)') ? 0.5 : 0) +
+    (selectedAddons.includes('Shaah Caddeys (Somali Spiced Tea)') ? 1.0 : 0) +
+    (selectedAddons.includes('Condensed Milk Dheeraad ah') ? 0.5 : 0) +
+    (selectedAddons.includes('Toasted Almonds / Yicib') ? 0.5 : 0);
 
   const effectivePrice = baseEffectivePrice + addonsExtraPrice;
   const totalPrice = (effectivePrice * quantity).toFixed(2);
@@ -78,6 +81,31 @@ export default function FoodDetailModal({ food, isOpen, onClose }: FoodDetailMod
       : typeof food.category === 'string'
       ? food.category
       : 'Signature Dish';
+
+  const catNameLower = (categoryName || '').toLowerCase();
+  const foodNameLower = (food.name || '').toLowerCase();
+
+  const isBeverage =
+    catNameLower.includes('beverage') ||
+    catNameLower.includes('juice') ||
+    catNameLower.includes('drink') ||
+    catNameLower.includes('tea') ||
+    catNameLower.includes('shaah') ||
+    foodNameLower.includes('juice') ||
+    foodNameLower.includes('cocktail') ||
+    foodNameLower.includes('tea') ||
+    foodNameLower.includes('shaah') ||
+    foodNameLower.includes('water');
+
+  const isDessert =
+    catNameLower.includes('dessert') ||
+    catNameLower.includes('sweet') ||
+    catNameLower.includes('cake') ||
+    foodNameLower.includes('halwa') ||
+    foodNameLower.includes('bites') ||
+    foodNameLower.includes('cake');
+
+  const isMainDish = !isBeverage && !isDessert;
 
   const isAvailable = food.status !== 'Out of Stock';
 
@@ -273,28 +301,6 @@ export default function FoodDetailModal({ food, isOpen, onClose }: FoodDetailMod
                 </span>
               )}
             </div>
-
-            {/* Preparation Time */}
-            {Boolean(food.preparationTime) && (
-              <div
-                style={{
-                  backgroundColor: 'rgba(0,0,0,0.7)',
-                  color: '#ffffff',
-                  fontSize: '12px',
-                  fontWeight: '600',
-                  padding: '5px 12px',
-                  borderRadius: '8px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '5px',
-                  backdropFilter: 'blur(8px)',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                }}
-              >
-                <Clock size={13} color="var(--accent)" />
-                <span>{food.preparationTime} mins</span>
-              </div>
-            )}
           </div>
         </div>
 
@@ -440,60 +446,115 @@ export default function FoodDetailModal({ food, isOpen, onClose }: FoodDetailMod
             </p>
           </div>
 
-          {/* Dish Customization: Protein Selection */}
-          <div
-            style={{
-              padding: '14px 16px',
-              backgroundColor: 'var(--bg-deep)',
-              borderRadius: '14px',
-              border: '1px solid var(--border)',
-            }}
-          >
-            <span
+          {/* Dish Customization: Protein Selection (Only for Main Dishes) */}
+          {isMainDish && (
+            <div
               style={{
-                fontSize: '11.5px',
-                fontWeight: '700',
-                textTransform: 'uppercase',
-                letterSpacing: '0.8px',
-                color: 'var(--accent)',
-                display: 'block',
-                marginBottom: '8px',
+                padding: '14px 16px',
+                backgroundColor: 'var(--bg-deep)',
+                borderRadius: '14px',
+                border: '1px solid var(--border)',
               }}
             >
-              Select Protein / Nooca Hilibka
-            </span>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '8px' }}>
-              {[
-                { id: '', label: 'Default / Standard' },
-                { id: 'Hilib Ari (Goat Meat)', label: 'Hilib Ari (Goat)' },
-                { id: 'Hilib Geel (Camel Meat)', label: 'Hilib Geel (Camel)' },
-                { id: 'Digaag (Chicken)', label: 'Digaag (Chicken)' },
-                { id: 'Kalluun (Fresh Fish)', label: 'Kalluun (Fish)' },
-              ].map((p) => (
-                <button
-                  key={p.id}
-                  type="button"
-                  onClick={() => setSelectedProtein(p.id)}
-                  style={{
-                    padding: '8px 10px',
-                    borderRadius: '9px',
-                    fontSize: '12px',
-                    fontWeight: '700',
-                    border: selectedProtein === p.id ? '1.5px solid var(--accent)' : '1px solid var(--border)',
-                    backgroundColor: selectedProtein === p.id ? 'rgba(212, 165, 116, 0.15)' : 'var(--bg-surface)',
-                    color: selectedProtein === p.id ? 'var(--accent)' : 'var(--text-primary)',
-                    cursor: 'pointer',
-                    textAlign: 'left',
-                    transition: 'all 0.15s ease',
-                  }}
-                >
-                  {p.label}
-                </button>
-              ))}
+              <span
+                style={{
+                  fontSize: '11.5px',
+                  fontWeight: '700',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.8px',
+                  color: 'var(--accent)',
+                  display: 'block',
+                  marginBottom: '8px',
+                }}
+              >
+                Select Protein / Nooca Hilibka
+              </span>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '8px' }}>
+                {[
+                  { id: '', label: 'Default / Standard' },
+                  { id: 'Hilib Ari (Goat Meat)', label: 'Hilib Ari (Goat)' },
+                  { id: 'Hilib Geel (Camel Meat)', label: 'Hilib Geel (Camel)' },
+                  { id: 'Digaag (Chicken)', label: 'Digaag (Chicken)' },
+                  { id: 'Kalluun (Fresh Fish)', label: 'Kalluun (Fish)' },
+                ].map((p) => (
+                  <button
+                    key={p.id}
+                    type="button"
+                    onClick={() => setSelectedProtein(p.id)}
+                    style={{
+                      padding: '8px 10px',
+                      borderRadius: '9px',
+                      fontSize: '12px',
+                      fontWeight: '700',
+                      border: selectedProtein === p.id ? '1.5px solid var(--accent)' : '1px solid var(--border)',
+                      backgroundColor: selectedProtein === p.id ? 'rgba(212, 165, 116, 0.15)' : 'var(--bg-surface)',
+                      color: selectedProtein === p.id ? 'var(--accent)' : 'var(--text-primary)',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      transition: 'all 0.15s ease',
+                    }}
+                  >
+                    {p.label}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* Dish Customization: Somali Extras & Add-ons */}
+          {/* Beverage Temperature / Ice Preferences (Only for Drinks) */}
+          {isBeverage && (
+            <div
+              style={{
+                padding: '14px 16px',
+                backgroundColor: 'var(--bg-deep)',
+                borderRadius: '14px',
+                border: '1px solid var(--border)',
+              }}
+            >
+              <span
+                style={{
+                  fontSize: '11.5px',
+                  fontWeight: '700',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.8px',
+                  color: 'var(--accent)',
+                  display: 'block',
+                  marginBottom: '8px',
+                }}
+              >
+                Ice & Temperature / Heerka Qabowga
+              </span>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+                {[
+                  { id: '', label: 'Normal Ice (Qabow)' },
+                  { id: 'Less Ice', label: 'Less Ice' },
+                  { id: 'No Ice', label: 'No Ice' },
+                ].map((p) => (
+                  <button
+                    key={p.id}
+                    type="button"
+                    onClick={() => setSelectedProtein(p.id)}
+                    style={{
+                      padding: '8px 10px',
+                      borderRadius: '9px',
+                      fontSize: '12px',
+                      fontWeight: '700',
+                      border: selectedProtein === p.id ? '1.5px solid var(--accent)' : '1px solid var(--border)',
+                      backgroundColor: selectedProtein === p.id ? 'rgba(212, 165, 116, 0.15)' : 'var(--bg-surface)',
+                      color: selectedProtein === p.id ? 'var(--accent)' : 'var(--text-primary)',
+                      cursor: 'pointer',
+                      textAlign: 'center',
+                      transition: 'all 0.15s ease',
+                    }}
+                  >
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Dish Customization: Extras & Add-ons */}
           <div
             style={{
               padding: '14px 16px',
@@ -513,15 +574,27 @@ export default function FoodDetailModal({ food, isOpen, onClose }: FoodDetailMod
                 marginBottom: '8px',
               }}
             >
-              Somali Extras & Sides / Kordhin
+              {isBeverage ? 'Drink Add-ons & Sweetness' : isDessert ? 'Dessert Add-ons & Topping' : 'Somali Extras & Sides / Kordhin'}
             </span>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {[
-                { name: 'Moos (Fresh Banana)', price: '+$0.50' },
-                { name: 'Basbaas Shigni Dheeraad ah (Extra Chili)', price: 'Free' },
-                { name: 'Maraq Dheeraad ah (Extra Broth)', price: 'Free' },
-                { name: 'Shaah Caddeys (Somali Spiced Tea)', price: '+$1.00' },
-              ].map((addon) => {
+              {(isBeverage
+                ? [
+                    { name: 'Sonkor Yar (Less Sugar)', price: 'Free' },
+                    { name: 'Liin Dhanaab Dheeraad (Extra Fresh Lime)', price: 'Free' },
+                    { name: 'Condensed Milk Dheeraad ah', price: '+$0.50' },
+                  ]
+                : isDessert
+                ? [
+                    { name: 'Toasted Almonds / Yicib', price: '+$0.50' },
+                    { name: 'Warm / Diiran (Served Hot)', price: 'Free' },
+                  ]
+                : [
+                    { name: 'Moos (Fresh Banana)', price: '+$0.50' },
+                    { name: 'Basbaas Shigni Dheeraad ah (Extra Chili)', price: 'Free' },
+                    { name: 'Maraq Dheeraad ah (Extra Broth)', price: 'Free' },
+                    { name: 'Shaah Caddeys (Somali Spiced Tea)', price: '+$1.00' },
+                  ]
+              ).map((addon) => {
                 const isSelected = selectedAddons.includes(addon.name);
                 return (
                   <button

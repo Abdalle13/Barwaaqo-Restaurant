@@ -50,6 +50,13 @@ export default function MenuPage() {
       .finally(() => setIsLoading(false));
   }, [selectedCategory, searchQuery, page]);
 
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 140, behavior: 'smooth' });
+    }
+  };
+
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--bg-deep)' }}>
       <Navbar />
@@ -252,7 +259,7 @@ export default function MenuPage() {
             >
               <button
                 disabled={page <= 1}
-                onClick={() => setPage(page - 1)}
+                onClick={() => handlePageChange(page - 1)}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -275,7 +282,7 @@ export default function MenuPage() {
               {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
                 <button
                   key={p}
-                  onClick={() => setPage(p)}
+                  onClick={() => handlePageChange(p)}
                   style={{
                     width: '38px',
                     height: '38px',
@@ -297,7 +304,7 @@ export default function MenuPage() {
 
               <button
                 disabled={page >= totalPages}
-                onClick={() => setPage(page + 1)}
+                onClick={() => handlePageChange(page + 1)}
                 style={{
                   display: 'flex',
                   alignItems: 'center',

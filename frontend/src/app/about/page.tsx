@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { ArrowRight, Utensils, Leaf, Heart, Calendar } from 'lucide-react';
+import { ArrowRight, Utensils, Leaf, Heart, Calendar, Sparkles } from 'lucide-react';
 
 export default function AboutPage() {
   const philosophyCards = [
@@ -148,44 +148,14 @@ export default function AboutPage() {
 
         {/* =====================================================
             2. OUR STORY (2-column layout)
-            Left: restaurant / food image
-            Right: Sheekada Barwaqo + Since 2024 badge
+            Desktop: Image on Left, Text on Right
+            Mobile: Text on Top, Image Below
         ===================================================== */}
         <section style={{ padding: '80px 20px', borderBottom: '1px solid var(--border)' }}>
           <div className="container">
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-                gap: '50px',
-                alignItems: 'center',
-              }}
-            >
-              {/* Left Column: Food / Dish Image */}
-              <div>
-                <div
-                  style={{
-                    borderRadius: '24px',
-                    overflow: 'hidden',
-                    border: '1px solid rgba(212, 165, 116, 0.2)',
-                    boxShadow: '0 20px 40px rgba(0, 0, 0, 0.5)',
-                  }}
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1544025162-d76694265947?w=900&auto=format&fit=crop&q=80"
-                    alt="Barwaqo Spiced Somali Delicacies"
-                    style={{
-                      width: '100%',
-                      height: '420px',
-                      objectFit: 'cover',
-                      display: 'block',
-                    }}
-                  />
-                </div>
-              </div>
-
-              {/* Right Column: Sheekada Barwaqo */}
-              <div>
+            <div className="about-story-container">
+              {/* Text Column */}
+              <div className="about-story-text">
                 {/* Small Badge: Since 2024 */}
                 <div
                   style={{
@@ -229,7 +199,60 @@ export default function AboutPage() {
                   Our story began with a passion for creating a place where people could come together, enjoy delicious food, and feel at home. Whether you're having lunch with family, meeting friends, celebrating a special moment, or simply enjoying a quiet meal, Barwaqo is designed to make every visit memorable.
                 </p>
               </div>
+
+              {/* Food / Dish Image */}
+              <div className="about-story-img">
+                <div
+                  style={{
+                    borderRadius: '24px',
+                    overflow: 'hidden',
+                    border: '1px solid rgba(212, 165, 116, 0.2)',
+                    boxShadow: '0 20px 40px rgba(0, 0, 0, 0.5)',
+                  }}
+                >
+                  <img
+                    src="https://images.unsplash.com/photo-1544025162-d76694265947?w=900&auto=format&fit=crop&q=80"
+                    alt="Barwaqo Spiced Somali Delicacies"
+                    style={{
+                      width: '100%',
+                      height: 'clamp(250px, 35vw, 420px)',
+                      objectFit: 'cover',
+                      display: 'block',
+                    }}
+                  />
+                </div>
+              </div>
             </div>
+
+            <style jsx>{`
+              @media (min-width: 860px) {
+                .about-story-container {
+                  display: grid;
+                  grid-template-columns: 1fr 1fr;
+                  gap: 50px;
+                  align-items: center;
+                }
+                .about-story-img {
+                  order: 1;
+                }
+                .about-story-text {
+                  order: 2;
+                }
+              }
+              @media (max-width: 859px) {
+                .about-story-container {
+                  display: flex;
+                  flex-direction: column;
+                  gap: 30px;
+                }
+                .about-story-text {
+                  order: 1;
+                }
+                .about-story-img {
+                  order: 2;
+                }
+              }
+            `}</style>
           </div>
         </section>
 
@@ -383,48 +406,64 @@ export default function AboutPage() {
             Come Hungry. Leave Happy.
             Experience Barwaqo Restaurant.
         ===================================================== */}
-        <section style={{ padding: '80px 20px' }}>
+        <section style={{ padding: 'clamp(50px, 8vw, 85px) 20px' }}>
           <div className="container">
             <div
               style={{
-                backgroundColor: 'var(--bg-surface)',
-                border: '1px solid var(--border)',
+                background: 'linear-gradient(135deg, rgba(212, 165, 116, 0.14) 0%, rgba(26, 21, 17, 0.95) 100%)',
+                border: '1px solid rgba(212, 165, 116, 0.3)',
                 borderRadius: '24px',
-                padding: '48px 36px',
+                padding: 'clamp(36px, 6vw, 60px) clamp(24px, 5vw, 48px)',
                 display: 'flex',
                 flexDirection: 'column',
-                gap: '20px',
+                gap: '24px',
+                boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)',
+                position: 'relative',
+                overflow: 'hidden',
               }}
             >
               <div>
                 <span
                   style={{
-                    fontSize: '18px',
+                    fontSize: '12.5px',
                     fontWeight: '800',
                     color: 'var(--accent)',
-                    display: 'block',
-                    marginBottom: '8px',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '7px',
+                    letterSpacing: '1.5px',
+                    textTransform: 'uppercase',
+                    marginBottom: '10px',
+                    padding: '5px 14px',
+                    borderRadius: '9999px',
+                    backgroundColor: 'rgba(212, 165, 116, 0.12)',
+                    border: '1px solid rgba(212, 165, 116, 0.25)',
                   }}
                 >
+                  <Sparkles size={13} />
                   Come Hungry. Leave Happy.
                 </span>
+
                 <h2
                   style={{
                     fontFamily: 'var(--font-heading)',
-                    fontSize: 'clamp(26px, 3.5vw, 36px)',
+                    fontSize: 'clamp(28px, 4.5vw, 42px)',
                     fontWeight: '800',
-                    color: 'var(--text-primary)',
-                    marginBottom: '10px',
+                    color: '#F5F0EB',
+                    marginBottom: '12px',
+                    letterSpacing: '-0.5px',
+                    lineHeight: 1.2,
                   }}
                 >
-                  Experience Barwaqo Restaurant.
+                  Experience Barwaqo Restaurant
                 </h2>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '15px', maxWidth: '580px', lineHeight: 1.6 }}>
-                  Whether you are joining us for dining in Mogadishu or ordering fresh dishes delivered to your door, our kitchen is ready to welcome you.
+
+                <p style={{ color: 'var(--text-secondary)', fontSize: '15.5px', maxWidth: '620px', lineHeight: 1.7, margin: 0 }}>
+                  Whether you are joining us for an authentic dining experience in Mogadishu or ordering fresh spiced dishes delivered directly to your doorstep, our kitchen is honored to welcome you.
                 </p>
               </div>
 
-              <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', paddingTop: '6px' }}>
+              <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', paddingTop: '4px' }}>
                 <Link
                   href="/menu"
                   prefetch={true}
@@ -432,17 +471,19 @@ export default function AboutPage() {
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '8px',
-                    padding: '12px 24px',
-                    borderRadius: '10px',
+                    padding: '13px 28px',
+                    borderRadius: '12px',
                     backgroundColor: 'var(--accent)',
                     color: 'var(--bg-deep)',
                     fontWeight: '700',
-                    fontSize: '14px',
+                    fontSize: '14.5px',
                     textDecoration: 'none',
+                    boxShadow: '0 4px 20px rgba(212, 165, 116, 0.35)',
+                    transition: 'all 0.2s ease',
                   }}
                 >
                   <span>Explore Menu</span>
-                  <ArrowRight size={16} />
+                  <ArrowRight size={17} />
                 </Link>
 
                 <Link
@@ -452,14 +493,15 @@ export default function AboutPage() {
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '8px',
-                    padding: '12px 24px',
-                    borderRadius: '10px',
-                    backgroundColor: 'rgba(255,255,255,0.04)',
-                    border: '1px solid var(--border)',
+                    padding: '13px 26px',
+                    borderRadius: '12px',
+                    backgroundColor: 'rgba(255,255,255,0.05)',
+                    border: '1px solid rgba(212, 165, 116, 0.35)',
                     color: 'var(--accent)',
                     fontWeight: '600',
-                    fontSize: '14px',
+                    fontSize: '14.5px',
                     textDecoration: 'none',
+                    transition: 'all 0.2s ease',
                   }}
                 >
                   <span>Book a Table</span>

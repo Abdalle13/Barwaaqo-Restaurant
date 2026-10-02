@@ -315,58 +315,59 @@ export default function HomePage() {
             ============================================ */}
         <section style={{ padding: 'clamp(50px, 8vw, 85px) 0', borderTop: '1px solid var(--border)' }}>
           <div className="container">
+            {/* Centered Section Header */}
             <div
               style={{
-                display: 'flex',
-                alignItems: 'flex-end',
-                justifyContent: 'space-between',
-                marginBottom: '40px',
-                flexWrap: 'wrap',
-                gap: '16px',
+                textAlign: 'center',
+                maxWidth: '680px',
+                margin: '0 auto 46px auto',
               }}
             >
-              <div>
-                <span
-                  style={{
-                    fontSize: '12px',
-                    fontWeight: '700',
-                    color: 'var(--accent)',
-                    textTransform: 'uppercase',
-                    letterSpacing: '1px',
-                    display: 'block',
-                    marginBottom: '6px',
-                  }}
-                >
-                  Chef Selections
-                </span>
-                <h2
-                  style={{
-                    fontFamily: 'var(--font-heading)',
-                    fontSize: 'clamp(26px, 4vw, 36px)',
-                    fontWeight: '800',
-                    color: 'var(--text-primary)',
-                  }}
-                >
-                  Our Signature Dishes
-                </h2>
-              </div>
-
-              <Link
-                href="/menu"
-                prefetch={true}
+              <span
                 style={{
-                  display: 'flex',
+                  fontSize: '12px',
+                  fontWeight: '700',
+                  color: 'var(--accent)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '2px',
+                  display: 'inline-flex',
                   alignItems: 'center',
                   gap: '6px',
-                  color: 'var(--accent)',
-                  fontWeight: '600',
-                  fontSize: '14px',
-                  textDecoration: 'none',
+                  marginBottom: '12px',
+                  padding: '5px 14px',
+                  borderRadius: '9999px',
+                  backgroundColor: 'rgba(212, 165, 116, 0.1)',
+                  border: '1px solid rgba(212, 165, 116, 0.25)',
                 }}
               >
-                <span>View Complete Menu</span>
-                <ChevronRight size={16} />
-              </Link>
+                <Sparkles size={12} />
+                Chef Selections
+              </span>
+
+              <h2
+                style={{
+                  fontFamily: 'var(--font-heading)',
+                  fontSize: 'clamp(28px, 4.5vw, 40px)',
+                  fontWeight: '800',
+                  color: 'var(--text-primary)',
+                  letterSpacing: '-0.5px',
+                  marginBottom: '14px',
+                  lineHeight: 1.2,
+                }}
+              >
+                Our Signature Dishes
+              </h2>
+
+              <p
+                style={{
+                  color: 'var(--text-secondary)',
+                  fontSize: 'clamp(14px, 1.8vw, 16px)',
+                  lineHeight: '1.7',
+                  margin: '0 auto',
+                }}
+              >
+                Discover our most celebrated culinary creations, prepared fresh daily with authentic Somali spices, aromatic cardamom basmati, and slow-roasted tender cuts.
+              </p>
             </div>
 
             {/* Dishes Grid — 4 dishes */}
@@ -403,6 +404,38 @@ export default function HomePage() {
                 ))}
               </div>
             )}
+
+            {/* View Complete Menu Button */}
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                marginTop: '44px',
+              }}
+            >
+              <Link
+                href="/menu"
+                prefetch={true}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  padding: '13px 32px',
+                  borderRadius: '12px',
+                  backgroundColor: 'var(--bg-surface)',
+                  border: '1.5px solid var(--accent)',
+                  color: 'var(--accent)',
+                  fontWeight: '700',
+                  fontSize: '14.5px',
+                  textDecoration: 'none',
+                  boxShadow: '0 4px 20px rgba(212, 165, 116, 0.15)',
+                  transition: 'all 0.25s ease',
+                }}
+              >
+                <span>View Complete Menu</span>
+                <ChevronRight size={17} />
+              </Link>
+            </div>
           </div>
         </section>
 
@@ -777,71 +810,89 @@ export default function HomePage() {
         <section style={{ padding: 'clamp(50px, 8vw, 85px) 0' }}>
           <div className="container">
             <div
+              className="private-dining-card"
               style={{
                 backgroundColor: 'var(--bg-surface)',
                 border: '1px solid rgba(212, 165, 116, 0.25)',
                 borderRadius: '24px',
-                padding: 'clamp(32px, 6vw, 60px) clamp(20px, 5vw, 50px)',
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))',
-                gap: '36px',
-                alignItems: 'center',
+                padding: 'clamp(28px, 5vw, 54px) clamp(18px, 4vw, 44px)',
                 boxShadow: '0 16px 50px rgba(0, 0, 0, 0.4)',
               }}
             >
-              <div>
-                <span
-                  style={{
-                    fontSize: '12px',
-                    fontWeight: '700',
-                    color: 'var(--accent)',
-                    textTransform: 'uppercase',
-                    letterSpacing: '1px',
-                    display: 'block',
-                    marginBottom: '8px',
-                  }}
-                >
-                  Exclusive Experiences
-                </span>
-                <h2
-                  style={{
-                    fontFamily: 'var(--font-heading)',
-                    fontSize: 'clamp(24px, 3.5vw, 34px)',
-                    fontWeight: '800',
-                    color: 'var(--text-primary)',
-                    marginBottom: '14px',
-                    lineHeight: 1.25,
-                  }}
-                >
-                  Private Dining & Event Catering
-                </h2>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '15px', lineHeight: '1.7', marginBottom: '24px' }}>
-                  Planning a family get-together, business lunch, or special celebration? We arrange comfortable reserved tables and personalized group catering tailored to your event.
-                </p>
+              <div className="private-dining-layout">
+                {/* Text Content */}
+                <div className="private-dining-info">
+                  <span
+                    style={{
+                      fontSize: '12px',
+                      fontWeight: '700',
+                      color: 'var(--accent)',
+                      textTransform: 'uppercase',
+                      letterSpacing: '1px',
+                      display: 'block',
+                      marginBottom: '8px',
+                    }}
+                  >
+                    Exclusive Experiences
+                  </span>
+                  <h2
+                    style={{
+                      fontFamily: 'var(--font-heading)',
+                      fontSize: 'clamp(24px, 3.5vw, 34px)',
+                      fontWeight: '800',
+                      color: 'var(--text-primary)',
+                      marginBottom: '14px',
+                      lineHeight: 1.25,
+                    }}
+                  >
+                    Private Dining & Event Catering
+                  </h2>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '15px', lineHeight: '1.7', marginBottom: '22px' }}>
+                    Planning a family get-together, business lunch, or special celebration? We arrange comfortable reserved tables and personalized group catering tailored to your event.
+                  </p>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '28px' }}>
-                  {[
-                    'Comfortable reserved tables for families and groups',
-                    'Custom platter menus for gatherings and celebrations',
-                    'Attentive table service from our hospitality staff',
-                    'Reliable event catering delivered across Mogadishu',
-                  ].map((perk, i) => (
-                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14px', color: 'var(--text-primary)' }}>
-                      <CheckCircle2 size={18} color="var(--accent)" style={{ flexShrink: 0 }} />
-                      <span>{perk}</span>
-                    </div>
-                  ))}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    {[
+                      'Comfortable reserved tables for families and groups',
+                      'Custom platter menus for gatherings and celebrations',
+                      'Attentive table service from our hospitality staff',
+                      'Reliable event catering delivered across Mogadishu',
+                    ].map((perk, i) => (
+                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14px', color: 'var(--text-primary)' }}>
+                        <CheckCircle2 size={18} color="var(--accent)" style={{ flexShrink: 0 }} />
+                        <span>{perk}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
-                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                {/* Event Image */}
+                <div className="private-dining-visual">
+                  <img
+                    src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&auto=format&fit=crop&q=80"
+                    alt="Barwaaqo Private Dining Event"
+                    style={{
+                      width: '100%',
+                      height: 'clamp(220px, 32vw, 360px)',
+                      objectFit: 'cover',
+                      borderRadius: '18px',
+                      border: '1px solid var(--border)',
+                      display: 'block',
+                    }}
+                  />
+                </div>
+
+                {/* CTA Action Buttons */}
+                <div className="private-dining-actions">
                   <Link
                     href="/reservations"
                     prefetch={true}
                     style={{
                       display: 'inline-flex',
                       alignItems: 'center',
+                      justifyContent: 'center',
                       gap: '8px',
-                      padding: '12px 24px',
+                      padding: '13px 26px',
                       borderRadius: '12px',
                       backgroundColor: 'var(--accent)',
                       color: 'var(--bg-deep)',
@@ -861,8 +912,9 @@ export default function HomePage() {
                     style={{
                       display: 'inline-flex',
                       alignItems: 'center',
+                      justifyContent: 'center',
                       gap: '8px',
-                      padding: '12px 22px',
+                      padding: '13px 24px',
                       borderRadius: '12px',
                       backgroundColor: 'rgba(255, 255, 255, 0.05)',
                       border: '1px solid var(--border)',
@@ -877,20 +929,54 @@ export default function HomePage() {
                 </div>
               </div>
 
-              {/* Event Image */}
-              <div style={{ position: 'relative' }}>
-                <img
-                  src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&auto=format&fit=crop&q=80"
-                  alt="Barwaaqo Private Dining Event"
-                  style={{
-                    width: '100%',
-                    height: 'clamp(240px, 35vw, 360px)',
-                    objectFit: 'cover',
-                    borderRadius: '18px',
-                    border: '1px solid var(--border)',
-                  }}
-                />
-              </div>
+              <style jsx>{`
+                @media (min-width: 860px) {
+                  .private-dining-layout {
+                    display: grid;
+                    grid-template-columns: 1.15fr 0.85fr;
+                    grid-template-rows: auto auto;
+                    column-gap: 40px;
+                    row-gap: 24px;
+                    align-items: center;
+                  }
+                  .private-dining-info {
+                    grid-column: 1;
+                    grid-row: 1;
+                  }
+                  .private-dining-actions {
+                    grid-column: 1;
+                    grid-row: 2;
+                    display: flex;
+                    gap: 12px;
+                    flex-wrap: wrap;
+                  }
+                  .private-dining-visual {
+                    grid-column: 2;
+                    grid-row: 1 / span 2;
+                  }
+                }
+                @media (max-width: 859px) {
+                  .private-dining-layout {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 22px;
+                  }
+                  .private-dining-info {
+                    order: 1;
+                  }
+                  .private-dining-visual {
+                    order: 2;
+                  }
+                  .private-dining-actions {
+                    order: 3;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                    width: 100%;
+                    padding-top: 4px;
+                  }
+                }
+              `}</style>
             </div>
           </div>
         </section>

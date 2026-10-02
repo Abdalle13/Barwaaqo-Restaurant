@@ -63,7 +63,7 @@ export default function FoodCard({ food }: FoodCardProps) {
         <div
           style={{
             width: '100%',
-            height: 'clamp(160px, 30vw, 210px)',
+            height: '190px',
             position: 'relative',
             backgroundColor: 'var(--bg-elevated)',
             overflow: 'hidden',
@@ -75,17 +75,33 @@ export default function FoodCard({ food }: FoodCardProps) {
               'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&auto=format&fit=crop&q=80'
             }
             alt={food.name}
+            onError={(e) => {
+              (e.currentTarget as HTMLImageElement).src =
+                'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&auto=format&fit=crop&q=80';
+            }}
             style={{
               width: '100%',
               height: '100%',
               objectFit: 'cover',
-              transition: 'transform 0.5s ease',
+              objectPosition: 'center',
+              display: 'block',
+              transition: 'transform 0.4s ease',
             }}
             onMouseEnter={(e) => {
-              (e.currentTarget as HTMLImageElement).style.transform = 'scale(1.06)';
+              (e.currentTarget as HTMLImageElement).style.transform = 'scale(1.05)';
             }}
             onMouseLeave={(e) => {
               (e.currentTarget as HTMLImageElement).style.transform = 'scale(1)';
+            }}
+          />
+
+          {/* Subtle gradient overlay to enhance badges */}
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              background: 'linear-gradient(180deg, rgba(0,0,0,0.3) 0%, transparent 40%, rgba(0,0,0,0.15) 100%)',
+              pointerEvents: 'none',
             }}
           />
 
@@ -138,31 +154,6 @@ export default function FoodCard({ food }: FoodCardProps) {
               </span>
             )}
           </div>
-
-          {/* Preparation Time Badge */}
-          {Boolean(food.preparationTime) && (
-            <div
-              style={{
-                position: 'absolute',
-                bottom: '12px',
-                right: '12px',
-                backgroundColor: 'rgba(0, 0, 0, 0.65)',
-                color: '#ffffff',
-                padding: '4px 9px',
-                borderRadius: '8px',
-                fontSize: '11px',
-                fontWeight: '600',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px',
-                backdropFilter: 'blur(8px)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-              }}
-            >
-              <Clock size={11} color="var(--accent)" />
-              <span>{food.preparationTime} min</span>
-            </div>
-          )}
         </div>
 
         {/* Card Content Area */}
