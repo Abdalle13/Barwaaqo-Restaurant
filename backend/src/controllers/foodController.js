@@ -34,7 +34,7 @@ exports.getFoods = async (req, res) => {
 
     const foods = await Food.find(filter)
       .populate('category', 'name')
-      .sort({ createdAt: -1 })
+      .sort({ isPopular: -1, createdAt: -1 })
       .skip(skip)
       .limit(limit);
 
