@@ -31,11 +31,10 @@ export default function HomePage() {
 
   useEffect(() => {
     api
-      .get('/foods?limit=4')
+      .get('/foods/popular')
       .then((res) => {
-        if (res.data.success) {
-          // Exactly 4 items
-          setPopularFoods(res.data.data.slice(0, 4));
+        if (res.data.success && res.data.data) {
+          setPopularFoods(res.data.data);
         }
       })
       .catch((err) => console.log('Error fetching popular foods:', err))

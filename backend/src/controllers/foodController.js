@@ -59,18 +59,51 @@ exports.getFoods = async (req, res) => {
 // @access  Public
 exports.getPopularFoods = async (req, res) => {
   try {
-    const popularFoods = await Food.find({ isDeleted: false, isPopular: true })
+    let popularFoods = await Food.find({ isDeleted: false, isPopular: true })
       .populate('category', 'name')
-      .limit(6);
+      .limit(10);
 
-    // Fallback: If no dishes are flagged as isPopular, return top rated items
-    let result = popularFoods;
+    // Exclude any beverage / drink items so Signature Dishes are always real culinary meals
+    let result = popularFoods.filter((f) => {
+      const catName = f.category?.name?.toLowerCase() || '';
+      const foodName = f.name?.toLowerCase() || '';
+      const isDrink =
+        catName.includes('drink') ||
+        catName.includes('beverage') ||
+        catName.includes('cabitaan') ||
+        foodName.includes('tea') ||
+        foodName.includes('shaah') ||
+        foodName.includes('juice') ||
+        foodName.includes('qaxwo') ||
+        foodName.includes('coffee');
+      return !isDrink;
+    });
+
+    // Fallback: If admin hasn't checked any food as isPopular yet, select top non-drink dishes
     if (result.length === 0) {
-      result = await Food.find({ isDeleted: false })
+      const allDishes = await Food.find({ isDeleted: false })
         .populate('category', 'name')
         .sort({ rating: -1, createdAt: -1 })
-        .limit(6);
+        .limit(12);
+
+      result = allDishes.filter((f) => {
+        const catName = f.category?.name?.toLowerCase() || '';
+        const foodName = f.name?.toLowerCase() || '';
+        const isDrink =
+          catName.includes('drink') ||
+          catName.includes('beverage') ||
+          catName.includes('cabitaan') ||
+          foodName.includes('tea') ||
+          foodName.includes('shaah') ||
+          foodName.includes('juice') ||
+          foodName.includes('qaxwo') ||
+          foodName.includes('coffee');
+        return !isDrink;
+      });
     }
+
+    // Limit to 5 signature dishes
+    result = result.slice(0, 5);
 
     res.status(200).json({
       success: true,
