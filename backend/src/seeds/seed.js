@@ -33,75 +33,65 @@ const seedData = async () => {
       )
     );
 
-    // Create CUSTOMER Role
     const customerPermIds = permissionDocs
       .filter((p) => ROLES.CUSTOMER.permissions.includes(p.name))
       .map((p) => p._id);
-
     const customerRole = await Role.create({
       name: ROLES.CUSTOMER.name,
       description: ROLES.CUSTOMER.description,
       permissions: customerPermIds,
     });
 
-    // Create ADMIN Role
     const adminRole = await Role.create({
       name: ROLES.ADMIN.name,
       description: ROLES.ADMIN.description,
       permissions: permissionDocs.map((p) => p._id),
     });
 
-    // Create DELIVERY Role
     const deliveryPermIds = permissionDocs
       .filter((p) => ROLES.DELIVERY.permissions.includes(p.name))
       .map((p) => p._id);
-
     const deliveryRole = await Role.create({
       name: ROLES.DELIVERY.name,
       description: ROLES.DELIVERY.description,
       permissions: deliveryPermIds,
     });
 
-    // Create RECEPTIONIST Role
     const receptionistPermIds = permissionDocs
       .filter((p) => ROLES.RECEPTIONIST.permissions.includes(p.name))
       .map((p) => p._id);
-
     await Role.create({
       name: ROLES.RECEPTIONIST.name,
       description: ROLES.RECEPTIONIST.description,
       permissions: receptionistPermIds,
     });
 
-    // 2. Create Admin, Demo Customer & Delivery Users
+    // 2. Users
     console.log('Seeding Users...');
-    const adminUser = {
+    await User.deleteOne({ email: 'admin@gmail.com' });
+    await User.create({
       name: 'Restaurant Admin',
-      email: 'admin@gmail.com', // Updated to gmail per request
+      email: 'admin@gmail.com',
       password: 'newadminpassword123',
       role: adminRole._id,
       phone: '+252610000000',
       address: 'KM4 Maka Al-Mukarama, Mogadishu',
       status: 'active',
-    };
+    });
 
-    await User.deleteOne({ email: adminUser.email });
-    await User.create(adminUser);
-
-    const demoCustomer = {
+    await User.deleteOne({ email: 'customer@gmail.com' });
+    const createdCustomer = await User.create({
       name: 'Hassan Ali',
-      email: 'customer@gmail.com', // Updated to gmail
+      email: 'customer@gmail.com',
       password: '',
       role: customerRole._id,
       phone: '+252615555555',
       address: 'Waberi District, Mogadishu',
       status: 'active',
-    };
+    });
 
-    await User.deleteOne({ email: demoCustomer.email });
-    const createdCustomer = await User.create(demoCustomer);
-
-    const demoDelivery = {
+    await User.deleteOne({ email: 'delivery@gmail.com' });
+    await User.create({
       name: 'Ahmed Delivery',
       email: 'delivery@gmail.com',
       password: 'delivery123456',
@@ -109,12 +99,9 @@ const seedData = async () => {
       phone: '+252616666666',
       address: 'Hodan District, Mogadishu',
       status: 'active',
-    };
+    });
 
-    await User.deleteOne({ email: demoDelivery.email });
-    await User.create(demoDelivery);
-
-    // 3. Seed Default Restaurant Settings
+    // 3. Settings
     console.log('Seeding Settings...');
     await Settings.deleteMany();
     await Settings.create({
@@ -132,7 +119,7 @@ const seedData = async () => {
       allowOnlineOrders: true,
     });
 
-    // 4. Seed Dining Tables
+    // 4. Tables
     console.log('Seeding Tables...');
     await Table.deleteMany();
     await Table.create([
@@ -144,7 +131,7 @@ const seedData = async () => {
       { tableNumber: 'T-06', capacity: 4, location: 'Terrace', status: 'Available' },
     ]);
 
-    // 5. Seed Menu Categories
+    // 5. Categories
     console.log('Seeding Categories...');
     await Category.deleteMany();
     const categories = await Category.create([
@@ -157,108 +144,71 @@ const seedData = async () => {
     ]);
 
     const catMap = {};
-    categories.forEach((c) => {
-      catMap[c.name] = c._id;
-    });
+    categories.forEach((c) => { catMap[c.name] = c._id; });
 
-    // 6. Seed Delicious Dishes
+    // 6. Food Menu
     console.log('Seeding Food Menu...');
     await Food.deleteMany();
     await Food.create([
       {
         name: 'Bariis Iskukaris with Hilib Ari',
         description: 'Fragrant spiced basmati rice slow-cooked with tender roasted goat meat, served with sliced banana and homemade basbaas chutney.',
-        price: 12.50,
-        discount: 10,
-        category: catMap['Traditional Somali'],
-        status: 'Available',
-        preparationTime: 25,
-        isPopular: true,
-        rating: 4.9,
-        numReviews: 48,
+        price: 12.50, discount: 10,
+        category: catMap['Traditional Somali'], status: 'Available',
+        preparationTime: 25, isPopular: true, rating: 4.9, numReviews: 48,
         image: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=800&auto=format&fit=crop&q=80',
       },
       {
         name: 'Baasto Salbuko (Classic Somali Pasta)',
         description: 'Rich tomato-simmered spaghetti with finely diced steak pieces, aromatic Somali xawaash spices, cilantro, and freshly cut lime.',
-        price: 9.50,
-        discount: 0,
-        category: catMap['Traditional Somali'],
-        status: 'Available',
-        preparationTime: 20,
-        isPopular: true,
-        rating: 4.8,
-        numReviews: 35,
+        price: 9.50, discount: 0,
+        category: catMap['Traditional Somali'], status: 'Available',
+        preparationTime: 20, isPopular: true, rating: 4.8, numReviews: 35,
         image: 'https://images.unsplash.com/photo-1621996346565-e3d5d6281561?w=800&auto=format&fit=crop&q=80',
       },
       {
         name: 'Grilled Beef Suqaar Platter',
         description: 'Tender cubes of prime beef stir-fried with bell peppers, sweet onions, and garlic. Served with choice of flatbread (canjeero) or rice.',
-        price: 11.00,
-        discount: 5,
-        category: catMap['Grill & BBQ'],
-        status: 'Available',
-        preparationTime: 18,
-        isPopular: true,
-        rating: 4.7,
-        numReviews: 29,
+        price: 11.00, discount: 5,
+        category: catMap['Grill & BBQ'], status: 'Available',
+        preparationTime: 18, isPopular: true, rating: 4.7, numReviews: 29,
         image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&auto=format&fit=crop&q=80',
       },
       {
         name: 'Crispy Sambusa Trio',
         description: 'Golden, crispy pastry triangles stuffed with seasoned spiced beef, scallions, and herbs. Accompanied by tangy cilantro dip.',
-        price: 4.50,
-        discount: 0,
-        category: catMap['Appetizers & Starters'],
-        status: 'Available',
-        preparationTime: 12,
-        isPopular: true,
-        rating: 4.9,
-        numReviews: 62,
+        price: 4.50, discount: 0,
+        category: catMap['Appetizers & Starters'], status: 'Available',
+        preparationTime: 12, isPopular: true, rating: 4.9, numReviews: 62,
         image: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=800&auto=format&fit=crop&q=80',
       },
       {
         name: 'Fresh Mango & Passion Fruit Cocktail',
         description: 'Chilled all-natural fresh tropical mango puree layered with passion fruit pulp and a splash of lime juice.',
-        price: 3.50,
-        discount: 0,
-        category: catMap['Beverages & Juices'],
-        status: 'Available',
-        preparationTime: 5,
-        isPopular: false,
-        rating: 4.6,
-        numReviews: 19,
+        price: 3.50, discount: 0,
+        category: catMap['Beverages & Juices'], status: 'Available',
+        preparationTime: 5, isPopular: false, rating: 4.6, numReviews: 19,
         image: 'https://images.unsplash.com/photo-1546173159-315724a31696?w=800&auto=format&fit=crop&q=80',
       },
       {
         name: 'Somali Spiced Shaah (Cardamom Tea)',
         description: 'Authentic black tea brewed with whole cardamom pods, cinnamon bark, cloves, ginger, and condensed creamy milk.',
-        price: 2.50,
-        discount: 0,
-        category: catMap['Beverages & Juices'],
-        status: 'Available',
-        preparationTime: 5,
-        isPopular: true,
-        rating: 5.0,
-        numReviews: 88,
+        price: 2.50, discount: 0,
+        category: catMap['Beverages & Juices'], status: 'Available',
+        preparationTime: 5, isPopular: true, rating: 5.0, numReviews: 88,
         image: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=800&auto=format&fit=crop&q=80',
       },
       {
         name: 'Honey Glazed Halwa Bites',
         description: 'Warm, fragrant homemade halwa infused with nutmeg, saffron, and cardamom, garnished with toasted sliced almonds.',
-        price: 5.00,
-        discount: 0,
-        category: catMap['Desserts'],
-        status: 'Available',
-        preparationTime: 10,
-        isPopular: false,
-        rating: 4.8,
-        numReviews: 22,
+        price: 5.00, discount: 0,
+        category: catMap['Desserts'], status: 'Available',
+        preparationTime: 10, isPopular: false, rating: 4.8, numReviews: 22,
         image: 'https://images.unsplash.com/photo-1587314168485-3236d6710814?w=800&auto=format&fit=crop&q=80',
       },
     ]);
 
-    // 7. Seed Sample Orders
+    // 7. Sample Orders
     console.log('Seeding Sample Orders...');
     const Order = require('../models/Order');
     await Order.deleteMany();
@@ -272,18 +222,8 @@ const seedData = async () => {
         orderId: 'BW-10293',
         user: createdCustomer._id,
         items: [
-          {
-            food: bariisFood._id,
-            name: bariisFood.name,
-            quantity: 2,
-            price: bariisFood.price,
-          },
-          {
-            food: teaFood._id,
-            name: teaFood.name,
-            quantity: 2,
-            price: teaFood.price,
-          },
+          { food: bariisFood._id, name: bariisFood.name, quantity: 2, price: bariisFood.price },
+          { food: teaFood._id, name: teaFood.name, quantity: 2, price: teaFood.price },
         ],
         subtotal: bariisFood.price * 2 + teaFood.price * 2,
         deliveryFee: 2.0,
@@ -300,12 +240,7 @@ const seedData = async () => {
         orderId: 'BW-91612',
         user: createdCustomer._id,
         items: [
-          {
-            food: suqaarFood._id,
-            name: suqaarFood.name,
-            quantity: 1,
-            price: suqaarFood.price,
-          },
+          { food: suqaarFood._id, name: suqaarFood.name, quantity: 1, price: suqaarFood.price },
         ],
         subtotal: suqaarFood.price,
         deliveryFee: 2.0,
@@ -321,15 +256,15 @@ const seedData = async () => {
     ]);
 
     console.log('\n========================================');
-    console.log('🎉 BARWAAQO RESTAURANT SEEDING COMPLETE!');
+    console.log('BARWAAQO RESTAURANT SEEDING COMPLETE!');
     console.log('========================================');
-    console.log('👑 Admin Login:    admin@barwaaqo.com    / admin123456');
-    console.log('👤 Customer Login: customer@barwaaqo.com / customer123456');
+    console.log('Admin:    admin@gmail.com    / newadminpassword123');
+    console.log('Customer: customer@gmail.com / customer123456');
     console.log('========================================\n');
 
     process.exit(0);
   } catch (error) {
-    console.error(`❌ Seeding failed: ${error.message}`);
+    console.error(`Seeding failed: ${error.message}`);
     process.exit(1);
   }
 };
