@@ -753,25 +753,32 @@ export default function MyOrdersPage() {
                       </div>
 
                       <div className="orders-actions-btns">
-                        <button
-                          onClick={() => {
-                            setSelectedTrackOrder(order);
-                            setTrackModalOpen(true);
-                          }}
-                          className="orders-track-btn"
-                          title="Track delivery status"
-                        >
-                          <Truck size={15} />
-                          <span>Track Order</span>
-                        </button>
+                        {order.status !== 'Completed' && order.status !== 'Cancelled' && (
+                          <button
+                            onClick={() => {
+                              setSelectedTrackOrder(order);
+                              setTrackModalOpen(true);
+                            }}
+                            className="orders-track-btn"
+                            title="Track delivery status"
+                          >
+                            <Truck size={15} />
+                            <span>Track Order</span>
+                          </button>
+                        )}
 
                         <button
                           onClick={() => handleReorder(order)}
-                          className="orders-reorder-btn"
+                          className={order.status === 'Completed' ? 'orders-track-btn' : 'orders-reorder-btn'}
+                          style={
+                            order.status === 'Completed'
+                              ? { backgroundColor: 'var(--accent)', color: 'var(--bg-deep)' }
+                              : undefined
+                          }
                           title="Add items to cart"
                         >
                           <RotateCcw size={14} />
-                          <span>{reorderedId === order._id ? 'Added ✓' : 'Reorder'}</span>
+                          <span>{reorderedId === order._id ? 'Added ✓' : order.status === 'Completed' ? 'Order Again' : 'Reorder'}</span>
                         </button>
                       </div>
                     </div>
