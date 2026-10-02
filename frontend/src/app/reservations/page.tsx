@@ -144,7 +144,7 @@ export default function ReservationsPage() {
               </h2>
               <p style={{ color: 'var(--text-secondary)', fontSize: '14.5px', maxWidth: '520px', margin: '0 auto 28px auto', lineHeight: 1.6 }}>
                 Thank you, <strong style={{ color: 'var(--accent)' }}>{customerName}</strong>. We have booked a table for{' '}
-                <strong style={{ color: 'var(--text-primary)' }}>{guests} guests</strong> ({seatingPreference}) on{' '}
+                <strong style={{ color: 'var(--text-primary)' }}>{guests} {guests === 1 ? 'guest' : 'guests'}</strong> on{' '}
                 <strong style={{ color: 'var(--text-primary)' }}>{reservationDate}</strong> at{' '}
                 <strong style={{ color: 'var(--text-primary)' }}>{reservationTime}</strong>. A confirmation has been registered with{' '}
                 <strong style={{ color: 'var(--text-primary)' }}>{customerEmail}</strong>.
@@ -300,13 +300,19 @@ export default function ReservationsPage() {
                       className="form-input"
                       style={{
                         width: '100%',
+                        maxWidth: '100%',
+                        boxSizing: 'border-box',
                         padding: '12px 14px',
                         borderRadius: '12px',
                         backgroundColor: 'var(--bg-deep)',
                         border: '1px solid var(--border)',
                         color: 'var(--text-primary)',
-                        colorScheme: 'dark',
                         fontSize: '14px',
+                        fontFamily: 'inherit',
+                        minHeight: '46px',
+                        WebkitAppearance: 'none',
+                        MozAppearance: 'none',
+                        display: 'block',
                       }}
                     />
                   </div>
@@ -319,65 +325,20 @@ export default function ReservationsPage() {
                       className="form-select"
                       style={{
                         width: '100%',
+                        maxWidth: '100%',
+                        boxSizing: 'border-box',
                         padding: '12px 14px',
                         borderRadius: '12px',
                         backgroundColor: 'var(--bg-deep)',
                         border: '1px solid var(--border)',
                         color: 'var(--text-primary)',
                         fontSize: '14px',
+                        minHeight: '46px',
                       }}
                     >
                       {timeSlots.map((slot) => (
                         <option key={slot} value={slot} style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)' }}>
                           {slot}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="form-group" style={{ marginBottom: 0 }}>
-                    <label className="form-label" style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-secondary)', marginBottom: '8px', display: 'block' }}>Seating Area (Optional)</label>
-                    <select
-                      value={seatingPreference}
-                      onChange={(e) => setSeatingPreference(e.target.value)}
-                      className="form-select"
-                      style={{
-                        width: '100%',
-                        padding: '12px 14px',
-                        borderRadius: '12px',
-                        backgroundColor: 'var(--bg-deep)',
-                        border: '1px solid var(--border)',
-                        color: 'var(--text-primary)',
-                        fontSize: '14px',
-                      }}
-                    >
-                      {seatingOptions.map((opt) => (
-                        <option key={opt} value={opt} style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)' }}>
-                          {opt}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="form-group" style={{ marginBottom: 0 }}>
-                    <label className="form-label" style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-secondary)', marginBottom: '8px', display: 'block' }}>Occasion / Munaasabadda (Optional)</label>
-                    <select
-                      value={occasion}
-                      onChange={(e) => setOccasion(e.target.value)}
-                      className="form-select"
-                      style={{
-                        width: '100%',
-                        padding: '12px 14px',
-                        borderRadius: '12px',
-                        backgroundColor: 'var(--bg-deep)',
-                        border: '1px solid var(--border)',
-                        color: 'var(--text-primary)',
-                        fontSize: '14px',
-                      }}
-                    >
-                      {occasions.map((occ) => (
-                        <option key={occ} value={occ} style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)' }}>
-                          {occ}
                         </option>
                       ))}
                     </select>

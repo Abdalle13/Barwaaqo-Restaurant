@@ -20,15 +20,23 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     setMounted(true);
-    const savedTheme = (localStorage.getItem('barwaaqo_theme') as Theme) || 'light';
-    setTheme(savedTheme);
-    document.documentElement.setAttribute('data-theme', savedTheme);
+    try {
+      const savedTheme = (localStorage.getItem('barwaaqo_theme') as Theme) || 'light';
+      setTheme(savedTheme);
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    } catch {
+      // Ignore storage restrictions in private mode
+    }
   }, []);
 
   const toggleTheme = () => {
     const nextTheme = theme === 'light' ? 'dark' : 'light';
     setTheme(nextTheme);
-    localStorage.setItem('barwaaqo_theme', nextTheme);
+    try {
+      localStorage.setItem('barwaaqo_theme', nextTheme);
+    } catch {
+      // Ignore
+    }
     document.documentElement.setAttribute('data-theme', nextTheme);
   };
 

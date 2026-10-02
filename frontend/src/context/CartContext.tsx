@@ -45,7 +45,9 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     setMounted(true);
-    localStorage.removeItem('barwaaqo_cart');
+    try {
+      localStorage.removeItem('barwaaqo_cart');
+    } catch {}
   }, []);
 
   useEffect(() => {
@@ -53,14 +55,14 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
 
     const nextKey = getCartKey(user?._id);
     setCartKey(nextKey);
-    const saved = localStorage.getItem(nextKey);
-    if (saved) {
-      try {
+    try {
+      const saved = localStorage.getItem(nextKey);
+      if (saved) {
         setItems(JSON.parse(saved));
-      } catch {
+      } else {
         setItems([]);
       }
-    } else {
+    } catch {
       setItems([]);
     }
     setHydratedKey(nextKey);
@@ -68,7 +70,9 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     if (mounted && hydratedKey === cartKey) {
-      localStorage.setItem(cartKey, JSON.stringify(items));
+      try {
+        localStorage.setItem(cartKey, JSON.stringify(items));
+      } catch {}
     }
   }, [items, mounted, cartKey, hydratedKey]);
 

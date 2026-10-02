@@ -715,7 +715,7 @@ export default function AdminPosPage() {
                       fontSize: '13px',
                     }}
                   >
-                    <option value="">— Select Table —</option>
+                    <option value="">Select Table</option>
                     {tables.map((t) => (
                       <option key={t._id} value={t._id}>
                         Table {t.tableNumber} - {t.location} ({t.capacity} seats) [{t.status}]

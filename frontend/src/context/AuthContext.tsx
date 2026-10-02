@@ -36,11 +36,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const savedToken = localStorage.getItem('barwaaqo_token');
-    const savedUser = localStorage.getItem('barwaaqo_user');
+    try {
+      const savedToken = localStorage.getItem('barwaaqo_token');
+      const savedUser = localStorage.getItem('barwaaqo_user');
 
-    if (savedToken && savedUser) {
-      try {
+      if (savedToken && savedUser) {
         setToken(savedToken);
         setUser(JSON.parse(savedUser));
         // Verify current session with backend in background
@@ -48,16 +48,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           .then((res) => {
             if (res.data.success) {
               setUser(res.data.data);
-              localStorage.setItem('barwaaqo_user', JSON.stringify(res.data.data));
+              try {
+                localStorage.setItem('barwaaqo_user', JSON.stringify(res.data.data));
+              } catch {}
             }
           })
           .catch(() => {
             // Silently fall back to cached session or re-auth on protected action
           });
-      } catch (err) {
+      }
+    } catch {
+      try {
         localStorage.removeItem('barwaaqo_token');
         localStorage.removeItem('barwaaqo_user');
-      }
+      } catch {}
     }
     setIsLoading(false);
   }, []);
