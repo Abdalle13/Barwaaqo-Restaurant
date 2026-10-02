@@ -7,6 +7,8 @@
     "start": "node server.js",
     "dev": "nodemon server.js",
     "seed": "node src/seeds/seed.js",
+    "orders:seed": "node src/seeds/seedOrders.js",
+    "orders:clear": "node src/seeds/clearOrders.js",
     "test": "jest --coverage"
   },
   "keywords": [
