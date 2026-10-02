@@ -148,15 +148,15 @@ export default function HomePage() {
                   'radial-gradient(circle at center, rgba(5,5,5,0.72) 0%, rgba(5,5,5,0.92) 80%, rgba(5,5,5,0.98) 100%)',
               }}
             />
-            {/* Bottom gradient fade */}
+            {/* Bottom gradient fade — subtle blend */}
             <div
               style={{
                 position: 'absolute',
                 bottom: 0,
                 left: 0,
                 right: 0,
-                height: '180px',
-                background: 'linear-gradient(to top, var(--bg-deep) 0%, transparent 100%)',
+                height: '120px',
+                background: 'linear-gradient(to top, rgba(0,0,0,0.18) 0%, transparent 100%)',
               }}
             />
           </div>
