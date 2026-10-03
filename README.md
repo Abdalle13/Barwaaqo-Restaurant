@@ -1,6 +1,6 @@
 # 🍽️ Barwaaqo Restaurant Management System
 
-> **A complete, production-ready full-stack restaurant platform** — online ordering, live order tracking, table reservations, point-of-sale, and a powerful multi-role admin dashboard. Built with authentic Somali fine dining in mind.
+> **A complete, production-ready full-stack restaurant platform** online ordering, live order tracking, table reservations, point-of-sale, and a powerful multi-role admin dashboard. Built with authentic Somali fine dining in mind.
 ---
 
 ## 📸 Overview
