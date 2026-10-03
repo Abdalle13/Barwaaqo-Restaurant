@@ -111,16 +111,16 @@ export default function HomePage() {
         <section
           style={{
             position: 'relative',
-            minHeight: '92vh',
+            minHeight: '94vh',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             overflow: 'hidden',
-            paddingTop: 'clamp(90px, 15vw, 130px)',
-            paddingBottom: 'clamp(50px, 10vw, 90px)',
+            paddingTop: 'clamp(90px, 14vw, 130px)',
+            paddingBottom: 'clamp(60px, 10vw, 100px)',
           }}
         >
-          {/* Background image with subtle zoom */}
+          {/* Background image with Ken Burns cinematic zoom */}
           <div
             style={{
               position: 'absolute',
@@ -139,24 +139,26 @@ export default function HomePage() {
                 animation: 'kenBurns 25s ease-in-out infinite',
               }}
             />
-            {/* Centered dark gradient vignette */}
+            {/* Cinematic dark vignette for text clarity */}
             <div
               style={{
                 position: 'absolute',
                 inset: 0,
                 background:
-                  'radial-gradient(circle at center, rgba(5,5,5,0.72) 0%, rgba(5,5,5,0.92) 80%, rgba(5,5,5,0.98) 100%)',
+                  'radial-gradient(circle at 50% 45%, rgba(0,0,0,0.52) 0%, rgba(0,0,0,0.78) 70%, rgba(0,0,0,0.92) 100%)',
               }}
             />
-            {/* Bottom gradient fade — subtle blend */}
+            {/* Soft bottom shadow transition into page background */}
             <div
               style={{
                 position: 'absolute',
                 bottom: 0,
                 left: 0,
                 right: 0,
-                height: '150px',
-                background: 'linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 100%)',
+                height: '220px',
+                background:
+                  'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.45) 45%, var(--bg-deep) 100%)',
+                pointerEvents: 'none',
               }}
             />
           </div>
@@ -171,39 +173,59 @@ export default function HomePage() {
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              maxWidth: '880px',
+              maxWidth: '900px',
               padding: '0 clamp(16px, 4vw, 24px)',
             }}
           >
             {/* Tagline Badge */}
-            <span
+            <div
               style={{
-                color: 'var(--accent)',
-                fontSize: 'clamp(12.5px, 2.5vw, 14px)',
-                fontWeight: '700',
-                textTransform: 'uppercase',
-                letterSpacing: '2px',
-                display: 'block',
-                marginBottom: '14px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '6px 18px',
+                borderRadius: '9999px',
+                backgroundColor: 'rgba(224, 138, 101, 0.14)',
+                border: '1px solid var(--accent-border)',
+                backdropFilter: 'blur(8px)',
+                marginBottom: '18px',
               }}
             >
-              Authentic Somali Fine Dining
-            </span>
+              <Sparkles size={14} color="var(--accent)" />
+              <span
+                style={{
+                  color: 'var(--accent)',
+                  fontSize: 'clamp(11.5px, 2vw, 13px)',
+                  fontWeight: '700',
+                  textTransform: 'uppercase',
+                  letterSpacing: '2px',
+                }}
+              >
+                Authentic Somali Fine Dining
+              </span>
+            </div>
 
-            {/* Main Headline with responsive typography */}
+            {/* Main Headline with luxury serif typography */}
             <h1
               style={{
-                fontFamily: 'var(--font-heading)',
-                fontSize: 'clamp(32px, 6.5vw, 64px)',
+                fontFamily: 'var(--font-brand)',
+                fontSize: 'clamp(36px, 7vw, 68px)',
                 fontWeight: '800',
-                lineHeight: '1.15',
+                lineHeight: '1.12',
                 marginBottom: '20px',
-                color: '#F5F0EB',
+                color: '#FFFFFF',
                 letterSpacing: '-0.5px',
+                textShadow: '0 4px 30px rgba(0, 0, 0, 0.7)',
               }}
             >
               A Taste of Heritage &{' '}
-              <span style={{ color: 'var(--accent)', display: 'inline-block' }}>
+              <span
+                style={{
+                  color: 'var(--accent)',
+                  display: 'inline-block',
+                  textShadow: '0 0 35px var(--accent-glow)',
+                }}
+              >
                 Modern Elegance
               </span>
             </h1>
@@ -212,10 +234,11 @@ export default function HomePage() {
             <p
               style={{
                 fontSize: 'clamp(15px, 2.2vw, 18px)',
-                color: 'var(--text-secondary)',
+                color: 'rgba(255, 255, 255, 0.88)',
                 lineHeight: '1.7',
-                marginBottom: '38px',
-                maxWidth: '660px',
+                marginBottom: '36px',
+                maxWidth: '680px',
+                textShadow: '0 2px 12px rgba(0, 0, 0, 0.7)',
               }}
             >
               Immerse yourself in authentic Somali flavors: slow-simmered tender cuts, aromatic cardamom basmati rice, and handcrafted spices prepared with generational passion.
@@ -230,6 +253,7 @@ export default function HomePage() {
                 gap: '14px',
                 flexWrap: 'wrap',
                 width: '100%',
+                marginBottom: '32px',
               }}
             >
               <Link
@@ -240,14 +264,14 @@ export default function HomePage() {
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '8px',
-                  padding: '14px 30px',
+                  padding: '14px 32px',
                   borderRadius: '12px',
                   background: 'var(--accent)',
-                  color: 'var(--bg-deep)',
+                  color: 'var(--text-inverse)',
                   fontWeight: '700',
                   fontSize: '15px',
                   textDecoration: 'none',
-                  boxShadow: '0 4px 22px rgba(212, 165, 116, 0.38)',
+                  boxShadow: '0 6px 24px var(--accent-glow)',
                   transition: 'all 0.25s ease',
                 }}
               >
@@ -265,13 +289,13 @@ export default function HomePage() {
                   gap: '8px',
                   padding: '14px 28px',
                   borderRadius: '12px',
-                  background: 'rgba(255, 255, 255, 0.04)',
-                  border: '1px solid rgba(212, 165, 116, 0.35)',
-                  color: 'var(--accent)',
+                  background: 'rgba(255, 255, 255, 0.08)',
+                  border: '1px solid rgba(255, 255, 255, 0.24)',
+                  color: '#FFFFFF',
                   fontWeight: '600',
                   fontSize: '15px',
                   textDecoration: 'none',
-                  backdropFilter: 'blur(10px)',
+                  backdropFilter: 'blur(12px)',
                   transition: 'all 0.25s ease',
                 }}
               >
@@ -279,26 +303,54 @@ export default function HomePage() {
                 <span>Reserve a Table</span>
               </Link>
             </div>
+
+            {/* Quality Badges */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 'clamp(14px, 3vw, 28px)',
+                flexWrap: 'wrap',
+                fontSize: '13px',
+                color: 'rgba(255, 255, 255, 0.75)',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Star size={15} color="#FBBF24" fill="#FBBF24" />
+                <span><strong>4.9</strong> Rating (500+ Guests)</span>
+              </div>
+              <span style={{ opacity: 0.3 }}>•</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <ShieldCheck size={15} color="var(--accent)" />
+                <span>100% Halal Prime Cuts</span>
+              </div>
+              <span style={{ opacity: 0.3 }}>•</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Clock size={15} color="#4ADE80" />
+                <span>Fast Mogadishu Delivery</span>
+              </div>
+            </div>
           </div>
 
           {/* Scroll Down Hint */}
           <div
             style={{
               position: 'absolute',
-              bottom: '20px',
+              bottom: '18px',
               left: '50%',
               transform: 'translateX(-50%)',
               zIndex: 3,
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              gap: '4px',
+              gap: '3px',
             }}
           >
-            <span style={{ fontSize: '10px', letterSpacing: '2px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+            <span style={{ fontSize: '9.5px', letterSpacing: '2px', color: 'rgba(255, 255, 255, 0.55)', textTransform: 'uppercase' }}>
               Scroll
             </span>
-            <ChevronDown size={16} color="var(--accent)" />
+            <ChevronDown size={15} color="var(--accent)" />
           </div>
         </section>
 
