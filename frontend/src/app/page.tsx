@@ -17,12 +17,10 @@ import {
   ChevronRight,
   Star,
   Clock,
-  Sparkles,
   UtensilsCrossed,
   CreditCard,
   CheckCircle2,
   Users,
-  ShieldCheck,
 } from 'lucide-react';
 
 export default function HomePage() {
@@ -173,46 +171,18 @@ export default function HomePage() {
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              maxWidth: '900px',
+              maxWidth: '880px',
               padding: '0 clamp(16px, 4vw, 24px)',
             }}
           >
-            {/* Tagline Badge */}
-            <div
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '6px 18px',
-                borderRadius: '9999px',
-                backgroundColor: 'rgba(224, 138, 101, 0.14)',
-                border: '1px solid var(--accent-border)',
-                backdropFilter: 'blur(8px)',
-                marginBottom: '18px',
-              }}
-            >
-              <Sparkles size={14} color="var(--accent)" />
-              <span
-                style={{
-                  color: 'var(--accent)',
-                  fontSize: 'clamp(11.5px, 2vw, 13px)',
-                  fontWeight: '700',
-                  textTransform: 'uppercase',
-                  letterSpacing: '2px',
-                }}
-              >
-                Authentic Somali Fine Dining
-              </span>
-            </div>
-
             {/* Main Headline with luxury serif typography */}
             <h1
               style={{
                 fontFamily: 'var(--font-brand)',
-                fontSize: 'clamp(36px, 7vw, 68px)',
+                fontSize: 'clamp(38px, 7.5vw, 70px)',
                 fontWeight: '800',
-                lineHeight: '1.12',
-                marginBottom: '20px',
+                lineHeight: '1.1',
+                marginBottom: '22px',
                 color: '#FFFFFF',
                 letterSpacing: '-0.5px',
                 textShadow: '0 4px 30px rgba(0, 0, 0, 0.7)',
@@ -236,7 +206,7 @@ export default function HomePage() {
                 fontSize: 'clamp(15px, 2.2vw, 18px)',
                 color: 'rgba(255, 255, 255, 0.88)',
                 lineHeight: '1.7',
-                marginBottom: '36px',
+                marginBottom: '38px',
                 maxWidth: '680px',
                 textShadow: '0 2px 12px rgba(0, 0, 0, 0.7)',
               }}
@@ -250,10 +220,9 @@ export default function HomePage() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: '14px',
+                gap: '16px',
                 flexWrap: 'wrap',
                 width: '100%',
-                marginBottom: '32px',
               }}
             >
               <Link
@@ -263,8 +232,8 @@ export default function HomePage() {
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: '8px',
-                  padding: '14px 32px',
+                  gap: '10px',
+                  padding: '16px 36px',
                   borderRadius: '12px',
                   background: 'var(--accent)',
                   color: 'var(--text-inverse)',
@@ -286,8 +255,8 @@ export default function HomePage() {
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: '8px',
-                  padding: '14px 28px',
+                  gap: '10px',
+                  padding: '16px 32px',
                   borderRadius: '12px',
                   background: 'rgba(255, 255, 255, 0.08)',
                   border: '1px solid rgba(255, 255, 255, 0.24)',
@@ -303,54 +272,25 @@ export default function HomePage() {
                 <span>Reserve a Table</span>
               </Link>
             </div>
-
-            {/* Quality Badges */}
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 'clamp(14px, 3vw, 28px)',
-                flexWrap: 'wrap',
-                fontSize: '13px',
-                color: 'rgba(255, 255, 255, 0.75)',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <Star size={15} color="#FBBF24" fill="#FBBF24" />
-                <span><strong>4.9</strong> Rating (500+ Guests)</span>
-              </div>
-              <span style={{ opacity: 0.3 }}>•</span>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <ShieldCheck size={15} color="var(--accent)" />
-                <span>100% Halal Prime Cuts</span>
-              </div>
-              <span style={{ opacity: 0.3 }}>•</span>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <Clock size={15} color="#4ADE80" />
-                <span>Fast Mogadishu Delivery</span>
-              </div>
-            </div>
           </div>
 
           {/* Scroll Down Hint */}
           <div
             style={{
               position: 'absolute',
-              bottom: '18px',
+              bottom: '22px',
               left: '50%',
               transform: 'translateX(-50%)',
               zIndex: 3,
               display: 'flex',
-              flexDirection: 'column',
               alignItems: 'center',
-              gap: '3px',
+              justifyContent: 'center',
+              color: 'var(--accent)',
+              opacity: 0.7,
+              animation: 'float 3s ease-in-out infinite',
             }}
           >
-            <span style={{ fontSize: '9.5px', letterSpacing: '2px', color: 'rgba(255, 255, 255, 0.55)', textTransform: 'uppercase' }}>
-              Scroll
-            </span>
-            <ChevronDown size={15} color="var(--accent)" />
+            <ChevronDown size={20} />
           </div>
         </section>
 
