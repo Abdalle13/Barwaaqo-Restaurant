@@ -3,8 +3,6 @@
 > **A complete, production-ready full-stack restaurant platform** — online ordering, live order tracking, table reservations, point-of-sale, and a powerful multi-role admin dashboard. Built with authentic Somali fine dining in mind.
 
 🌐 **Live Demo:** [barwaaqo-restaurant.vercel.app](https://barwaaqo-restaurant-s4nd.vercel.app)
-📦 **GitHub:** [github.com/Abdalle13/Barwaaqo-Restaurant](https://github.com/Abdalle13/Barwaaqo-Restaurant)
-
 ---
 
 ## 📸 Overview
