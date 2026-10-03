@@ -21,6 +21,8 @@ import {
   Clock,
   CheckCircle2,
   DollarSign,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import { useToast } from '@/components/ui/Toast';
 import ReceiptModal from '@/components/admin/ReceiptModal';
@@ -52,6 +54,10 @@ export default function AdminPosPage() {
   const [notes, setNotes] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(8);
   
   // Receipt Modal State
   const [receiptOrder, setReceiptOrder] = useState<Order | null>(null);
@@ -123,6 +129,32 @@ export default function AdminPosPage() {
       return matchesCategory && (!query || food.name.toLowerCase().includes(query));
     });
   }, [foods, search, selectedCategory]);
+
+  // Reset to first page when search, category, or items-per-page changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, selectedCategory, itemsPerPage]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredFoods.length / itemsPerPage));
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedFoods = useMemo(() => {
+    return filteredFoods.slice(startIndex, startIndex + itemsPerPage);
+  }, [filteredFoods, startIndex, itemsPerPage]);
+
+  const getPageNumbers = () => {
+    if (totalPages <= 5) {
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
+    }
+    const pages: (number | string)[] = [];
+    if (currentPage <= 3) {
+      pages.push(1, 2, 3, 4, '...', totalPages);
+    } else if (currentPage >= totalPages - 2) {
+      pages.push(1, '...', totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+    } else {
+      pages.push(1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages);
+    }
+    return pages;
+  };
 
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const deliveryFee = orderType === 'DELIVERY' && cart.length > 0 ? 2 : 0;
@@ -375,9 +407,30 @@ export default function AdminPosPage() {
                 <Utensils size={17} color="var(--accent)" />
                 <h2 style={{ fontSize: '15px', fontWeight: '700', margin: 0 }}>Available Dishes</h2>
               </div>
-              <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-                {filteredFoods.length} items
-              </span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+                  {filteredFoods.length} items
+                </span>
+                <select
+                  value={itemsPerPage}
+                  onChange={(e) => setItemsPerPage(Number(e.target.value))}
+                  style={{
+                    backgroundColor: 'var(--bg-deep)',
+                    border: '1px solid var(--border)',
+                    borderRadius: '8px',
+                    padding: '3px 8px',
+                    fontSize: '11px',
+                    color: 'var(--text-primary)',
+                    cursor: 'pointer',
+                  }}
+                  title="Items per page"
+                >
+                  <option value={8}>8 / page</option>
+                  <option value={12}>12 / page</option>
+                  <option value={16}>16 / page</option>
+                  <option value={24}>24 / page</option>
+                </select>
+              </div>
             </div>
 
             <div className="pos-food-grid" style={{ padding: '16px', maxHeight: '560px', overflowY: 'auto' }}>
@@ -390,7 +443,7 @@ export default function AdminPosPage() {
                   No available dishes found matching your search.
                 </p>
               ) : (
-                filteredFoods.map((food) => {
+                paginatedFoods.map((food) => {
                   const cartItem = cart.find((item) => item.food._id === food._id);
                   return (
                     <button
@@ -466,6 +519,118 @@ export default function AdminPosPage() {
                 })
               )}
             </div>
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '12px 18px',
+                  borderTop: '1px solid var(--border)',
+                  backgroundColor: 'var(--bg-elevated)',
+                  fontSize: '12px',
+                  color: 'var(--text-secondary)',
+                  flexWrap: 'wrap',
+                  gap: '8px',
+                }}
+              >
+                <span>
+                  Showing{' '}
+                  <strong style={{ color: 'var(--text-primary)' }}>
+                    {startIndex + 1}–{Math.min(startIndex + itemsPerPage, filteredFoods.length)}
+                  </strong>{' '}
+                  of{' '}
+                  <strong style={{ color: 'var(--text-primary)' }}>
+                    {filteredFoods.length}
+                  </strong>{' '}
+                  dishes (Page {currentPage} of {totalPages})
+                </span>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                  <button
+                    type="button"
+                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '8px',
+                      border: '1px solid var(--border)',
+                      backgroundColor: currentPage === 1 ? 'transparent' : 'var(--bg-deep)',
+                      color: currentPage === 1 ? 'var(--text-muted)' : 'var(--text-primary)',
+                      cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+                      opacity: currentPage === 1 ? 0.45 : 1,
+                      transition: 'all 0.15s ease',
+                    }}
+                    title="Previous Page"
+                  >
+                    <ChevronLeft size={16} />
+                  </button>
+
+                  {getPageNumbers().map((item, idx) => {
+                    if (item === '...') {
+                      return (
+                        <span key={`dots-${idx}`} style={{ padding: '0 4px', color: 'var(--text-muted)' }}>
+                          …
+                        </span>
+                      );
+                    }
+                    const pageNum = item as number;
+                    const isActive = currentPage === pageNum;
+                    return (
+                      <button
+                        key={pageNum}
+                        type="button"
+                        onClick={() => setCurrentPage(pageNum)}
+                        style={{
+                          minWidth: '32px',
+                          height: '32px',
+                          padding: '0 8px',
+                          borderRadius: '8px',
+                          border: isActive ? '1px solid var(--accent)' : '1px solid var(--border)',
+                          backgroundColor: isActive ? 'var(--accent)' : 'var(--bg-deep)',
+                          color: isActive ? '#000000' : 'var(--text-primary)',
+                          fontWeight: isActive ? '700' : '500',
+                          fontSize: '12px',
+                          cursor: 'pointer',
+                          transition: 'all 0.15s ease',
+                        }}
+                      >
+                        {pageNum}
+                      </button>
+                    );
+                  })}
+
+                  <button
+                    type="button"
+                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={currentPage === totalPages}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '8px',
+                      border: '1px solid var(--border)',
+                      backgroundColor: currentPage === totalPages ? 'transparent' : 'var(--bg-deep)',
+                      color: currentPage === totalPages ? 'var(--text-muted)' : 'var(--text-primary)',
+                      cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+                      opacity: currentPage === totalPages ? 0.45 : 1,
+                      transition: 'all 0.15s ease',
+                    }}
+                    title="Next Page"
+                  >
+                    <ChevronRight size={16} />
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Recent Counter Sales (Reprint Bar) */}
