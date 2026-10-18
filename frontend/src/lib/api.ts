@@ -1,10 +1,9 @@
 import axios from 'axios';
 
-const PRODUCTION_BACKEND = 'https://barwaaqo-restaurant-backend.vercel.app';
+const PRODUCTION_BACKEND = 'https://barwaaqo-restaurant.vercel.app';
 
 let rawUrl = (
-  process.env.NEXT_PUBLIC_API_URL ||
-  (typeof window !== 'undefined' ? PRODUCTION_BACKEND + '/api' : PRODUCTION_BACKEND + '/api')
+  process.env.NEXT_PUBLIC_API_URL || PRODUCTION_BACKEND + '/api'
 ).trim().replace(/\/+$/, '');
 
 if (!rawUrl.endsWith('/api')) {
