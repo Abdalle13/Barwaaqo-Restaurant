@@ -5,24 +5,23 @@ const { authorize } = require('../middleware/authoriz');
 const { PERMISSIONS } = require('../seeds/constants');
 const upload = require('../utils/fileUpload');
 
-const { 
-    getFoods, 
-    getFoodById,
-  createFood, 
-  updateFood, 
-  deleteFood 
+const {
+  getFoods,
+  getPopularFoods,
+  getFoodById,
+  createFood,
+  updateFood,
+  deleteFood,
 } = require('../controllers/foodController');
 
+// Public routes for visitors & diners
+router.get('/', getFoods);
+router.get('/popular', getPopularFoods);
+router.get('/:id', getFoodById);
 
-// 1. GET All Foods (All Users)
-router.get('/', protect, authorize(PERMISSIONS.VIEW_FOOD), getFoods);
-// 2. GET Single Food (All Users)
-router.get('/:id', protect, authorize(PERMISSIONS.VIEW_FOOD), getFoodById);
-// 2. Create food (Admin Only)
+// Admin-only management routes
 router.post('/', protect, authorize(PERMISSIONS.CREATE_FOOD), upload.single('image'), createFood);
-// 3. Update Food (Admin Only)
-router.put('/:id', protect, authorize(PERMISSIONS.UPDATE_FOOD), upload.single('image'), updateFood)
-// 4. Delete Food (Admin Only)
+router.put('/:id', protect, authorize(PERMISSIONS.UPDATE_FOOD), upload.single('image'), updateFood);
 router.delete('/:id', protect, authorize(PERMISSIONS.DELETE_FOOD), deleteFood);
 
 module.exports = router;

@@ -12,9 +12,9 @@ const {
   deleteCategory 
 } = require('../controllers/categoryController');
 
-// Dhammaan routes-ka waxay u baahan yihiin in qofku Login yahay (protect)
-router.get('/', protect, authorize(PERMISSIONS.VIEW_CATEGORIES), getCategories);
-router.get('/:id', protect, authorize(PERMISSIONS.VIEW_CATEGORIES), getCategoryById);
+// Public routes
+router.get('/', getCategories);
+router.get('/:id', getCategoryById);
 
 router.post('/', protect, authorize(PERMISSIONS.CREATE_CATEGORY), createCategory);
 router.put('/:id', protect, authorize(PERMISSIONS.UPDATE_CATEGORY), updateCategory);
