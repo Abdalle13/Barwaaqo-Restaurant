@@ -1,6 +1,12 @@
 import axios from 'axios';
 
-let rawUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api').trim().replace(/\/+$/, '');
+const PRODUCTION_BACKEND = 'https://barwaaqo-restaurant-backend.vercel.app';
+
+let rawUrl = (
+  process.env.NEXT_PUBLIC_API_URL ||
+  (typeof window !== 'undefined' ? PRODUCTION_BACKEND + '/api' : PRODUCTION_BACKEND + '/api')
+).trim().replace(/\/+$/, '');
+
 if (!rawUrl.endsWith('/api')) {
   rawUrl += '/api';
 }
@@ -35,11 +41,9 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // If token expired or unauthorized, clear storage
     if (error.response && error.response.status === 401) {
       if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
-        // localStorage.removeItem('barwaaqo_token');
-        // localStorage.removeItem('barwaaqo_user');
+        // Optionally clear storage on unauthorized
       }
     }
     return Promise.reject(error);

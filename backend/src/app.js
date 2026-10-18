@@ -44,6 +44,7 @@ app.use(cors({
       !origin ||
       allowedOrigins.indexOf(origin) !== -1 ||
       origin.endsWith('.vercel.app') ||
+      origin.endsWith('.netlify.app') ||
       process.env.NODE_ENV !== 'production'
     ) {
       callback(null, true);
